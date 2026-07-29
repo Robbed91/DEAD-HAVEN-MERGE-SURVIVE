@@ -1,0 +1,70 @@
+{
+  "manifest_version": 1,
+  "note": "Per the placeholder art policy: no blank rectangles or generic coloured circles are used as finished visuals. Phase 1 placeholders are procedurally drawn (Control._draw()) silhouettes/scenes in the game's established palette, listed below alongside assets still to be produced.",
+  "assets": [
+    {
+      "name": "App icon",
+      "file_path": "icon.svg",
+      "required_dimensions": "128x128 (source vector, exported at multiple launcher sizes)",
+      "animation_frames": 0,
+      "status": "final_placeholder_vector",
+      "replacement_priority": "low - reads clearly at small sizes already"
+    },
+    {
+      "name": "Main menu background",
+      "file_path": "scenes/main_menu/main_menu_background.gd",
+      "required_dimensions": "720x1280 (viewport-relative, procedural)",
+      "animation_frames": "1 (looping glow pulse via _process)",
+      "status": "procedural_placeholder",
+      "replacement_priority": "high - first impression screen"
+    },
+    {
+      "name": "Hollow Creek Farmhouse exterior",
+      "file_path": "scenes/haven/haven_background.gd",
+      "required_dimensions": "720x1280 (viewport-relative, procedural)",
+      "animation_frames": 0,
+      "status": "procedural_placeholder",
+      "replacement_priority": "high - primary gameplay backdrop; needs layered PSD-style import (background/structure/damage/foreground) per section 20 of the design spec when real art lands"
+    },
+    {
+      "name": "World map",
+      "file_path": "scenes/world_map/world_map_background.gd",
+      "required_dimensions": "720x1280 (viewport-relative, procedural)",
+      "animation_frames": 0,
+      "status": "procedural_placeholder",
+      "replacement_priority": "medium"
+    },
+    {
+      "name": "Survivor roster portraits",
+      "file_path": "scripts/ui/survivor_silhouette.gd",
+      "required_dimensions": "96x96 per card, scalable",
+      "animation_frames": 0,
+      "status": "procedural_placeholder",
+      "replacement_priority": "high - see ART_ASSET_GUIDE.md for the full required expression/outfit set per survivor"
+    },
+    {
+      "name": "Merge chain item icons (9 chains x up to 8 levels)",
+      "file_path": "assets/items/",
+      "required_dimensions": "128x128",
+      "animation_frames": "merge burst: 6-8",
+      "status": "not_started",
+      "replacement_priority": "high - required for Phase 2"
+    },
+    {
+      "name": "The Hollow (infected) sprites - Drifter, Screecher, Breaker, Lurker, Runner, Bloater",
+      "file_path": "assets/characters/hollow/",
+      "required_dimensions": "256x256",
+      "animation_frames": "idle 4-6, move 6-8, attack 4-6",
+      "status": "not_started",
+      "replacement_priority": "high - required for Phase 7 (defence events)"
+    },
+    {
+      "name": "Delivery van upgrade stages (9 stages)",
+      "file_path": "assets/environments/vehicles/delivery_van/",
+      "required_dimensions": "512x384",
+      "animation_frames": 0,
+      "status": "not_started",
+      "replacement_priority": "medium - required for Phase 6"
+    }
+  ]
+}

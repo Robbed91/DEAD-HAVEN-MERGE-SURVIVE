@@ -1,0 +1,27 @@
+# Godot 4+ specific ignores
+.godot/
+.import/
+export.cfg
+export_credentials.cfg
+
+# Android build artifacts
+android/build/
+*.apk
+*.aab
+*.aar
+
+# Debug keystore should never be committed
+*.keystore
+!debug.keystore.example
+
+# Imported/generated
+*.translation
+.import/
+
+# OS/editor cruft
+.DS_Store
+Thumbs.db
+*.tmp
+
+# Local save data (never ship player saves in the repo)
+saves/
