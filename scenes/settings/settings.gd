@@ -21,6 +21,7 @@ func _ready() -> void:
 	_bind_toggle(%HighContrastToggle, "high_contrast", s.high_contrast)
 	_bind_toggle(%ColorblindToggle, "colorblind_mode", s.colorblind_mode)
 	_bind_toggle(%SubtitlesToggle, "subtitles", s.subtitles)
+	_bind_graphics_quality(%GraphicsQualityOption, s.graphics_quality)
 
 	%BackButton.pressed.connect(func(): SceneRouter.back("main_menu"))
 	%ResetProgressButton.pressed.connect(func(): _reset_dialog.popup_centered())
@@ -37,6 +38,13 @@ func _bind_slider(slider: HSlider, key: String, initial: float) -> void:
 func _bind_toggle(toggle: CheckButton, key: String, initial: bool) -> void:
 	toggle.button_pressed = initial
 	toggle.toggled.connect(func(v): GameManager.update_setting(key, v))
+
+const _GRAPHICS_QUALITY_VALUES := ["low", "standard", "high"]
+
+func _bind_graphics_quality(option: OptionButton, initial: String) -> void:
+	var index: int = _GRAPHICS_QUALITY_VALUES.find(initial)
+	option.selected = index if index >= 0 else 1
+	option.item_selected.connect(func(i: int): GameManager.update_setting("graphics_quality", _GRAPHICS_QUALITY_VALUES[i]))
 
 func _on_reset_confirmed() -> void:
 	GameManager.reset_progress()

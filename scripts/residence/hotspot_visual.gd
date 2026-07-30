@@ -141,8 +141,7 @@ func _draw() -> void:
 ## MergeBoard's burst effect reused here for the "construction happening"
 ## feedback the spec asks for (spec: hammering, dust, sparks).
 func play_repair_burst() -> void:
-	var reduced: bool = GameManager.settings.get("reduced_motion", false)
-	if reduced:
+	if not GameManager.effects_enabled():
 		return
 	var burst := Control.new()
 	burst.size = size

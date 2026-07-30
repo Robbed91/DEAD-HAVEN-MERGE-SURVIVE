@@ -52,10 +52,14 @@ design and code can never drift apart.
   state also carries an icon, label, or state change (e.g. the hotspot
   repair checkmark badge in `scripts/residence/hotspot_visual.gd`, not
   colour alone).
-- A colour-blind-safe pass is still open work: today's contrast comes
-  from `GameManager.settings.high_contrast` swapping to `HC_BG`/`HC_TEXT`/
-  `HC_ACCENT` (pure black/white/orange) rather than per-hue
-  deuteranopia/protanopia adjustment - tracked as a Phase 9 (Polish) item.
+- `GameManager.settings.colorblind_mode` (Phase 9) adds a visible outline
+  to every button state so button identity/tappability never depends on
+  perceiving a colour difference - it deliberately does not shift
+  palette hues (unverifiable without a real screen in this headless
+  environment). A hue-tuned deuteranopia/protanopia palette pass is still
+  open work. `high_contrast` remains the separate, stronger override
+  (pure black/white/orange via `HC_BG`/`HC_TEXT`/`HC_ACCENT`) for low-
+  vision users generally, not colour-blindness specifically.
 
 ## 3. Typography
 

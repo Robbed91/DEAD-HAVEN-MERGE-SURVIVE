@@ -35,7 +35,7 @@ const HC_ACCENT := Color("ff8a3d")
 
 const MIN_TOUCH_TARGET := 64.0
 
-static func build_theme(text_scale: float = 1.0, high_contrast: bool = false) -> Theme:
+static func build_theme(text_scale: float = 1.0, high_contrast: bool = false, colorblind_mode: bool = false) -> Theme:
 	var theme := Theme.new()
 	var base_font_size := int(round(28 * text_scale))
 	var button_font_size := int(round(26 * text_scale))
@@ -52,11 +52,31 @@ static func build_theme(text_scale: float = 1.0, high_contrast: bool = false) ->
 	theme.set_font_size("font_size", "Label", base_font_size)
 
 	# -- Button ---------------------------------------------------------------
+	# colorblind_mode never touches hue (unverifiable without a real screen
+	# in this environment - see ART_STYLE_GUIDE.md section 2) - instead it
+	# adds a shape/outline cue so button state doesn't depend on perceiving
+	# a colour difference at all: every button gets a visible outline, and
+	# disabled buttons additionally lose their fill instead of just dimming
+	# it, so "can't tap this" is legible by silhouette alone.
 	var btn_normal := _panel_style(accent, 12, MIN_TOUCH_TARGET)
 	var btn_hover := _panel_style(accent.lightened(0.12), 12, MIN_TOUCH_TARGET)
 	var btn_pressed := _panel_style(accent.darkened(0.18), 12, MIN_TOUCH_TARGET)
 	var btn_disabled := _panel_style(OLIVE_DARK, 12, MIN_TOUCH_TARGET)
 	btn_disabled.bg_color.a = 0.5
+
+	if colorblind_mode:
+		for style in [btn_normal, btn_hover, btn_pressed]:
+			style.border_width_left = 3
+			style.border_width_right = 3
+			style.border_width_top = 3
+			style.border_width_bottom = 3
+			style.border_color = CREAM
+		btn_disabled.bg_color.a = 0.18
+		btn_disabled.border_width_left = 3
+		btn_disabled.border_width_right = 3
+		btn_disabled.border_width_top = 3
+		btn_disabled.border_width_bottom = 3
+		btn_disabled.border_color = CREAM.darkened(0.5)
 
 	theme.set_stylebox("normal", "Button", btn_normal)
 	theme.set_stylebox("hover", "Button", btn_hover)

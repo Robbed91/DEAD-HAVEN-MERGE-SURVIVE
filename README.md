@@ -35,16 +35,19 @@ cool blue-grey exteriors. See `scripts/ui/theme_factory.gd` for the exact
 palette values and `ART_ASSET_GUIDE.md` for how it's applied to
 environments and characters.
 
-## Current status: Phase 8 - Additional content
+## Current status: Phase 9 - Polish (part 1)
 
-Phases 1-7 (foundation, merge board, residence system, story, scavenging,
-vehicles/survivors, defence) are done, and now a second residence -
-Redwater Service Station - is real, along with the DefenceManager
-generalization that makes a second residence's own attack event possible
-at all. **It is not yet the full game** - 3 more residences and a final
-polish pass are scoped for the phases that follow (see
-`DEVELOPMENT_LOG.md` for the authoritative phase-by-phase plan and
-status).
+Phases 1-8 (foundation, merge board, residence system, story, scavenging,
+vehicles/survivors, defence, a second residence) are done. Art Phase 1
+added a real logo/splash/brand identity and a full art-production spec
+(see "Documentation" below for `ART_STYLE_GUIDE.md`, `ART_GENERATION_PROMPTS.md`
+and `ART_ILLUSTRATION_CHECKLIST.md`). Phase 9 so far fixed a real bug
+where accessibility settings (text size, high contrast, colour-blind
+mode) didn't take effect until an app restart, and added a Low/Standard/
+High graphics-quality tier that actually gates particle-heavy effects.
+**It is not yet the full game** - 3 more residences, 4 more recruitable
+survivors, and illustrated art all remain (see `DEVELOPMENT_LOG.md` for
+the authoritative phase-by-phase plan and status).
 
 What already works, end to end, in this build:
 - Everything from Phase 1 (main menu, save/load, settings, navigation, dev diagnostics), Phase 2 (the full 7x9 merge board, 101 items across 9 gameplay + 4 reward chains, producers, energy, storage), Phase 3 (9 real repair hotspots on Hollow Creek Farmhouse, task panels, "Find on Board" task highlighting), Phase 4 (a real dialogue engine, an intro scene, and Noah Vance's rescue scene with a genuine choice), Phase 5 (5 real scavenging locations with choice-based encounters and real loot), Phase 6 (a real survivor roster, Noah's personal quest, a 9-stage upgradeable delivery van, skill-based scavenging odds) and Phase 7 (Hollow Creek Farmhouse's tenth milestone: survive the first night attack)

@@ -149,8 +149,8 @@ func _on_drop_attempted(dragged_id: String, cell: BoardCell) -> void:
 
 # -- Feedback / animation --------------------------------------------------
 
-func _reduced_motion() -> bool:
-	return GameManager.settings.get("reduced_motion", false)
+func _effects_disabled() -> bool:
+	return not GameManager.effects_enabled()
 
 func _play_pop_at_instance(instance_id: String) -> void:
 	var bi: BoardItem = BoardState.items.get(instance_id)
@@ -159,7 +159,7 @@ func _play_pop_at_instance(instance_id: String) -> void:
 	var cell: BoardCell = _cells.get(bi.grid_position)
 	if cell == null or cell.item_view == null:
 		return
-	if _reduced_motion():
+	if _effects_disabled():
 		return
 	var view := cell.item_view
 	view.scale = Vector2(0.5, 0.5)
@@ -169,7 +169,7 @@ func _play_pop_at_instance(instance_id: String) -> void:
 	tween.tween_property(view, "scale", Vector2.ONE, 0.1)
 
 func _play_invalid_shake(cell: BoardCell) -> void:
-	if _reduced_motion() or cell.item_view == null:
+	if _effects_disabled() or cell.item_view == null:
 		return
 	var view := cell.item_view
 	var base_pos := view.position
@@ -184,7 +184,7 @@ func _play_invalid_shake(cell: BoardCell) -> void:
 ## modulate/scale tweens, which Godot applies at render time without any
 ## further redraw calls needed.
 func _play_merge_burst(grid_pos: Vector2i) -> void:
-	if _reduced_motion():
+	if _effects_disabled():
 		return
 	var cell: BoardCell = _cells.get(grid_pos)
 	if cell == null:

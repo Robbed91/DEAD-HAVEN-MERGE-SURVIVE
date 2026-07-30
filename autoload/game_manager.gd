@@ -48,6 +48,7 @@ var settings: Dictionary = {
 	"colorblind_mode": false,
 	"subtitles": true,
 	"text_scale": 1.0,
+	"graphics_quality": "standard", # "low" | "standard" | "high" - see ART_STYLE_GUIDE.md / brief section 38
 }
 
 ## True once a game has been started/loaded this session. Prevents screens
@@ -56,6 +57,14 @@ var is_game_active: bool = false
 
 func is_debug_enabled() -> bool:
 	return OS.is_debug_build()
+
+## Single source of truth for whether non-essential motion/particle effects
+## (merge bursts, hotspot repair dust, map marker pulses, ...) should play -
+## folds together the accessibility "reduced motion" toggle and the
+## performance "graphics_quality" tier (brief section 38's Low/Standard/
+## High modes) so effect call sites don't each duplicate this check.
+func effects_enabled() -> bool:
+	return not settings.get("reduced_motion", false) and settings.get("graphics_quality", "standard") != "low"
 
 func _ready() -> void:
 	_energy_regen_timer = Timer.new()
@@ -278,6 +287,14 @@ func update_setting(key: String, value: Variant) -> void:
 	EventBus.settings_changed.emit()
 	if key in ["master_volume", "music_volume", "sfx_volume"]:
 		AudioManager.apply_volume_settings()
+	if key in ["text_scale", "high_contrast", "colorblind_mode"]:
+		# Previously these baked into the Theme once at Boot and never
+		# again - toggling High Contrast or Colour-blind Mode in Settings
+		# had no visible effect until the app restarted. Rebuilding here
+		# makes every accessibility setting take effect immediately.
+		get_window().theme = ThemeFactory.build_theme(
+			settings.text_scale, settings.high_contrast, settings.colorblind_mode
+		)
 	SaveManager.request_autosave()
 
 func reset_progress() -> void:

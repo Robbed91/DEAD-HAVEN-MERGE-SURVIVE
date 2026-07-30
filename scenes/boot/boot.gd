@@ -9,6 +9,7 @@ extends Node
 func _ready() -> void:
 	get_window().theme = ThemeFactory.build_theme(
 		GameManager.settings.get("text_scale", 1.0),
-		GameManager.settings.get("high_contrast", false)
+		GameManager.settings.get("high_contrast", false),
+		GameManager.settings.get("colorblind_mode", false)
 	)
 	SceneRouter.go_to("splash", {}, false)

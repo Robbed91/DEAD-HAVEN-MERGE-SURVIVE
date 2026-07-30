@@ -1369,6 +1369,174 @@ question (see `ART_ASSET_GUIDE.md` - every visual in the project through
 Phase 8 is procedural placeholder art via `_draw()`, by necessity of this
 environment having no image-generation tool).
 
+## Art Phase 1: Visual foundation - complete
+
+Prompted by the full art/graphics/animation brief (48 sections) attached
+mid-Phase-8. This environment has no image-generation tool - unchanged
+from every prior phase's honest disclosure - so this phase is scoped to
+the brief's own Section 45 fallback: produce everything achievable
+without raster generation, and track everything else as a concrete,
+ready-to-generate production prompt rather than skip it or fake it.
+
+### Files created
+
+- `assets/branding/logo/` (5 SVGs: horizontal dark/light, stacked, icon-
+  only, monochrome) and `assets/branding/app_icon/notification_icon.svg`
+  - original hand-authored vector art on the boarded-doorway motif
+  already established in `icon.svg`, not a placeholder.
+- `scenes/splash/splash.gd`/`.tscn` - a real splash screen (previously
+  just a comment in `boot.gd` saying one belonged there), showing the
+  stacked logo with a fade in/hold/fade out before routing to the main
+  menu; tap-to-skip; respects the same active-scene guard every other
+  auto-navigating screen uses so `tests/smoke_test.gd` can still
+  instantiate it safely as a plain child.
+- `ART_STYLE_GUIDE.md` - the formal palette (named semantic roles,
+  cross-referenced 1:1 with `ThemeFactory` constants) and typography
+  direction (Oswald + Inter, both SIL OFL 1.1 - licence-clear, not yet
+  bundled as font files).
+- `ART_GENERATION_PROMPTS.md` - the brief's shared style header +
+  negative prompt, plus 10 fully detailed generation prompts covering
+  its Section 48 vertical slice (Mara Vale and Noah Vance character
+  sheets, the Drifter concept sheet, Hollow Creek's two earliest exterior
+  states, the merge-board design, the construction item chain as a
+  template, the Tool Crate producer, a window-boarding task/animation
+  storyboard, and the intro dialogue scene) - each grounded in this
+  project's actual data files, not generic filler.
+- `ART_ILLUSTRATION_CHECKLIST.md` - a flat, hand-off-ready list of every
+  illustration the game currently needs (14 categories), with a
+  suggested batching/priority order, for whichever future session
+  actually has an image-generation tool.
+- `assets/manifests/animation_manifest.json` - every animation in the
+  project, implemented and planned, per the brief's Section 37 schema.
+
+### Files modified
+
+- `scripts/ui/theme_factory.gd` - added `SAFE_AMBER`/`STORM_BLUEGREY` as
+  named palette constants (the brief's "safe-haven amber"/"storm
+  blue-grey" semantic roles existed as one-off hex values in a couple of
+  background scripts already; now centralised).
+- `assets/manifests/asset_manifest.json` - expanded from a short informal
+  list to the brief's full Section 36 schema (asset id, category,
+  transparency, animation type, scenes using it, licence/generation
+  source, optimisation status) for every existing entry, plus new
+  entries for the logo set/splash/notification icon.
+- `autoload/scene_router.gd` - added `"splash"` to `SCENE_PATHS`.
+- `scenes/boot/boot.gd` - now routes to `"splash"` first instead of
+  straight to `"main_menu"`.
+- `tests/smoke_test.gd` - added `splash.tscn` to the coverage list.
+- `ART_ASSET_GUIDE.md` / `README.md` - cross-reference the new documents;
+  a new "Finished (non-placeholder) assets" section in `ART_ASSET_GUIDE.md`
+  so the logo/splash aren't mistaken for placeholders alongside everything
+  else in that document.
+
+### Tests performed
+
+`godot4 --headless --path . --import` (confirms the new SVGs import
+cleanly - Godot's built-in SVG rasterizer, same path `icon.svg` already
+used successfully) and the full smoke test suite including the new
+`splash.tscn` step - all pass, no regressions.
+
+### Known issues
+
+- **This is vector/spec work, not the illustrated art the brief
+  actually asks for.** No painted character, environment, or item art
+  exists. That gap is unchanged and can't be closed without an
+  image-generation tool - see `ART_GENERATION_PROMPTS.md`'s intro.
+- **No font files bundled yet** - Oswald/Inter are documented
+  recommendations, not yet added to the project.
+- **The wordmark's "distressed" treatment is a stand-in** (a subtle SVG
+  `feTurbulence` displacement filter), not a hand-painted texture pass.
+
+### Exact next phase
+
+Resume **Phase 9: Polish** (animation/juice pass, accessibility,
+performance) - see below.
+
+## Phase 9: Polish (part 1 - accessibility + performance settings) - complete
+
+### Files modified
+
+- `autoload/game_manager.gd` - **bug fix**: `EventBus.settings_changed`
+  had zero listeners anywhere in the codebase. `text_scale`,
+  `high_contrast` and (newly) `colorblind_mode` were baked into
+  `get_window().theme` exactly once, at `Boot._ready()`, and never
+  rebuilt - toggling any of them on the Settings screen changed the
+  stored value and did nothing visible until the app restarted. Fixed by
+  rebuilding the theme inline in `update_setting()` for those three keys,
+  the same way audio volume keys already trigger `AudioManager.apply_volume_settings()`.
+  Also added a new `graphics_quality` setting (`"low"`/`"standard"`/
+  `"high"`, default `"standard"` - brief section 38's performance tiers)
+  and a single `effects_enabled()` helper folding it together with
+  `reduced_motion`, replacing three near-duplicate ad hoc checks.
+- `scripts/ui/theme_factory.gd` - `build_theme()` now takes a
+  `colorblind_mode` parameter. Deliberately does **not** touch palette
+  hues (unverifiable without a real screen in this environment - see
+  `ART_STYLE_GUIDE.md`); instead adds a visible outline to every button
+  state so "which button is this / can I tap it" doesn't depend on
+  perceiving a colour difference at all.
+- `scenes/boot/boot.gd` - passes `colorblind_mode` through on the initial
+  theme build too.
+- `scenes/merge_board/merge_board.gd`, `scripts/residence/hotspot_visual.gd`,
+  `scenes/world_map/world_map.gd` - the three existing particle/motion
+  effects (merge burst, hotspot repair dust, map marker pulse) now check
+  `GameManager.effects_enabled()` instead of reading `reduced_motion`
+  directly, so `graphics_quality: "low"` also suppresses them - real
+  Android performance headroom, not just an accessibility toggle.
+- `scenes/settings/settings.gd`/`.tscn` - new "Graphics quality" row
+  (Low/Standard/High `OptionButton`) under a new "Graphics" section.
+- `tests/smoke_test_settings.gd` - rewritten to actually catch the bug
+  above: asserts `get_window().theme` (the live one, not a freshly-built
+  throwaway `Theme`) reflects each setting change, and that
+  `effects_enabled()` correctly folds `reduced_motion` +
+  `graphics_quality`.
+
+### Features completed
+
+- **Accessibility settings now take effect immediately**, no restart
+  required: text scale, high contrast, and colour-blind mode (new) all
+  rebuild the live theme the moment they're toggled.
+- **A real graphics-quality tier setting** exists and is wired through
+  to every current particle/motion effect - `"low"` measurably reduces
+  what's drawn per frame, which is the actual point of a performance
+  tier on Android, not just a UI toggle that does nothing.
+
+### Tests performed
+
+`godot4 --headless --path . --import` clean; full 10-test smoke suite
+passes, including the rewritten `smoke_test_settings.tscn` which now
+genuinely exercises the live-theme-rebuild bug fix rather than just
+building a disposable `Theme` and checking its font size in isolation.
+
+### Known issues
+
+- **Colour-blind mode is shape/outline-based, not palette-based** - a
+  hue-shifted, deuteranopia/protanopia-tuned palette pass is still open
+  work; doing it correctly needs actual visual verification this
+  headless environment can't provide.
+- **No audio exists to apply the new graphics tiers' spirit to** - the
+  brief's Low/Standard/High modes also cover weather/particle density
+  and target frame rate, which don't have enough real content
+  (weather, more than one particle effect) yet to meaningfully tier.
+- **No new juice/animation content this pass** - Phase 9's "animation
+  pass on existing systems" is scoped down to this settings/performance
+  work; the fuller repair-sequence/vehicle/character animation work in
+  `ART_GENERATION_PROMPTS.md` and `animation_manifest.json` is still
+  gated on real art existing to animate.
+- **Godot binary still not persisted** in this environment - same caveat
+  as every phase so far.
+
+### Exact next phase
+
+**Phase 10 (or continued Phase 9)**: build the 3 remaining residences
+(Greybridge School, Saint Mercy Hospital, Northgate Prison) and their
+survivor rescues (Dr Imogen Shaw, Riley Chen, Caleb Rusk), the 5
+remaining scavenging locations, and a main-story chapter arc connecting
+them - the biggest remaining gap is content breadth (half the survivor
+roster and most residences are still narratively absent), not any single
+system. Illustrated art remains gated on an image-generation tool
+becoming available - `ART_ILLUSTRATION_CHECKLIST.md` is ready whenever
+that happens.
+
 ### Commands required to run or export the project
 
 ```bash

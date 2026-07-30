@@ -85,7 +85,7 @@ func _build_scavenging_markers() -> void:
 		layer.add_child(marker)
 
 func _pulse_marker(marker: Control) -> void:
-	if GameManager.settings.get("reduced_motion", false):
+	if not GameManager.effects_enabled():
 		return
 	var tween := create_tween().set_loops()
 	tween.tween_property(marker, "scale", Vector2(1.12, 1.12), 0.9).set_trans(Tween.TRANS_SINE)
