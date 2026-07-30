@@ -147,5 +147,6 @@ placeholder and what a licence-safe replacement needs to look like.
 - `ART_ASSET_GUIDE.md` / `AUDIO_ASSET_GUIDE.md` - asset status and requirements
 - `ART_STYLE_GUIDE.md` - formal colour palette, typography and logo system
 - `ART_GENERATION_PROMPTS.md` - ready-to-use image-generation prompts for assets this environment can't produce directly (no image-generation tool available here)
+- `ART_ILLUSTRATION_CHECKLIST.md` - flat, hand-off-ready checklist of every illustration the game needs, kept current as later phases add content
 - `data/README.md` - what content lives in each data folder and when it's populated
 - `tests/PHASE1_MANUAL_CHECKLIST.md` - manual verification steps (no test-runner engine available in this environment)
