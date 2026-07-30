@@ -145,5 +145,7 @@ placeholder and what a licence-safe replacement needs to look like.
 
 - `DEVELOPMENT_LOG.md` - phase-by-phase build log (files touched, features completed, known issues, next phase)
 - `ART_ASSET_GUIDE.md` / `AUDIO_ASSET_GUIDE.md` - asset status and requirements
+- `ART_STYLE_GUIDE.md` - formal colour palette, typography and logo system
+- `ART_GENERATION_PROMPTS.md` - ready-to-use image-generation prompts for assets this environment can't produce directly (no image-generation tool available here)
 - `data/README.md` - what content lives in each data folder and when it's populated
 - `tests/PHASE1_MANUAL_CHECKLIST.md` - manual verification steps (no test-runner engine available in this environment)

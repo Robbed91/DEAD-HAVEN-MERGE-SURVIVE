@@ -7,6 +7,24 @@ needs to contain when it's produced. See
 `assets/manifests/asset_manifest.json` for the machine-readable version of
 this table.
 
+**Related documents** (Art Phase 1, added in response to the full
+art/graphics/animation brief): `ART_STYLE_GUIDE.md` is the formal
+palette/typography/logo reference; `ART_GENERATION_PROMPTS.md` has
+ready-to-use image-generation prompts for the vertical-slice assets this
+environment can't produce directly (no image-generation tool exists
+here - see that document's intro for what that means in practice);
+`assets/manifests/animation_manifest.json` tracks every animation,
+implemented and planned, alongside the asset manifest below.
+
+## Finished (non-placeholder) assets
+
+Not everything in this project is a placeholder. `icon.svg` (the launcher
+icon) and, as of Art Phase 1, the full logo set under
+`assets/branding/logo/` plus the notification icon and the real splash
+screen (`scenes/splash/`) are genuine original vector art, hand-authored,
+integrated, and not expected to change before a rebrand - see
+`ART_STYLE_GUIDE.md` section 4 for the full set and their intended uses.
+
 ## Placeholder technique used in Phase 1
 
 Where a final illustration doesn't exist yet, the corresponding scene has a
