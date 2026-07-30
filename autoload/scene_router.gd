@@ -12,6 +12,7 @@ const SCENE_PATHS: Dictionary = {
 	"dialogue": "res://scenes/dialogue/dialogue.tscn",
 	"scavenging": "res://scenes/scavenging/scavenging.tscn",
 	"vehicle": "res://scenes/vehicle/vehicle.tscn",
+	"defence": "res://scenes/defence/defence.tscn",
 	"merge_board": "res://scenes/merge_board/merge_board.tscn",
 	"world_map": "res://scenes/world_map/world_map.tscn",
 	"survivors": "res://scenes/survivors/survivors.tscn",

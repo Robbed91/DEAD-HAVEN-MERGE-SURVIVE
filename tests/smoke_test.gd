@@ -20,6 +20,7 @@ const SCENES := [
 	"res://scenes/dialogue/dialogue.tscn",
 	"res://scenes/scavenging/scavenging.tscn",
 	"res://scenes/vehicle/vehicle.tscn",
+	"res://scenes/defence/defence.tscn",
 ]
 
 var _step_index: int = 0

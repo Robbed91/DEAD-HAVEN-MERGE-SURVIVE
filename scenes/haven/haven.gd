@@ -12,12 +12,14 @@ const HOTSPOT_SIZE := Vector2(64, 64)
 const CHAPTER_TITLES := {
 	"chapter_1_the_open_door": "Chapter 1: The Open Door",
 	"chapter_2_someone_upstairs": "Chapter 2: Someone Upstairs",
+	"chapter_4_the_first_wave": "Chapter 4: The First Wave",
 }
 
 @onready var _hotspots_layer: Control = %Hotspots
 @onready var _task_panel: TaskPanel = %TaskPanel
 @onready var _progress_label: Label = %ProgressLabel
 @onready var _chapter_label: Label = %ChapterLabel
+@onready var _defence_button: Button = %DefenceButton
 
 var _hotspot_visuals: Dictionary = {} # hotspot_id -> HotspotVisual
 
@@ -30,7 +32,9 @@ func _ready() -> void:
 			_build_hotspot(hotspot)
 
 	_task_panel.completed.connect(_on_task_completed)
+	_defence_button.pressed.connect(func(): SceneRouter.go_to("defence"))
 	EventBus.chapter_changed.connect(func(_id): _refresh_chapter_label())
+	EventBus.defence_resolved.connect(func(_outcome): _refresh_progress())
 	_refresh_progress()
 	_refresh_chapter_label()
 
@@ -85,3 +89,4 @@ func _refresh_progress() -> void:
 		if ResidenceManager.get_hotspot_state(hotspot.id) == ResidenceHotspot.State.COMPLETED:
 			done += 1
 	_progress_label.text = "Repairs: %d / %d" % [done, residence.hotspots.size()]
+	_defence_button.visible = DefenceManager.can_attempt()

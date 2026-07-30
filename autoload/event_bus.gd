@@ -44,6 +44,9 @@ signal mission_completed(mission_id: String, outcome_success: bool)
 signal vehicle_discovered(vehicle_id: String)
 signal vehicle_stage_changed(vehicle_id: String, new_stage: int)
 
+# -- Defence (Phase 7) -------------------------------------------------
+signal defence_resolved(outcome_success: bool)
+
 # -- Lightweight UI feedback ----------------------------------------------
 ## Used by any screen to surface a short non-blocking message, e.g. for
 ## systems that are not implemented yet in the current development phase.

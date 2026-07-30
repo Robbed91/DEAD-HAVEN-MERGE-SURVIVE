@@ -21,12 +21,29 @@ const SCAVENGING_MARKER_POSITIONS := {
 
 func _ready() -> void:
 	%HollowCreekMarker.pressed.connect(func(): SceneRouter.go_to("haven"))
-	for locked_name in ["RedwaterMarker", "GreybridgeMarker", "SaintMercyMarker", "NorthgateMarker"]:
+	for locked_name in ["GreybridgeMarker", "SaintMercyMarker", "NorthgateMarker"]:
 		var marker: Button = get_node("%" + locked_name)
 		marker.pressed.connect(func(): EventBus.show_toast.emit("Locked - reach this residence by progressing the campaign."))
+	_setup_redwater_marker()
 	_pulse_marker(%HollowCreekMarker)
 	_build_scavenging_markers()
 	_build_vehicle_marker()
+
+## Redwater Service Station itself isn't built until Phase 8, but
+## surviving the first night attack (Phase 7) is a real, earned story
+## beat that should feel different from "just locked" - so once
+## GameManager.story_flags["redwater_unlocked"] is set, the marker's
+## message changes to something honest about what's actually true: found,
+## not yet reachable, rather than still framed as locked.
+func _setup_redwater_marker() -> void:
+	var marker: Button = %RedwaterMarker
+	if GameManager.get_story_flag("redwater_unlocked", false):
+		marker.modulate.a = 0.85
+		marker.text = "📍"
+		marker.tooltip_text = "Redwater Service Station - located, not yet reachable"
+		marker.pressed.connect(func(): EventBus.show_toast.emit("You know where it is now. The route there isn't ready yet."))
+	else:
+		marker.pressed.connect(func(): EventBus.show_toast.emit("Locked - reach this residence by progressing the campaign."))
 
 func _build_vehicle_marker() -> void:
 	if not VehicleManager.is_discovered("delivery_van"):

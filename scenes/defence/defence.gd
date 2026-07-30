@@ -1,0 +1,78 @@
+extends Control
+## Defence
+##
+## Hollow Creek Farmhouse's first-night attack: pick who leads the
+## response, spend energy to commit, choose how to handle it, see the
+## outcome. Same three-panel flow as scenes/scavenging/scavenging.gd,
+## reused deliberately rather than re-architected.
+
+const SURVIVOR_NAMES := {
+	"mara_vale": "Mara Vale",
+	"noah_vance": "Noah Vance",
+}
+
+@onready var _survivor_box: VBoxContainer = %SurvivorBox
+@onready var _send_button: Button = %SendButton
+@onready var _encounter_label: Label = %EncounterLabel
+@onready var _choices_box: VBoxContainer = %ChoicesBox
+@onready var _outcome_label: Label = %OutcomeLabel
+@onready var _return_button: Button = %ReturnButton
+@onready var _prep_panel: VBoxContainer = %PrepPanel
+@onready var _encounter_panel: VBoxContainer = %EncounterPanel
+@onready var _outcome_panel: VBoxContainer = %OutcomePanel
+
+var _selected_survivor_id: String = ""
+var _shared_group: ButtonGroup
+
+func _ready() -> void:
+	if not DefenceManager.can_attempt():
+		if get_tree().current_scene == self:
+			var reason := "You need to finish repairing the farmhouse first." if not DefenceManager.all_hotspots_complete() else "You've already made it through the first night."
+			EventBus.show_toast.emit(reason)
+			SceneRouter.go_to("haven", {}, false)
+		return
+
+	for survivor_id in GameManager.get_unlocked_survivor_ids():
+		var btn := Button.new()
+		btn.text = SURVIVOR_NAMES.get(survivor_id, survivor_id)
+		btn.toggle_mode = true
+		btn.custom_minimum_size = Vector2(0, 52)
+		btn.button_group = _survivor_group()
+		btn.pressed.connect(func(): _selected_survivor_id = survivor_id)
+		_survivor_box.add_child(btn)
+		if _selected_survivor_id.is_empty():
+			_selected_survivor_id = survivor_id
+			btn.button_pressed = true
+
+	_send_button.pressed.connect(_on_send_pressed)
+	_return_button.pressed.connect(func(): SceneRouter.go_to("haven", {}, false))
+
+func _survivor_group() -> ButtonGroup:
+	if _shared_group == null:
+		_shared_group = ButtonGroup.new()
+	return _shared_group
+
+func _on_send_pressed() -> void:
+	var result := DefenceManager.launch(_selected_survivor_id)
+	if not result.success:
+		EventBus.show_toast.emit("Not enough energy to prepare for the night.")
+		return
+	_prep_panel.visible = false
+	_encounter_panel.visible = true
+	_encounter_label.text = "Night falls, and they come from the treeline. What now?"
+	for child in _choices_box.get_children():
+		child.queue_free()
+	for i in DefenceManager.choices.size():
+		var choice: Dictionary = DefenceManager.choices[i]
+		var btn := Button.new()
+		btn.text = String(choice.get("text", "..."))
+		btn.custom_minimum_size = Vector2(0, 56)
+		btn.pressed.connect(_on_choice_pressed.bind(i))
+		_choices_box.add_child(btn)
+
+func _on_choice_pressed(choice_index: int) -> void:
+	var result := DefenceManager.resolve_choice(choice_index, _selected_survivor_id)
+	_encounter_panel.visible = false
+	_outcome_panel.visible = true
+	var prefix: String = "You made it through. " if result.outcome_success else "It was close. "
+	_outcome_label.text = prefix + String(result.text)

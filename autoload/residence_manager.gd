@@ -151,6 +151,20 @@ func _maybe_discover_vehicle() -> void:
 	VehicleManager.discover_vehicle("delivery_van")
 	EventBus.show_toast.emit("You found an old delivery van behind the barn.")
 
+## Sends a hotspot back to DESTROYED and un-marks its quest(s) as
+## complete, so it can be repaired again through the normal task-panel
+## flow. Used by DefenceManager on a failed defence ("damaged defences" -
+## spec section 15's failure consequences) - never called for any other
+## reason, since normal play only ever advances a hotspot forward.
+func revert_hotspot(hotspot_id: String, residence_id: String = "hollow_creek_farmhouse") -> void:
+	var hotspot := get_hotspot(residence_id, hotspot_id)
+	if hotspot == null:
+		return
+	hotspot_states[hotspot_id] = ResidenceHotspot.State.DESTROYED
+	for quest_id in hotspot.required_task_ids:
+		completed_quest_ids.erase(quest_id)
+	EventBus.hotspot_state_changed.emit(hotspot_id, ResidenceHotspot.State.DESTROYED)
+
 func to_save_data() -> Dictionary:
 	return {
 		"hotspot_states": hotspot_states.duplicate(),

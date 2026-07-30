@@ -1046,3 +1046,166 @@ done
 godot4 --headless --path /path/to/dead-haven-merge-survive \
   --export-debug "Android" build/android/dead_haven.apk
 ```
+
+---
+
+## Phase 7: Defence - complete
+
+### Files created
+
+New autoload: `autoload/defence_manager.gd` - Hollow Creek Farmhouse's
+milestone 10, "Survive the first night attack". Unlike every prior
+phase's content, its choice data is deliberately kept as inline `var`
+constants in the autoload rather than a `data/` file - it's a single,
+story-critical event, not a repeatable content category like items/
+quests/missions, so a whole data-file-plus-generator-script pipeline for
+one event would be needless indirection. (It's `var`, not `const`,
+specifically so tests can force deterministic outcomes the same way
+`smoke_test_scavenging.gd` already does on `ScavengingMission.encounter_choices`
+- GDScript rejects mutating elements of a true `const` container.)
+
+New screen: `scenes/defence/defence.gd`/`.tscn` - survivor picker ->
+Prepare -> 3-choice encounter -> outcome, reusing
+`scenes/scavenging/scavenging.gd`'s exact three-panel pattern rather than
+inventing a new one.
+
+Tests: `tests/smoke_test_defence.gd`/`.tscn`.
+
+### Files modified
+
+- `project.godot` - registered `DefenceManager`; added `"defence"` to
+  `SceneRouter.SCENE_PATHS`.
+- `autoload/event_bus.gd` - added `defence_resolved`.
+- `autoload/game_manager.gd` - `new_game()`/`to_save_data()`/
+  `apply_save_data()` now also cover `DefenceManager`.
+- `autoload/residence_manager.gd` - new `revert_hotspot()`, used only by
+  `DefenceManager` on a failed defence to send one hotspot back to
+  DESTROYED and un-mark its quest as complete (spec: "damaged defences").
+- `scenes/haven/haven.gd`/`.tscn` - a "Prepare for the Night" button
+  appears once `DefenceManager.can_attempt()` is true (all 9 hotspots
+  COMPLETED and the first wave not yet survived); added
+  `"chapter_4_the_first_wave"` to the chapter title lookup.
+- `scenes/world_map/world_map.gd` - the Redwater Service Station marker's
+  message changes once `GameManager.story_flags["redwater_unlocked"]` is
+  set (see Features completed).
+- `tests/smoke_test.gd` - added `defence.tscn` to the coverage list.
+
+### Features completed
+
+- **Gated on real completion**: the defence event only becomes reachable
+  once every one of Hollow Creek Farmhouse's 9 hotspots is COMPLETED -
+  `DefenceManager.can_attempt()` is the single source of truth the Haven
+  button, the Defence screen's own guard, and the smoke test all check.
+- **Choice-based, with a skill bonus**: 3 approaches (hold the barricades,
+  retreat to the cellar, use the traps) with different odds; sending a
+  survivor with the `"trap"` or `"defence"` skill tag improves the chance,
+  same `+0.15`-capped-at-`0.95` mechanism Phase 6 introduced for
+  scavenging (currently only meaningful once Caleb Rusk - who has the
+  `"trap"`/`"defence"` skills - is eventually recruited; Mara and Noah
+  don't have a matching skill, so the bonus is real but currently inert in
+  practice, same honest situation Phase 6 documented for its own bonus).
+- **Failure is real but never blocking**: a failed attempt reverts one
+  random already-COMPLETED hotspot back to DESTROYED and costs a little
+  coin - spec's own listed failure consequences ("damaged defences...
+  additional repair tasks... rebuild and try again"), not a game-over.
+  The event can be attempted again the moment that hotspot is repaired.
+- **Success has real, felt consequences**: a big coin/XP reward, the
+  chapter advances directly from "Someone Upstairs" to "The First Wave"
+  (spec's own Chapter 4 content *is* this event - see Known issues for why
+  there's no separate Chapter 3 transition), and the World Map's Redwater
+  Service Station marker changes from a flat "locked" message to
+  something that acknowledges the story has actually moved - honest about
+  Redwater not being built yet rather than pretending it's reachable.
+
+### Tests performed
+
+Same headless-binary approach as every phase, `timeout`-wrapped throughout:
+
+- `godot4 --headless --path . --import` - clean, zero script/parse errors
+  after fixing the `const` mutation issue below.
+- **A real bug was caught immediately by trying to write the test**: the
+  first draft of `smoke_test_defence.gd` tried to force deterministic
+  outcomes with `DefenceManager.choices[0].success_chance = 0.0/1.0`, the
+  same technique `smoke_test_scavenging.gd` uses - except `choices` had
+  been declared `const`, and GDScript's parser rejects assigning into any
+  element of a `const` container outright (`Cannot assign a new value to
+  a constant`), unlike a `const`-bound `Resource` reference (Phase 5's
+  case) whose *fields* remain mutable. Fixed by changing the declaration
+  to `var` (renamed from `CHOICES` to `choices` to match ordinary-variable
+  naming convention at the same time) - functionally identical at
+  runtime, just testable.
+- `tests/smoke_test.tscn` (now also covering `defence.tscn`),
+  `tests/smoke_test_save.tscn`, `tests/smoke_test_settings.tscn`,
+  `tests/smoke_test_merge.tscn`, `tests/smoke_test_residence.tscn`,
+  `tests/smoke_test_dialogue.tscn`, `tests/smoke_test_scavenging.tscn`,
+  `tests/smoke_test_vehicle_survivors.tscn` - all still pass, no
+  regressions.
+- `tests/smoke_test_defence.tscn` (new) - `can_attempt()`/`launch()` both
+  correctly refuse before all 9 hotspots are done; launching spends the
+  energy cost; a forced failure (`success_chance` 0.0) never sets
+  `has_survived_first_wave`, never touches `GameManager.is_game_active`,
+  and reverts exactly one hotspot to DESTROYED whose quest becomes
+  completable again; re-repairing that hotspot makes the event attemptable
+  again and a forced success (`success_chance` 1.0) sets
+  `has_survived_first_wave`, advances the chapter, and sets
+  `redwater_unlocked`; `can_attempt()` correctly goes false again once
+  already survived; a full save/reload round trip preserves all of it.
+
+### Known issues
+
+- **Not visually confirmed**, same caveat as every phase. Whether the
+  "Prepare for the Night" button reads clearly against the hotspot layer,
+  and the defence screen's pacing, both need a real screen.
+- **Chapter jumps from 2 straight to 4 - there's no distinct Chapter 3
+  beat.** Spec's Chapter 3 ("Before Nightfall") is "food/water secured,
+  traps built, rear exit restored, first scavenging mission introduced" -
+  all of that is mechanically true by the time a player reaches this
+  event (the relevant hotspots are done, scavenging has existed since
+  Phase 5), but nothing marks a Chapter 3 *transition* specifically. This
+  was a deliberate choice over inventing an empty chapter-only milestone
+  with no new content behind it.
+- **The skill bonus has no one to apply to yet.** Same situation Phase 6
+  flagged for scavenging: the mechanism is real and tested, but Caleb Rusk
+  (the survivor whose skills would trigger it) has no rescue path built.
+- **Defence choice data lives in code, not `data/`** - a deliberate,
+  documented exception (see Files created) for this one story-critical
+  event, not an inconsistency with the rest of the project's content
+  philosophy.
+- **No animated attack sequence, trap-triggering visuals, or barricade-
+  durability display** per spec section 15's fuller description - this
+  phase is the real mechanical loop (gate, choice, odds, consequence,
+  retry) without the presentation layer on top. Same "logic first,
+  animation later" trade-off every prior phase has made under this
+  container's headless-only testing constraint.
+- **Godot binary still not persisted** in this environment - same caveat
+  as every phase so far.
+
+### Exact next phase
+
+**Phase 8: Additional content** - Redwater Service Station (spec section
+9's second residence: forecourt/shop/garage/roof/fuel store/staff room/
+road barrier/drainage tunnel, 10 milestones, Lena Ortiz's rescue),
+additional merge chains/survivors/scavenging locations, and World Map
+expansion (the remaining locked residence markers, routes, weather). This
+is also where the `redwater_unlocked` flag this phase introduced finally
+does something - flip Redwater from "coming soon" to actually reachable.
+
+### Commands required to run or export the project
+
+```bash
+# Open and run in the editor
+# (Godot 4.3+, standard build, GDScript-only project)
+godot4 --path /path/to/dead-haven-merge-survive
+
+# Headless import check (populates .godot/ cache, surfaces parse errors)
+godot4 --headless --path /path/to/dead-haven-merge-survive --import
+
+# Run the full smoke test suite (always with a timeout wrapper)
+for f in smoke_test smoke_test_save smoke_test_settings smoke_test_merge smoke_test_residence smoke_test_dialogue smoke_test_scavenging smoke_test_vehicle_survivors smoke_test_defence; do
+  timeout 30 godot4 --headless --path /path/to/dead-haven-merge-survive "tests/$f.tscn"
+done
+
+# Android export (after templates/SDK/keystore are configured in the editor)
+godot4 --headless --path /path/to/dead-haven-merge-survive \
+  --export-debug "Android" build/android/dead_haven.apk
+```

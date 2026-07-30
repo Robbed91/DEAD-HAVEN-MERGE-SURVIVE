@@ -35,22 +35,24 @@ cool blue-grey exteriors. See `scripts/ui/theme_factory.gd` for the exact
 palette values and `ART_ASSET_GUIDE.md` for how it's applied to
 environments and characters.
 
-## Current status: Phase 6 - Vehicles and survivors
+## Current status: Phase 7 - Defence
 
-Phases 1-5 (foundation, merge board, residence system, story, scavenging)
-are done, and now there's a real survivor roster with skills, a personal
-quest, and a 9-stage upgradeable vehicle. **It is not yet the full game** -
-defence events are scoped for the phase that follows (see
-`DEVELOPMENT_LOG.md` for the authoritative phase-by-phase plan and status).
+Phases 1-6 (foundation, merge board, residence system, story, scavenging,
+vehicles/survivors) are done, and now Hollow Creek Farmhouse's tenth and
+final milestone - surviving the first night attack - is real. **It is not
+yet the full game** - a second residence, more content and a final polish
+pass are scoped for the phases that follow (see `DEVELOPMENT_LOG.md` for
+the authoritative phase-by-phase plan and status).
 
 What already works, end to end, in this build:
-- Everything from Phase 1 (main menu, save/load, settings, navigation, dev diagnostics), Phase 2 (the full 7x9 merge board, 101 items across 9 gameplay + 4 reward chains, producers, energy, storage), Phase 3 (9 real repair hotspots on Hollow Creek Farmhouse, task panels, "Find on Board" task highlighting), Phase 4 (a real dialogue engine, an intro scene, and Noah Vance's rescue scene with a genuine choice) and Phase 5 (5 real scavenging locations with choice-based encounters and real loot)
+- Everything from Phase 1 (main menu, save/load, settings, navigation, dev diagnostics), Phase 2 (the full 7x9 merge board, 101 items across 9 gameplay + 4 reward chains, producers, energy, storage), Phase 3 (9 real repair hotspots on Hollow Creek Farmhouse, task panels, "Find on Board" task highlighting), Phase 4 (a real dialogue engine, an intro scene, and Noah Vance's rescue scene with a genuine choice), Phase 5 (5 real scavenging locations with choice-based encounters and real loot) and Phase 6 (a real survivor roster, Noah's personal quest, a 9-stage upgradeable delivery van, skill-based scavenging odds)
+- Hollow Creek Farmhouse's tenth milestone: once all 9 hotspots are repaired, "Prepare for the Night" appears on Haven - pick a survivor, choose how to handle the attack, and either survive it (big reward, the story moves to Chapter 4, Redwater Service Station appears on the map as "located, not yet reachable") or take real but non-blocking damage (one hotspot gets wrecked again and needs re-repairing, then you can try again)
 - A real survivor roster: unlocked cards (Mara always, Noah once rescued) show real biography/role/skills; Noah has a personal quest ("Noah's Workbench") completable from his card
 - A 9-stage upgradeable delivery van, discovered once all 9 Hollow Creek Farmhouse hotspots are repaired, with a visibly-evolving silhouette and real per-stage item requirements
-- Sending a survivor whose skills match a scavenging mission's recommended equipment (e.g. Noah's carpentry skills on the Farm Shed mission) genuinely improves the odds
+- Sending a survivor whose skills match a scavenging or defence encounter's needs (e.g. Noah's carpentry skills on the Farm Shed mission) genuinely improves the odds
 - Failure at a scavenging encounter costs a little (coins or energy) but never blocks progress or removes anything you already have
-- Chapter tracking ("Chapter 1: The Open Door" -> "Chapter 2: Someone Upstairs" once the front door is secured), shown on Haven's header
-- Energy regenerates over time (including while the app is closed) and can be spent by producers or scavenging missions; a debug infinite-energy mode exists for testing
+- Chapter tracking ("Chapter 1: The Open Door" -> "Chapter 2: Someone Upstairs" -> "Chapter 4: The First Wave"), shown on Haven's header
+- Energy regenerates over time (including while the app is closed) and can be spent by producers, scavenging missions, or the defence event; a debug infinite-energy mode exists for testing
 - First-time item discovery grants a coin/energy reward exactly once per item, with a discovery banner
 
 ### Honest limitation
@@ -69,10 +71,12 @@ changes and the Noah unlock (Phase 3) all behave as designed; dialogue
 chain/branch resolution, choice rewards and story flags, and chapter
 advancement (Phase 4) all behave as designed; scavenging's energy cost,
 forced success/failure encounter resolution, loot delivery and
-non-blocking-failure guarantee (Phase 5) all behave as designed; and (new
-in Phase 6) vehicle discovery, stage-upgrade gating/consumption, personal
-quest completion, and the skill-based scavenging bonus all behave as
-designed too (see `tests/README.md` for the smoke tests this was checked with). It has
+non-blocking-failure guarantee (Phase 5) all behave as designed; vehicle
+discovery, stage-upgrade gating/consumption, personal quest completion,
+and the skill-based scavenging bonus (Phase 6) all behave as designed; and
+(new in Phase 7) the defence event's completion gate, energy cost, forced
+success/failure resolution, non-blocking hotspot damage, and retry path
+all behave as designed too (see `tests/README.md` for the smoke tests this was checked with). It has
 **not** been visually confirmed on a real screen - touch input, drag
 gesture feel, layout at actual device resolutions, and animation timing
 still need a real run in the editor or on a device. Please report anything
@@ -87,16 +91,16 @@ network service, or third-party SDK is required to play.
 ## Project structure
 
 ```
-autoload/         Global singletons: EventBus, ItemDatabase, GameManager, BoardState, CharacterDatabase, ResidenceManager, DialogueManager, ScavengingManager, VehicleManager, SaveManager, AudioManager, SceneRouter
-data/              Content: data/items/ (101 ItemDefinition .tres), data/chains/, data/residences/ + data/quests/ (Hollow Creek Farmhouse + Noah's personal quest), data/dialogue/ (intro + Noah rescue), data/scavenging/ (5 locations), data/characters/ (6 survivors), data/vehicles/ (delivery van) - see data/README.md
-scenes/            One folder per screen; scenes/ui/ holds shared components (top bar, bottom nav, toast, storage panel, item info panel, discovery banner, task panel); scenes/dialogue/, scenes/scavenging/ and scenes/vehicle/ are the Phase 4-6 screens
+autoload/         Global singletons: EventBus, ItemDatabase, GameManager, BoardState, CharacterDatabase, ResidenceManager, DialogueManager, ScavengingManager, VehicleManager, DefenceManager, SaveManager, AudioManager, SceneRouter
+data/              Content: data/items/ (101 ItemDefinition .tres), data/chains/, data/residences/ + data/quests/ (Hollow Creek Farmhouse + Noah's personal quest), data/dialogue/ (intro + Noah rescue), data/scavenging/ (5 locations), data/characters/ (6 survivors), data/vehicles/ (delivery van) - see data/README.md. The defence event's choice data is a deliberate exception, kept inline in autoload/defence_manager.gd rather than data/ - see DEVELOPMENT_LOG.md Phase 7.
+scenes/            One folder per screen; scenes/ui/ holds shared components (top bar, bottom nav, toast, storage panel, item info panel, discovery banner, task panel); scenes/dialogue/, scenes/scavenging/, scenes/vehicle/ and scenes/defence/ are the Phase 4-7 screens
 scripts/
   data_models/     Strongly-typed Resource classes (ItemDefinition, ResidenceDefinition, SurvivorDefinition, ScavengingMission, VehicleDefinition, ...)
   ui/              Theme factory and other UI-only helpers
   merge/           Merge board runtime: item icon renderer, item view, board cell, chain legend icon
   residence/       Hotspot visual (Phase 3)
   vehicle/         Vehicle visual (Phase 6)
-  characters/       Reserved for Phase 7+ gameplay logic
+  characters/       Reserved for Phase 8+ gameplay logic
 assets/            Art/audio; assets/manifests/asset_manifest.json tracks placeholder vs. final status
 shaders/           Reserved for later visual-effects work
 tests/             Headless smoke tests + manual test checklists; see tests/README.md
