@@ -50,16 +50,23 @@ Current placeholder scripts:
   School's exterior, a third distinct palette/time-of-day again (flat
   cold overcast daylight) so all three residences read as different
   places at a glance.
+- `scenes/saint_mercy/saint_mercy_background.gd` (Phase 11) - Saint
+  Mercy Hospital's exterior, a fourth distinct palette/time-of-day: full
+  night lit by a sickly green-white emergency glow from a handful of
+  still-working windows, rather than any warm light source at all.
 - `scenes/world_map/world_map_background.gd`
 - `scripts/ui/survivor_silhouette.gd`
-- `scripts/residence/hotspot_visual.gd` (Phase 3, extended Phase 8/10) -
-  one reusable before/after patch renderer shared by every residence's
+- `scripts/residence/hotspot_visual.gd` (Phase 3, extended Phase 8/10/11)
+  - one reusable before/after patch renderer shared by every residence's
   hotspots: a distinct simple shape per repair area (Hollow Creek: door,
   window, couch, hearth, shelving, bed, barn, fence, spikes; Redwater:
   pumps, garage bay, store shelves, office window, generator vents, fence
   posts, drainage arc, workbench; Greybridge: double doors, basketball
   hoop, book spines, cafeteria table, boiler tank, desk, chain-link
-  fencing, radio mast), damaged colouring before its quest completes and
+  fencing, radio mast; Saint Mercy: cross-marked ER doors, pharmacy
+  shelving, a hospital bed, an operating table, a power room with a
+  lightning-bolt accent, an ambulance silhouette, file drawers, a sealed
+  observation window), damaged colouring before its quest completes and
   clean colouring plus a checkmark badge after, with a brief dust-burst
   animation on completion. Same swap-over story as the item icon renderer
   below: point a hotspot at real layered art later and this stops being
@@ -92,11 +99,12 @@ individual pieces can animate/update independently:
 9. Weather effects
 10. Particle effects
 
-`haven_background.gd`, `redwater_background.gd` and
-`greybridge_background.gd` each currently draw layers 1-4 procedurally in
-a single script, one per residence; splitting these into separate nodes/
-textures is expected once real art replaces the placeholders (tracked as
-high priority in the asset manifest).
+`haven_background.gd`, `redwater_background.gd`,
+`greybridge_background.gd` and `saint_mercy_background.gd` each
+currently draw layers 1-4 procedurally in a single script, one per
+residence; splitting these into separate nodes/textures is expected once
+real art replaces the placeholders (tracked as high priority in the
+asset manifest).
 
 ## Dialogue portraits (Phase 4)
 

@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="DialogueEntry" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data_models/dialogue_entry.gd" id="1_img02"]
+
+[resource]
+script = ExtResource("1_img02")
+id = "imogen_02"
+speaker_id = "imogen_shaw"
+portrait_key = "imogen_shaw"
+expression_key = "suspicious"
+text = "\"I sealed this ward myself, and I'm not opening it for a stranger. Show me you're not bitten, not sick, and not stupid enough to be both.\""
+background_scene_path = ""
+animation = ""
+sound_cue = ""
+branching_options = Array[Dictionary]([])
+next_id = "imogen_03"

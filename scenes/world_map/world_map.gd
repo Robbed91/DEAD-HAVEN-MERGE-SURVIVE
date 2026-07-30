@@ -25,9 +25,9 @@ func _ready() -> void:
 	%HollowCreekMarker.pressed.connect(func(): SceneRouter.go_to("haven"))
 	_setup_redwater_marker()
 	_setup_greybridge_marker()
-	for locked_name in ["SaintMercyMarker", "NorthgateMarker"]:
-		var locked_marker: Button = get_node("%" + locked_name)
-		locked_marker.pressed.connect(func(): EventBus.show_toast.emit("Locked - reach this residence by progressing the campaign."))
+	_setup_saint_mercy_marker()
+	var locked_marker: Button = %NorthgateMarker
+	locked_marker.pressed.connect(func(): EventBus.show_toast.emit("Locked - reach this residence by progressing the campaign."))
 	_pulse_marker(%HollowCreekMarker)
 	_build_scavenging_markers()
 	_build_vehicle_marker()
@@ -57,6 +57,18 @@ func _setup_greybridge_marker() -> void:
 		marker.text = "🏫"
 		marker.tooltip_text = "Greybridge School"
 		marker.pressed.connect(func(): SceneRouter.go_to("greybridge"))
+	else:
+		marker.pressed.connect(func(): EventBus.show_toast.emit("Locked - reach this residence by progressing the campaign."))
+
+## Same pattern again: opens once story_flags["saint_mercy_unlocked"] is
+## set by a successful greybridge_defence (Phase 11).
+func _setup_saint_mercy_marker() -> void:
+	var marker: Button = %SaintMercyMarker
+	if GameManager.get_story_flag("saint_mercy_unlocked", false):
+		marker.modulate.a = 1.0
+		marker.text = "🏥"
+		marker.tooltip_text = "Saint Mercy Hospital"
+		marker.pressed.connect(func(): SceneRouter.go_to("saint_mercy"))
 	else:
 		marker.pressed.connect(func(): EventBus.show_toast.emit("Locked - reach this residence by progressing the campaign."))
 

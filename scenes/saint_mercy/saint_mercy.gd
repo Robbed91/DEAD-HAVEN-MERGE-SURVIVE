@@ -1,19 +1,16 @@
 extends Control
-## Haven
+## SaintMercy
 ##
-## Hollow Creek Farmhouse residence screen. Phase 3: hotspots are real,
-## data-driven from ResidenceManager/ResidenceDefinition - each one shows
-## its current repair state and opens a real task (TaskPanel) that
-## consumes a merge-board item and advances it.
+## Saint Mercy Hospital residence screen - Phase 11's fourth residence,
+## reachable from the World Map once greybridge_defence's success sets
+## saint_mercy_unlocked. Same data-driven hotspot/task-panel pattern as
+## every other residence screen.
 
-const RESIDENCE_ID := "hollow_creek_farmhouse"
+const RESIDENCE_ID := "saint_mercy_hospital"
+const DEFENCE_EVENT_ID := "saint_mercy_defence"
 const HOTSPOT_SIZE := Vector2(64, 64)
 
 const CHAPTER_TITLES := {
-	"chapter_1_the_open_door": "Chapter 1: The Open Door",
-	"chapter_2_someone_upstairs": "Chapter 2: Someone Upstairs",
-	"chapter_4_the_first_wave": "Chapter 4: The First Wave",
-	"chapter_5_the_station": "Chapter 5: The Station",
 	"chapter_6_the_signal": "Chapter 6: The Signal",
 	"chapter_7_do_no_harm": "Chapter 7: Do No Harm",
 }
@@ -28,27 +25,18 @@ var _hotspot_visuals: Dictionary = {} # hotspot_id -> HotspotVisual
 
 func _ready() -> void:
 	var residence := ResidenceManager.get_residence(RESIDENCE_ID)
-	%ResidenceNameLabel.text = residence.display_name if residence else "Hollow Creek Farmhouse"
+	%ResidenceNameLabel.text = residence.display_name if residence else "Saint Mercy Hospital"
 
 	if residence != null:
 		for hotspot in residence.hotspots:
 			_build_hotspot(hotspot)
 
 	_task_panel.completed.connect(_on_task_completed)
-	_defence_button.pressed.connect(func(): SceneRouter.go_to("defence", {"event_id": "hollow_creek_first_wave", "return_scene_key": "haven"}))
+	_defence_button.pressed.connect(func(): SceneRouter.go_to("defence", {"event_id": DEFENCE_EVENT_ID, "return_scene_key": "saint_mercy"}))
 	EventBus.chapter_changed.connect(func(_id): _refresh_chapter_label())
 	EventBus.defence_resolved.connect(func(_outcome): _refresh_progress())
 	_refresh_progress()
 	_refresh_chapter_label()
-
-	# Only auto-launch the intro when this Haven is actually the tree's
-	# active scene (i.e. reached through normal navigation) - never when
-	# something else instantiates Haven as a child for inspection (e.g.
-	# tests/smoke_test.gd), which must not have its own tree replaced out
-	# from under it as a side effect of Haven's _ready().
-	if get_tree().current_scene == self and not GameManager.get_story_flag("chapter_1_intro_seen", false):
-		GameManager.set_story_flag("chapter_1_intro_seen", true)
-		DialogueManager.start_dialogue("intro_01")
 
 func _build_hotspot(hotspot: ResidenceHotspot) -> void:
 	var visual := HotspotVisual.new()
@@ -92,4 +80,4 @@ func _refresh_progress() -> void:
 		if ResidenceManager.get_hotspot_state(hotspot.id) == ResidenceHotspot.State.COMPLETED:
 			done += 1
 	_progress_label.text = "Repairs: %d / %d" % [done, residence.hotspots.size()]
-	_defence_button.visible = DefenceManager.can_attempt("hollow_creek_first_wave")
+	_defence_button.visible = DefenceManager.can_attempt(DEFENCE_EVENT_ID)

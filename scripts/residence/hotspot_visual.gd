@@ -167,6 +167,48 @@ func _draw() -> void:
 			draw_line(Vector2(s.x * 0.46, s.y * 0.72), Vector2(s.x * 0.54, s.y * 0.72), base, 2.5)
 			if fixed:
 				draw_circle(Vector2(s.x * 0.5, s.y * 0.12), s.x * 0.03, accent)
+		"reception_er":
+			draw_rect(Rect2(s.x * 0.16, s.y * 0.22, s.x * 0.68, s.y * 0.6), base, false, 3.0)
+			draw_line(Vector2(s.x * 0.5, s.y * 0.22), Vector2(s.x * 0.5, s.y * 0.82), base, 3.0)
+			draw_line(Vector2(s.x * 0.36, s.y * 0.42), Vector2(s.x * 0.64, s.y * 0.42), accent, 4.0)
+			draw_line(Vector2(s.x * 0.5, s.y * 0.3), Vector2(s.x * 0.5, s.y * 0.54), accent, 4.0)
+		"pharmacy":
+			for i in 3:
+				for j in 3:
+					var bx: float = s.x * (0.22 + j * 0.2)
+					var by: float = s.y * (0.3 + i * 0.18)
+					draw_rect(Rect2(bx, by, s.x * 0.1, s.y * 0.12), base)
+		"patient_ward":
+			draw_rect(Rect2(s.x * 0.2, s.y * 0.5, s.x * 0.6, s.y * 0.28), base)
+			draw_rect(Rect2(s.x * 0.2, s.y * 0.36, s.x * 0.14, s.y * 0.18), accent)
+		"surgical_suite":
+			draw_rect(Rect2(s.x * 0.3, s.y * 0.55, s.x * 0.4, s.y * 0.16), base)
+			draw_arc(Vector2(s.x * 0.5, s.y * 0.3), s.x * 0.14, 0, TAU, 20, base, 3.0)
+			for i in 6:
+				var angle: float = TAU * i / 6.0
+				draw_line(Vector2(s.x * 0.5, s.y * 0.3), Vector2(s.x * 0.5, s.y * 0.3) + Vector2(cos(angle), sin(angle)) * s.x * 0.06, base, 2.0)
+		"power_room":
+			draw_rect(Rect2(s.x * 0.32, s.y * 0.22, s.x * 0.36, s.y * 0.58), base, false, 3.0)
+			var bolt := PackedVector2Array([
+				Vector2(s.x * 0.54, s.y * 0.32), Vector2(s.x * 0.44, s.y * 0.54), Vector2(s.x * 0.5, s.y * 0.54),
+				Vector2(s.x * 0.46, s.y * 0.72),
+			])
+			draw_polyline(bolt, accent, 2.5)
+		"ambulance_bay":
+			draw_rect(Rect2(s.x * 0.16, s.y * 0.4, s.x * 0.68, s.y * 0.36), base)
+			draw_line(Vector2(s.x * 0.42, s.y * 0.5), Vector2(s.x * 0.58, s.y * 0.5), accent, 4.0)
+			draw_line(Vector2(s.x * 0.5, s.y * 0.42), Vector2(s.x * 0.5, s.y * 0.58), accent, 4.0)
+			if fixed:
+				draw_circle(Vector2(s.x * 0.26, s.y * 0.78), s.x * 0.05, base)
+				draw_circle(Vector2(s.x * 0.74, s.y * 0.78), s.x * 0.05, base)
+		"records_office":
+			for i in 3:
+				draw_rect(Rect2(s.x * 0.28, s.y * (0.28 + i * 0.2), s.x * 0.44, s.y * 0.14), base)
+		"isolation_ward":
+			draw_rect(Rect2(s.x * 0.22, s.y * 0.2, s.x * 0.56, s.y * 0.64), base, false, 3.0)
+			draw_circle(Vector2(s.x * 0.5, s.y * 0.42), s.x * 0.1, base if not fixed else accent)
+			if not fixed:
+				draw_line(Vector2(s.x * 0.42, s.y * 0.34), Vector2(s.x * 0.58, s.y * 0.5), Color("1a1917"), 2.0)
 		_:
 			draw_circle(s * 0.5, s.x * 0.3, base)
 

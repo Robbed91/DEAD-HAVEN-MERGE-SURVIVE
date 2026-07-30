@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="QuestDefinition" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data_models/quest_definition.gd" id="1_rpr01"]
+
+[resource]
+script = ExtResource("1_rpr01")
+id = "q_restart_power_room"
+title = "Restart the Power Room"
+description = "The backup generator's still wired in - it just needs the right parts to bring the wards back to life."
+quest_type = 1
+requirements = {
+"electronics_4": 1
+}
+prerequisite_quest_ids = PackedStringArray()
+rewards = {
+"coins": 45,
+"xp": 35
+}
+is_complete = false
+dialogue_trigger_id = ""
+residence_hotspot_id = "power_room"
+time_condition = ""

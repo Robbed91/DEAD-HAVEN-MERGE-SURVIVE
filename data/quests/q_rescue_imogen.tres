@@ -1,0 +1,23 @@
+[gd_resource type="Resource" script_class="QuestDefinition" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data_models/quest_definition.gd" id="1_rqi01"]
+
+[resource]
+script = ExtResource("1_rqi01")
+id = "q_rescue_imogen"
+title = "Behind the Sealed Doors"
+description = "The isolation ward's doors are sealed from the inside, exactly as they're meant to be. Someone made sure of that on purpose."
+quest_type = 2
+requirements = {
+"medical_3": 1
+}
+prerequisite_quest_ids = PackedStringArray()
+rewards = {
+"coins": 65,
+"unlock_survivor": "imogen_shaw",
+"xp": 55
+}
+is_complete = false
+dialogue_trigger_id = "imogen_01"
+residence_hotspot_id = "isolation_ward"
+time_condition = ""

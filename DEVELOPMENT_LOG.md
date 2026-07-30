@@ -1651,6 +1651,114 @@ locations, then a real look at whether the story-flag/chapter chain needs
 a proper main-story arc connecting all five residences rather than each
 one only advancing its own next-door neighbour.
 
+## Phase 11: Saint Mercy Hospital - complete
+
+Fourth residence, same Phase 8/10 pattern a third time: a new
+`ResidenceDefinition`, 8 quests, a rescue (Dr Imogen Shaw, a former
+emergency physician found behind the isolation ward's self-sealed
+doors), her own 3-part dialogue scene, a fourth `DefenceManager` event,
+and a new screen/background. Unlike Greybridge's deliberately-matched
+skill_tags, `saint_mercy_defence` uses the standard `["trap", "defence"]`
+tags on purpose - see Features completed.
+
+### Files created
+
+- `data/residences/saint_mercy_hospital.tres` - 8 hotspots (ER reception,
+  pharmacy, patient ward, surgical suite, power room, ambulance bay,
+  records office, isolation ward), covering construction/medical/
+  clothing/tool/electronics/fuel/trap chains.
+- `data/quests/q_clear_er_reception.tres`, `q_secure_pharmacy.tres`,
+  `q_clear_patient_ward.tres`, `q_restore_surgical_suite.tres`,
+  `q_restart_power_room.tres`, `q_clear_ambulance_bay.tres`,
+  `q_secure_records_office.tres`, and the rescue quest
+  `q_rescue_imogen.tres` (`medical_3`, `unlock_survivor: imogen_shaw`,
+  `dialogue_trigger_id: imogen_01`).
+- `data/dialogue/imogen_01.tres`/`imogen_02.tres`/`imogen_03.tres` -
+  Imogen found behind the isolation ward's self-sealed doors, guarded and
+  demanding proof of health before she'll open up (matching her
+  `calm_under_pressure`/`guarded` traits), then a branching trust choice.
+- `scenes/saint_mercy/saint_mercy.gd`/`.tscn` and
+  `scenes/saint_mercy/saint_mercy_background.gd` - a fourth distinct
+  palette/time-of-day: full night lit by a sickly green-white emergency
+  glow from a handful of still-working windows, rather than any of the
+  other three residences' light sources.
+- Tests: `tests/smoke_test_saint_mercy.gd`/`.tscn`.
+
+### Files modified
+
+- `autoload/defence_manager.gd` - new `saint_mercy_defence` event
+  (`residence_id: saint_mercy_hospital`, `skill_tags: ["trap",
+  "defence"]` - deliberately the standard tags, not Imogen's own medical
+  ones, since triage skill doesn't make someone better at holding a
+  barricade; `success_flag: northgate_unlocked`).
+- `autoload/residence_manager.gd` - `q_rescue_imogen` advances the
+  chapter to `chapter_7_do_no_harm`.
+- `scripts/residence/hotspot_visual.gd` - a distinct placeholder shape
+  per Saint Mercy hotspot id (a cross-marked ER doors, pharmacy shelving,
+  a hospital bed, an operating table with an overhead light, a power
+  room with a lightning-bolt accent, an ambulance silhouette, stacked
+  file drawers, and a sealed observation window).
+- `scenes/world_map/world_map.gd`/`.tscn` - `_setup_saint_mercy_marker()`
+  (identical shape to the Redwater/Greybridge setup functions).
+- `scenes/haven/haven.gd`, `scenes/redwater/redwater.gd`,
+  `scenes/greybridge/greybridge.gd`, `scenes/defence/defence.gd` - added
+  Chapter 7's title and `saint_mercy_defence`'s/`imogen_shaw`'s labels.
+- `autoload/scene_router.gd` - added `"saint_mercy"`.
+- `tests/smoke_test.gd` - added `saint_mercy.tscn` to the coverage list.
+
+### Features completed
+
+- **A fourth full residence**, same shape as the other three.
+- **A deliberate contrast with Phase 10's skill-tag choice, tested
+  directly**: `smoke_test_saint_mercy.gd` asserts `saint_mercy_defence`
+  uses the standard `["trap", "defence"]` tags *and* that Imogen's real
+  skills do **not** match them - a doctor being good at triage doesn't
+  make her better at holding a barricade, and the test makes that a
+  checked design decision rather than something that could silently
+  drift. Those standard tags are waiting for Caleb Rusk (Northgate
+  Prison), whose actual skills are `trap`/`defence` - once he exists,
+  his bonus goes live for *three* events at once (Hollow Creek, Redwater,
+  Saint Mercy), not just one.
+
+### Tests performed
+
+Same headless approach as every phase, `timeout`-wrapped throughout:
+
+- `godot4 --headless --path . --import` - clean, zero script/parse errors.
+- Full existing suite (all 11 prior smoke tests) - all still pass, no
+  regressions.
+- `tests/smoke_test_saint_mercy.tscn` (new) - residence data loads with 8
+  hotspots; completing every hotspot except the rescue leaves
+  `saint_mercy_defence` un-attemptable; completing `q_rescue_imogen`
+  unlocks `imogen_shaw`, advances the chapter to `chapter_7_do_no_harm`,
+  and its `dialogue_trigger_id` is `imogen_01`; `saint_mercy_defence`'s
+  `skill_tags` are directly asserted to be the standard set and to NOT
+  overlap Imogen's real skills; a forced success spends the event's own
+  energy cost, marks only itself survived, and sets
+  `northgate_unlocked`; a full save/reload round trip preserves all of
+  it.
+
+### Known issues
+
+- **Not visually confirmed**, same caveat as every phase.
+- **8 hotspots, not spec's fuller count** - same trade-off every
+  residence's content generation has made.
+- **Northgate Prison remains a locked placeholder** - Caleb Rusk still
+  has no rescue path, and with him the last unmatched defence skill
+  bonus.
+- **No route/travel scene between residences**, same gap every phase
+  since 8 has flagged.
+- **Godot binary still not persisted** in this environment.
+
+### Exact next phase
+
+Northgate Prison (Caleb Rusk) - the fifth and final residence in the
+current roster, closing out every existing defence event's skill bonus
+at once. After that: the remaining 5 scavenging locations, and a real
+look at whether the story-flag/chapter chain needs a proper main-story
+arc connecting all five residences rather than each one only advancing
+its own next-door neighbour (a Known Issue carried since Phase 8).
+
 ### Commands required to run or export the project
 
 ```bash
@@ -1662,7 +1770,7 @@ godot4 --path /path/to/dead-haven-merge-survive
 godot4 --headless --path /path/to/dead-haven-merge-survive --import
 
 # Run the full smoke test suite (always with a timeout wrapper)
-for f in smoke_test smoke_test_save smoke_test_settings smoke_test_merge smoke_test_residence smoke_test_dialogue smoke_test_scavenging smoke_test_vehicle_survivors smoke_test_defence smoke_test_redwater smoke_test_greybridge; do
+for f in smoke_test smoke_test_save smoke_test_settings smoke_test_merge smoke_test_residence smoke_test_dialogue smoke_test_scavenging smoke_test_vehicle_survivors smoke_test_defence smoke_test_redwater smoke_test_greybridge smoke_test_saint_mercy; do
   timeout 30 godot4 --headless --path /path/to/dead-haven-merge-survive "tests/$f.tscn"
 done
 

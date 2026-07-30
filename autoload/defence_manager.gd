@@ -50,6 +50,15 @@ var events := {
 		"success_chapter": "",
 		"success_flag": "saint_mercy_unlocked",
 	},
+	"saint_mercy_defence": {
+		"residence_id": "saint_mercy_hospital",
+		"energy_cost": 30,
+		"skill_tags": ["trap", "defence"],
+		"success_coins": 200,
+		"success_xp": 160,
+		"success_chapter": "",
+		"success_flag": "northgate_unlocked",
+	},
 }
 
 ## event_id -> Array[Dictionary] of {text, success_chance, success_text,
@@ -107,6 +116,23 @@ var event_choices := {
 			"text": "Hold the stairwell chokepoint to the radio tower.", "success_chance": 0.55,
 			"success_text": "One at a time, the stairwell is easy to hold. The tower stays untouched.",
 			"failure_text": "The chokepoint holds, barely, but the landing below takes real damage.",
+		},
+	],
+	"saint_mercy_defence": [
+		{
+			"text": "Barricade the ambulance bay and hold the ground floor.", "success_chance": 0.5,
+			"success_text": "The bay doors hold. Whatever came looking for the lights inside gives up before sunrise.",
+			"failure_text": "The barricade gives an inch too much. You force it back, but the doors won't hold as well again.",
+		},
+		{
+			"text": "Move the wards upstairs and cut off the stairwells.", "success_chance": 0.65,
+			"success_text": "Upstairs is quiet all night. Whatever's down in reception loses interest by morning.",
+			"failure_text": "One stairwell doesn't hold as long as hoped. You reinforce it from above, rattled but intact.",
+		},
+		{
+			"text": "Use the isolation ward's sealed doors as a last line.", "success_chance": 0.55,
+			"success_text": "The seals do exactly what they were built for. Nothing gets through.",
+			"failure_text": "A seal fails under the weight. You reset it in the dark, hands shaking, but it holds the second time.",
 		},
 	],
 }

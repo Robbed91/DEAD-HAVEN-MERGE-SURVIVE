@@ -35,26 +35,27 @@ cool blue-grey exteriors. See `scripts/ui/theme_factory.gd` for the exact
 palette values and `ART_ASSET_GUIDE.md` for how it's applied to
 environments and characters.
 
-## Current status: Phase 10 - Greybridge School
+## Current status: Phase 11 - Saint Mercy Hospital
 
 Phases 1-8 (foundation, merge board, residence system, story, scavenging,
-vehicles/survivors, defence, a second residence) and Phase 9 part 1
-(accessibility/performance settings) are done. Art Phase 1 added a real
-logo/splash/brand identity and a full art-production spec (see
-"Documentation" below for `ART_STYLE_GUIDE.md`,
-`ART_GENERATION_PROMPTS.md` and `ART_ILLUSTRATION_CHECKLIST.md`). Phase
-10 adds a third residence - Greybridge School - and its own rescue, radio
-technician Riley Chen. **It is not yet the full game** - 2 more
-residences, 2 more recruitable survivors, and illustrated art all remain
-(see `DEVELOPMENT_LOG.md` for the authoritative phase-by-phase plan and
-status).
+vehicles/survivors, defence, a second residence), Phase 9 part 1
+(accessibility/performance settings), and Phase 10 (a third residence,
+Greybridge School) are done. Art Phase 1 added a real logo/splash/brand
+identity and a full art-production spec (see "Documentation" below for
+`ART_STYLE_GUIDE.md`, `ART_GENERATION_PROMPTS.md` and
+`ART_ILLUSTRATION_CHECKLIST.md`). Phase 11 adds a fourth residence -
+Saint Mercy Hospital - and its own rescue, Dr Imogen Shaw. **It is not
+yet the full game** - 1 more residence, 1 more recruitable survivor, and
+illustrated art all remain (see `DEVELOPMENT_LOG.md` for the
+authoritative phase-by-phase plan and status).
 
 What already works, end to end, in this build:
 - Everything from Phase 1 (main menu, save/load, settings, navigation, dev diagnostics), Phase 2 (the full 7x9 merge board, 101 items across 9 gameplay + 4 reward chains, producers, energy, storage), Phase 3 (9 real repair hotspots on Hollow Creek Farmhouse, task panels, "Find on Board" task highlighting), Phase 4 (a real dialogue engine, an intro scene, and Noah Vance's rescue scene with a genuine choice), Phase 5 (5 real scavenging locations with choice-based encounters and real loot), Phase 6 (a real survivor roster, Noah's personal quest, a 9-stage upgradeable delivery van, skill-based scavenging odds) and Phase 7 (Hollow Creek Farmhouse's tenth milestone: survive the first night attack)
 - A second residence, Redwater Service Station, reachable from the World Map once you've survived Hollow Creek's first night: 8 more real repair hotspots (fuel pumps, service bay, convenience store, cashier's office, generator room, perimeter fence, drainage tunnel, garage workshop), a second rescue (mechanic Lena Ortiz, barricaded in the garage workshop) with her own dialogue scene, and its own "Defend the Station" attack event once every hotspot there is repaired
 - A third residence, Greybridge School, reachable once you've survived Redwater's own attack: 8 more repair hotspots (main hall, gymnasium, library, cafeteria, boiler room, admin office, playground fence, radio tower), a third rescue (radio technician Riley Chen, found behind a wedged-shut stairwell to the roof) with her own dialogue scene, and its own "Defend the School" attack event whose skill requirements specifically match Riley's own skills - so unlike every prior defence event's skill bonus, this one is live immediately rather than waiting on a future survivor who happens to match
-- Chapter tracking ("Chapter 1: The Open Door" -> "Chapter 2: Someone Upstairs" -> "Chapter 4: The First Wave" -> "Chapter 5: The Station" -> "Chapter 6: The Signal"), shown on all three residence screens' headers
-- A real survivor roster: unlocked cards (Mara always, Noah/Lena/Riley once rescued) show real biography/role/skills; Noah has a personal quest ("Noah's Workbench") completable from his card
+- A fourth residence, Saint Mercy Hospital, reachable once you've survived Greybridge's own attack: 8 more repair hotspots (ER reception, pharmacy, patient ward, surgical suite, power room, ambulance bay, records office, isolation ward), a fourth rescue (Dr Imogen Shaw, found behind the isolation ward's self-sealed doors) with her own dialogue scene, and its own "Defend the Hospital" attack event that deliberately keeps the standard skill requirements rather than matching Imogen's own medical skills - a doctor's triage skill doesn't make her better at holding a barricade
+- Chapter tracking ("Chapter 1: The Open Door" -> "Chapter 2: Someone Upstairs" -> "Chapter 4: The First Wave" -> "Chapter 5: The Station" -> "Chapter 6: The Signal" -> "Chapter 7: Do No Harm"), shown on all four residence screens' headers
+- A real survivor roster: unlocked cards (Mara always, Noah/Lena/Riley/Imogen once rescued) show real biography/role/skills; Noah has a personal quest ("Noah's Workbench") completable from his card
 - A 9-stage upgradeable delivery van, discovered once all 9 Hollow Creek Farmhouse hotspots are repaired, with a visibly-evolving silhouette and real per-stage item requirements
 - Sending a survivor whose skills match a scavenging or defence encounter's needs (e.g. Noah's carpentry skills on the Farm Shed mission) genuinely improves the odds
 - Failure at a scavenging or defence encounter costs a little (coins or energy, or one already-repaired hotspot needing re-repair) but never blocks progress or removes anything you already have
@@ -85,11 +86,14 @@ resolution, non-blocking hotspot damage, and retry path (Phase 7) all
 behave as designed; Redwater Service Station's own hotspots/task panels resolve against the
 correct residence, Lena Ortiz's rescue unlocks her and advances the
 chapter, and its own `redwater_defence` event resolves completely
-independently of Hollow Creek's (Phase 8); and (new in Phase 10)
-Greybridge School's own hotspots/rescue behave the same way, and its
-`greybridge_defence` event's skill requirements are directly verified to
-match Riley Chen's own real skills, not just asserted in a comment - all
-behave as designed too (see `tests/README.md` for the smoke tests this was checked with). It has
+independently of Hollow Creek's (Phase 8); Greybridge School's own
+hotspots/rescue behave the same way, and its `greybridge_defence` event's
+skill requirements are directly verified to match Riley Chen's own real
+skills, not just asserted in a comment (Phase 10); and (new in Phase 11)
+Saint Mercy Hospital's own hotspots/rescue behave the same way too, with
+its `saint_mercy_defence` event's skill requirements directly verified
+to be the standard set and to NOT match Dr Imogen Shaw's own medical
+skills - all behave as designed too (see `tests/README.md` for the smoke tests this was checked with). It has
 **not** been visually confirmed on a real screen - touch input, drag
 gesture feel, layout at actual device resolutions, and animation timing
 still need a real run in the editor or on a device. Please report anything
@@ -105,8 +109,8 @@ network service, or third-party SDK is required to play.
 
 ```
 autoload/         Global singletons: EventBus, ItemDatabase, GameManager, BoardState, CharacterDatabase, ResidenceManager, DialogueManager, ScavengingManager, VehicleManager, DefenceManager, SaveManager, AudioManager, SceneRouter
-data/              Content: data/items/ (101 ItemDefinition .tres), data/chains/, data/residences/ (Hollow Creek Farmhouse + Redwater Service Station + Greybridge School) + data/quests/ (26 quests: 9 Hollow Creek + 8 Redwater + 8 Greybridge repair/rescue quests, plus Noah's personal quest), data/dialogue/ (intro, Noah/Lena/Riley rescues), data/scavenging/ (5 locations), data/characters/ (6 survivors), data/vehicles/ (delivery van) - see data/README.md. All three defence events' choice data are a deliberate exception, kept inline in autoload/defence_manager.gd rather than data/ - see DEVELOPMENT_LOG.md Phase 7/8/10.
-scenes/            One folder per screen; scenes/ui/ holds shared components (top bar, bottom nav, toast, storage panel, item info panel, discovery banner, task panel); scenes/splash/, scenes/dialogue/, scenes/scavenging/, scenes/vehicle/, scenes/defence/, scenes/redwater/ and scenes/greybridge/ are the Phase 4-10 screens
+data/              Content: data/items/ (101 ItemDefinition .tres), data/chains/, data/residences/ (Hollow Creek Farmhouse + Redwater Service Station + Greybridge School + Saint Mercy Hospital) + data/quests/ (34 quests: 9 Hollow Creek + 8 Redwater + 8 Greybridge + 8 Saint Mercy repair/rescue quests, plus Noah's personal quest), data/dialogue/ (intro, Noah/Lena/Riley/Imogen rescues), data/scavenging/ (5 locations), data/characters/ (6 survivors), data/vehicles/ (delivery van) - see data/README.md. All four defence events' choice data are a deliberate exception, kept inline in autoload/defence_manager.gd rather than data/ - see DEVELOPMENT_LOG.md Phase 7/8/10/11.
+scenes/            One folder per screen; scenes/ui/ holds shared components (top bar, bottom nav, toast, storage panel, item info panel, discovery banner, task panel); scenes/splash/, scenes/dialogue/, scenes/scavenging/, scenes/vehicle/, scenes/defence/, scenes/redwater/, scenes/greybridge/ and scenes/saint_mercy/ are the Phase 4-11 screens
 scripts/
   data_models/     Strongly-typed Resource classes (ItemDefinition, ResidenceDefinition, SurvivorDefinition, ScavengingMission, VehicleDefinition, ...)
   ui/              Theme factory and other UI-only helpers

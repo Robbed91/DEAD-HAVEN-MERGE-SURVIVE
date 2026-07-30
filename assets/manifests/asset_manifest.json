@@ -148,6 +148,23 @@
       "optimisation_status": "n/a - procedural draw calls, not a texture"
     },
     {
+      "asset_id": "saint_mercy_exterior",
+      "name": "Saint Mercy Hospital exterior",
+      "category": "environment",
+      "file_path": "scenes/saint_mercy/saint_mercy_background.gd",
+      "source_file_path": "scenes/saint_mercy/saint_mercy_background.gd",
+      "dimensions": "720x1280 (viewport-relative, procedural)",
+      "format": "Control._draw() procedural script",
+      "transparency": false,
+      "animation_type": "none",
+      "frame_count": 0,
+      "status": "procedural_placeholder",
+      "scenes_using_it": ["scenes/saint_mercy/saint_mercy.tscn"],
+      "replacement_priority": "high - fourth primary gameplay backdrop; deliberately a full-night, emergency-lighting-only palette distinct from all three other residences",
+      "licence_or_generation_source": "n/a - procedural, no external source",
+      "optimisation_status": "n/a - procedural draw calls, not a texture"
+    },
+    {
       "asset_id": "world_map_background",
       "name": "World map",
       "category": "environment",
