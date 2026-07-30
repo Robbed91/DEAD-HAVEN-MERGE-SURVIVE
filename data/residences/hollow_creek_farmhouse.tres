@@ -1,0 +1,117 @@
+[gd_resource type="Resource" script_class="ResidenceDefinition" load_steps=12 format=3]
+
+[ext_resource type="Script" path="res://scripts/data_models/residence_hotspot.gd" id="1_3ynot"]
+[ext_resource type="Script" path="res://scripts/data_models/residence_definition.gd" id="2_x0jd1"]
+
+[sub_resource type="Resource" id="Resource_52aca"]
+script = ExtResource("1_3ynot")
+id = "front_door"
+display_name = "Front Door"
+area_position = Vector2(0.5, 0.68)
+state = 0
+required_task_ids = PackedStringArray("q_secure_front_door")
+visual_variant_scenes = {}
+transition_animation = "construction_repair"
+completion_reward = {}
+
+[sub_resource type="Resource" id="Resource_elqbu"]
+script = ExtResource("1_3ynot")
+id = "kitchen_window"
+display_name = "Kitchen Window"
+area_position = Vector2(0.68, 0.55)
+state = 0
+required_task_ids = PackedStringArray("q_board_kitchen_windows")
+visual_variant_scenes = {}
+transition_animation = "construction_repair"
+completion_reward = {}
+
+[sub_resource type="Resource" id="Resource_0sdtx"]
+script = ExtResource("1_3ynot")
+id = "living_room"
+display_name = "Living Room"
+area_position = Vector2(0.3, 0.56)
+state = 0
+required_task_ids = PackedStringArray("q_clear_living_room")
+visual_variant_scenes = {}
+transition_animation = "construction_repair"
+completion_reward = {}
+
+[sub_resource type="Resource" id="Resource_n8agd"]
+script = ExtResource("1_3ynot")
+id = "fireplace"
+display_name = "Fireplace"
+area_position = Vector2(0.62, 0.32)
+state = 0
+required_task_ids = PackedStringArray("q_restore_fireplace")
+visual_variant_scenes = {}
+transition_animation = "construction_repair"
+completion_reward = {}
+
+[sub_resource type="Resource" id="Resource_40v4q"]
+script = ExtResource("1_3ynot")
+id = "pantry"
+display_name = "Food Pantry"
+area_position = Vector2(0.78, 0.62)
+state = 0
+required_task_ids = PackedStringArray("q_repair_pantry")
+visual_variant_scenes = {}
+transition_animation = "construction_repair"
+completion_reward = {}
+
+[sub_resource type="Resource" id="Resource_afk1m"]
+script = ExtResource("1_3ynot")
+id = "upstairs_bedroom"
+display_name = "Upstairs Bedroom"
+area_position = Vector2(0.38, 0.38)
+state = 0
+required_task_ids = PackedStringArray("q_rescue_noah")
+visual_variant_scenes = {}
+transition_animation = "construction_repair"
+completion_reward = {}
+
+[sub_resource type="Resource" id="Resource_jmpkb"]
+script = ExtResource("1_3ynot")
+id = "barn"
+display_name = "Barn"
+area_position = Vector2(0.18, 0.56)
+state = 0
+required_task_ids = PackedStringArray("q_reinforce_barn")
+visual_variant_scenes = {}
+transition_animation = "construction_repair"
+completion_reward = {}
+
+[sub_resource type="Resource" id="Resource_wmi0x"]
+script = ExtResource("1_3ynot")
+id = "rear_escape"
+display_name = "Rear Fence"
+area_position = Vector2(0.92, 0.72)
+state = 0
+required_task_ids = PackedStringArray("q_build_rear_escape")
+visual_variant_scenes = {}
+transition_animation = "construction_repair"
+completion_reward = {}
+
+[sub_resource type="Resource" id="Resource_kjv2b"]
+script = ExtResource("1_3ynot")
+id = "perimeter_traps"
+display_name = "Perimeter"
+area_position = Vector2(0.1, 0.78)
+state = 0
+required_task_ids = PackedStringArray("q_install_perimeter_traps")
+visual_variant_scenes = {}
+transition_animation = "construction_repair"
+completion_reward = {}
+
+[resource]
+script = ExtResource("2_x0jd1")
+id = "hollow_creek_farmhouse"
+display_name = "Hollow Creek Farmhouse"
+description = "The tutorial residence: Mara's first foothold on the Haven Line."
+environment_scene_path = "res://scenes/haven/haven.tscn"
+hotspots = Array[ExtResource("1_3ynot")]([SubResource("Resource_52aca"), SubResource("Resource_elqbu"), SubResource("Resource_0sdtx"), SubResource("Resource_n8agd"), SubResource("Resource_40v4q"), SubResource("Resource_afk1m"), SubResource("Resource_jmpkb"), SubResource("Resource_wmi0x"), SubResource("Resource_kjv2b")])
+chapter_ids = PackedStringArray("chapter_1_the_open_door")
+unlock_requirements = {}
+completion_rewards = {
+"unlocks": "world_map",
+"unlocks_residence": "redwater_service_station"
+}

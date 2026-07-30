@@ -319,6 +319,40 @@ func purge_expired_deletions() -> void:
 		if _pending_deletions[instance_id].expires_at_unix <= now:
 			_pending_deletions.erase(instance_id)
 
+# -- Quantity queries / consumption (used by ResidenceManager tasks) --------
+
+## Total count of item_id across both the board and storage.
+func count_item(item_id: String) -> int:
+	var total := 0
+	for instance_id in items:
+		if items[instance_id].item_id == item_id:
+			total += 1
+	return total
+
+## Removes up to `count` instances of item_id, storage first (keeps the
+## board visually stable), then the board. Returns false and removes
+## nothing if there weren't enough - callers should check count_item()
+## first, but this is safe to call speculatively too.
+func consume_item(item_id: String, count: int) -> bool:
+	if count_item(item_id) < count:
+		return false
+	var to_remove: Array[String] = []
+	for instance_id in storage_order:
+		if to_remove.size() >= count:
+			break
+		if items[instance_id].item_id == item_id:
+			to_remove.append(instance_id)
+	if to_remove.size() < count:
+		for instance_id in grid.values():
+			if to_remove.size() >= count:
+				break
+			if items[instance_id].item_id == item_id:
+				to_remove.append(instance_id)
+	for instance_id in to_remove:
+		_remove_instance(instance_id)
+		EventBus.board_item_removed.emit(instance_id)
+	return true
+
 # -- Reward-chain collection ---------------------------------------------
 
 ## Reward-chain items (energy/coin/xp/token) are collected instead of used

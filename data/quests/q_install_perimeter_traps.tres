@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="QuestDefinition" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data_models/quest_definition.gd" id="1_ehoxg"]
+
+[resource]
+script = ExtResource("1_ehoxg")
+id = "q_install_perimeter_traps"
+title = "Install Perimeter Traps"
+description = "Early warning for whatever comes down the road at night."
+quest_type = 1
+requirements = {
+"trap_3": 1
+}
+prerequisite_quest_ids = PackedStringArray()
+rewards = {
+"coins": 45,
+"xp": 35
+}
+is_complete = false
+dialogue_trigger_id = ""
+residence_hotspot_id = "perimeter_traps"
+time_condition = ""

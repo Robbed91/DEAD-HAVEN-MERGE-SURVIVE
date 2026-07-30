@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="QuestDefinition" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data_models/quest_definition.gd" id="1_7em1n"]
+
+[resource]
+script = ExtResource("1_7em1n")
+id = "q_board_kitchen_windows"
+title = "Board the Kitchen Windows"
+description = "Broken glass everywhere. Board it up before dark."
+quest_type = 1
+requirements = {
+"construction_3": 1
+}
+prerequisite_quest_ids = PackedStringArray()
+rewards = {
+"coins": 35,
+"xp": 25
+}
+is_complete = false
+dialogue_trigger_id = ""
+residence_hotspot_id = "kitchen_window"
+time_condition = ""

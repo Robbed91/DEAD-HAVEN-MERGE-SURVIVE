@@ -96,6 +96,7 @@ func new_game() -> void:
 		"current_residence_id": "hollow_creek_farmhouse",
 		"tutorial_step": 0,
 		"tutorial_complete": false,
+		"unlocked_survivor_ids": [],
 	}
 	resources = {
 		"energy": MAX_ENERGY_DEFAULT,
@@ -110,6 +111,7 @@ func new_game() -> void:
 	}
 	is_game_active = true
 	BoardState.reset_new_board()
+	ResidenceManager.reset_new_game()
 	SaveManager.save_game()
 	EventBus.game_loaded.emit()
 
@@ -130,6 +132,7 @@ func to_save_data() -> Dictionary:
 		"resources": resources.duplicate(true),
 		"settings": settings.duplicate(true),
 		"board": BoardState.to_save_data(),
+		"residence": ResidenceManager.to_save_data(),
 	}
 
 func apply_save_data(data: Dictionary) -> void:
@@ -141,6 +144,7 @@ func apply_save_data(data: Dictionary) -> void:
 		settings.merge(data["settings"], true)
 	_apply_offline_energy_regen()
 	BoardState.apply_save_data(data.get("board", {}))
+	ResidenceManager.apply_save_data(data.get("residence", {}))
 	AudioManager.apply_volume_settings()
 
 # -- Resources ---------------------------------------------------------------
@@ -187,6 +191,19 @@ func add_fuel(amount: int) -> void:
 func add_morale(amount: int) -> void:
 	resources.morale = clampi(resources.morale + amount, 0, 100)
 	EventBus.morale_changed.emit(resources.morale)
+
+## Idempotent - unlocking an already-unlocked survivor is a no-op.
+func unlock_survivor(survivor_id: String) -> void:
+	var unlocked: Array = profile.unlocked_survivor_ids
+	if unlocked.has(survivor_id):
+		return
+	unlocked.append(survivor_id)
+	EventBus.survivor_unlocked.emit(survivor_id)
+	SaveManager.request_autosave()
+
+func is_survivor_unlocked(survivor_id: String) -> bool:
+	var unlocked: Array = profile.unlocked_survivor_ids
+	return unlocked.has(survivor_id)
 
 # -- Experience & levelling ---------------------------------------------------
 

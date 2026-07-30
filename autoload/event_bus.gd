@@ -28,6 +28,11 @@ signal items_merged(dragged_instance_id: String, target_instance_id: String, res
 signal item_discovered(item_id: String)
 signal producer_activated(producer_instance_id: String, spawned_instance_id: String)
 
+# -- Residence / quests (Phase 3) ------------------------------------------
+signal hotspot_state_changed(hotspot_id: String, new_state: int)
+signal quest_completed(quest_id: String)
+signal survivor_unlocked(survivor_id: String)
+
 # -- Lightweight UI feedback ----------------------------------------------
 ## Used by any screen to surface a short non-blocking message, e.g. for
 ## systems that are not implemented yet in the current development phase.

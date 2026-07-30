@@ -324,3 +324,181 @@ godot4 --headless --path /path/to/dead-haven-merge-survive tests/smoke_test_merg
 godot4 --headless --path /path/to/dead-haven-merge-survive \
   --export-debug "Android" build/android/dead_haven.apk
 ```
+
+---
+
+## Phase 3: Residence system - complete
+
+### Files created
+
+Content: `data/residences/hollow_creek_farmhouse.tres` (`ResidenceDefinition`
+with 9 `ResidenceHotspot` sub-resources), 9 `data/quests/q_*.tres`
+(`QuestDefinition`) - one per Hollow Creek Farmhouse milestone from the
+design spec section 9 (front door, kitchen windows, living room, fireplace,
+pantry, rescue Noah, barn, rear escape, perimeter traps). Generated once by
+a script run through the Godot binary and deleted, same pattern as Phase
+2's item content.
+
+New autoload: `autoload/residence_manager.gd` (loads residence/quest
+content, owns hotspot-state and quest-completion runtime state, checks/
+consumes merge-board item requirements, grants rewards including the
+`unlock_survivor` special-case).
+
+Residence UI: `scripts/residence/hotspot_visual.gd` (one procedurally-drawn
+before/after patch per hotspot, distinct shape per area, a repair-burst
+animation on completion), `scenes/ui/task_panel.gd`/`.tscn` (tap a hotspot
+-> task name/description/required item with owned-vs-needed count/reward
+-> Complete, or Find on Board to jump to the Merge Board with the right
+chain highlighted).
+
+Tests: `tests/smoke_test_residence.gd`/`.tscn`.
+
+### Files modified
+
+- `project.godot` - registered the `ResidenceManager` autoload.
+- `autoload/event_bus.gd` - added hotspot_state_changed, quest_completed,
+  survivor_unlocked signals.
+- `autoload/game_manager.gd` - `profile.unlocked_survivor_ids`,
+  `unlock_survivor()`/`is_survivor_unlocked()`; `new_game()` now also
+  calls `ResidenceManager.reset_new_game()`; save data now includes
+  `ResidenceManager`'s block.
+- `autoload/board_state.gd` - `count_item()`/`consume_item()`, so
+  ResidenceManager can check and spend merge-board items without reaching
+  into BoardState's internals.
+- `scenes/haven/haven.gd`/`.tscn` - full rewrite: hotspots are now built
+  from `ResidenceManager.get_residence()` data instead of 3 hardcoded inert
+  buttons; added a repair-progress label.
+- `scenes/merge_board/merge_board.gd` - reads a `highlight_chain_id` param
+  from `SceneRouter.take_pending_params()` on `_ready()`, so "Find on
+  Board" from a task panel lands with the right chain already highlighted
+  - this is Phase 2's chain-highlight legend becoming the real task
+  highlighting the spec describes.
+- `scenes/survivors/survivors.gd` - Noah's locked state now reads
+  `GameManager.is_survivor_unlocked("noah_vance")` instead of a hardcoded
+  `true`; every other roster entry is still hardcoded-locked pending Phase
+  6's real recruitment system.
+
+### Features completed
+
+- **Real repair hotspots**: 9 hotspots on Hollow Creek Farmhouse, each
+  backed by a `ResidenceHotspot` + one `QuestDefinition`, each requiring a
+  specific merge-board item (spread across 5 of the 9 chains - Construction
+  x4, Tool x2, Food x1, Medical x1, Trap x1 - so the milestone chain
+  exercises most of Phase 2's content rather than just one chain).
+- **Visual state change, not just a label**: every hotspot draws its own
+  distinct damaged-vs-fixed patch (`HotspotVisual`) - a boarded/cracked
+  door vs. a solid one, broken vs. intact window panes, debris vs. a couch,
+  a cold vs. lit fireplace, and so on - plus a small dust-burst animation
+  played on completion (spec: hammering/dust/sparks - simplified to a
+  reusable particle burst rather than distinct SFX/VFX per hotspot type,
+  see Known issues).
+- **Task panel**: tap a hotspot -> see its title, description, required
+  item (with a live owned/needed count via `BoardState.count_item()`), and
+  reward preview. Complete is disabled until the requirement is met;
+  "Find on Board" routes to the Merge Board with the exact chain
+  highlighted instead of leaving the player to guess.
+- **Item consumption**: completing a task actually removes the required
+  item from storage/board (`BoardState.consume_item()`), not just a
+  cosmetic check - the item is genuinely spent.
+- **Rewards**: coins + XP per milestone, tuned roughly to milestone
+  significance (30-60 range); the "Someone's Upstairs" milestone (spec
+  milestone 6, "Save survivor Noah Vance") additionally unlocks Noah in
+  the Survivors roster via a generic `unlock_survivor` reward key - reusing
+  Phase 1's roster screen with a real state change instead of building a
+  new one.
+- **Duplicate-completion prevention**: `try_complete_quest()` on an
+  already-completed quest fails with `already_complete` rather than
+  double-granting rewards or re-consuming items.
+- **Save/reload**: hotspot states, completed quest ids, and the Noah
+  unlock all persist and reload correctly (see Tests performed).
+
+### Tests performed
+
+Same headless-binary approach as Phases 1-2 (binary downloaded fresh into
+this container, not persisted - see Known issues):
+
+- `godot4 --headless --path . --import` - clean, zero script/parse errors.
+- `tests/smoke_test.tscn` - still instantiates every screen including the
+  rewritten Haven with no runtime error.
+- `tests/smoke_test_save.tscn`, `tests/smoke_test_settings.tscn`,
+  `tests/smoke_test_merge.tscn` - all still pass, no regressions from the
+  Phase 3 additions.
+- `tests/smoke_test_residence.tscn` (new) - residence/hotspot/quest data
+  loads with the expected shape; a task correctly refuses to complete
+  before its required item exists; spawning the item and completing the
+  task consumes it, grants coins/XP, and flips the hotspot to COMPLETED;
+  completing the same quest again is correctly rejected; completing
+  `q_rescue_noah` unlocks `noah_vance` via the generic reward path;
+  `get_active_quest_for_hotspot()` correctly returns null once a hotspot's
+  only task is done; a full save -> reload round trip preserves completed
+  quests, hotspot state, and the Noah unlock.
+
+### Known issues
+
+- **Not visually confirmed**, same caveat as every phase so far - headless
+  mode has no window. Hotspot tap-target size/spacing on the actual
+  background art, and whether the 9 marker positions read clearly against
+  the Phase 1 procedural background, need a real screen.
+- **Two-state hotspots, not five.** `ResidenceHotspot.State` defines
+  DESTROYED/PARTIALLY_CLEARED/UNDER_REPAIR/COMPLETED/UPGRADED; Phase 3
+  only ever uses DESTROYED and COMPLETED (a hotspot flips straight from
+  one to the other when its single linked quest finishes). The other three
+  states exist in the schema for hotspots with more than one sequential
+  task - none of Hollow Creek Farmhouse's hotspots need that yet, but a
+  later residence (or an "upgrade" pass on this one) can use
+  `required_task_ids` with more than one entry without any data-model
+  changes.
+- **One shared repair-burst effect for every hotspot type**, not distinct
+  hammering/sawing/dust/spark animations per repair type as spec section
+  21 lists - reusing Phase 2's merge-burst pattern was the pragmatic choice
+  within this phase's scope; per-hotspot animation variety is a polish-pass
+  candidate.
+- **Milestone 10 ("Survive the first night attack") is not in this
+  phase.** It's explicitly Phase 7's defence-event system per the
+  design spec's own phase breakdown; Hollow Creek Farmhouse's 9 completable
+  hotspots here cover milestones 1-9. The residence won't show as fully
+  "complete" until Phase 7 adds the tenth.
+- **Noah's rescue has no dialogue scene** - completing `q_rescue_noah`
+  unlocks him via a toast ("Repaired!", same as any other task) rather
+  than the story beat described in the design spec ("Noises are heard
+  inside... Player chooses whether to trust him"). The real dialogue
+  engine is Phase 4; wiring `dialogue_trigger_id` (already a field on
+  `QuestDefinition`, currently unset) to a real scene happens then.
+- **World Map / residence-to-residence progression untouched.** Completing
+  all 9 hotspots doesn't yet unlock Redwater Service Station or update the
+  World Map - `ResidenceDefinition.completion_rewards` already has the
+  intended keys (`unlocks: world_map`, `unlocks_residence`) but nothing
+  reads them yet; that's Phase 8 ("Additional content") territory per the
+  spec's own phase order, or an earlier pass once Phase 7's defence event
+  makes the residence genuinely "done".
+- **Godot binary still not persisted** in this environment - same caveat
+  as every phase so far.
+
+### Exact next phase
+
+**Phase 4: Story** - the dialogue engine (speaker/portrait/expression/
+text/background/animation/sound/branching/conditions/rewards/relationship
+changes/quest triggers per spec section 16), character portraits/
+expressions (currently `SurvivorSilhouette` placeholders), and chapter
+progression. This is also where Noah's rescue gets a real scene instead of
+a toast, and where `QuestDefinition.dialogue_trigger_id` (unused since
+Phase 1) becomes real.
+
+### Commands required to run or export the project
+
+```bash
+# Open and run in the editor
+# (Godot 4.3+, standard build, GDScript-only project)
+godot4 --path /path/to/dead-haven-merge-survive
+
+# Headless import check (populates .godot/ cache, surfaces parse errors)
+godot4 --headless --path /path/to/dead-haven-merge-survive --import
+
+# Run the Phase 2 + Phase 3 smoke tests
+godot4 --headless --path /path/to/dead-haven-merge-survive tests/smoke_test_merge.tscn
+godot4 --headless --path /path/to/dead-haven-merge-survive tests/smoke_test_residence.tscn
+
+# Android export (after templates/SDK/keystore are configured in the editor)
+godot4 --headless --path /path/to/dead-haven-merge-survive \
+  --export-debug "Android" build/android/dead_haven.apk
+```

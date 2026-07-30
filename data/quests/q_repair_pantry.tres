@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="QuestDefinition" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data_models/quest_definition.gd" id="1_ak30c"]
+
+[resource]
+script = ExtResource("1_ak30c")
+id = "q_repair_pantry"
+title = "Repair the Food Pantry"
+description = "Shelving's collapsed. Fix it before supplies spoil."
+quest_type = 1
+requirements = {
+"food_3": 1
+}
+prerequisite_quest_ids = PackedStringArray()
+rewards = {
+"coins": 35,
+"xp": 25
+}
+is_complete = false
+dialogue_trigger_id = ""
+residence_hotspot_id = "pantry"
+time_condition = ""

@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="QuestDefinition" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data_models/quest_definition.gd" id="1_0ud3u"]
+
+[resource]
+script = ExtResource("1_0ud3u")
+id = "q_reinforce_barn"
+title = "Reinforce the Barn"
+description = "The barn walls are sound but need reinforcing before it's usable."
+quest_type = 1
+requirements = {
+"construction_5": 1
+}
+prerequisite_quest_ids = PackedStringArray()
+rewards = {
+"coins": 45,
+"xp": 35
+}
+is_complete = false
+dialogue_trigger_id = ""
+residence_hotspot_id = "barn"
+time_condition = ""

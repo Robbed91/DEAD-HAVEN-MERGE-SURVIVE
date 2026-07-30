@@ -35,6 +35,10 @@ func _ready() -> void:
 	_info_panel.changed.connect(_on_state_changed)
 	refresh_board()
 
+	var params := SceneRouter.take_pending_params()
+	if params.has("highlight_chain_id") and not String(params.highlight_chain_id).is_empty():
+		_on_legend_tapped(String(params.highlight_chain_id))
+
 func _build_grid() -> void:
 	_grid.columns = COLUMNS
 	for cell in _grid.get_children():

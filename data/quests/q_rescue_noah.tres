@@ -1,0 +1,23 @@
+[gd_resource type="Resource" script_class="QuestDefinition" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data_models/quest_definition.gd" id="1_iyje2"]
+
+[resource]
+script = ExtResource("1_iyje2")
+id = "q_rescue_noah"
+title = "Someone's Upstairs"
+description = "A noise upstairs turned out to be a survivor - hurt, and running a fever."
+quest_type = 2
+requirements = {
+"medical_3": 1
+}
+prerequisite_quest_ids = PackedStringArray()
+rewards = {
+"coins": 60,
+"unlock_survivor": "noah_vance",
+"xp": 50
+}
+is_complete = false
+dialogue_trigger_id = ""
+residence_hotspot_id = "upstairs_bedroom"
+time_condition = ""

@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="QuestDefinition" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data_models/quest_definition.gd" id="1_sj8ow"]
+
+[resource]
+script = ExtResource("1_sj8ow")
+id = "q_secure_front_door"
+title = "Secure the Front Door"
+description = "The door barely holds. It needs proper boards, not scrap."
+quest_type = 1
+requirements = {
+"construction_2": 1
+}
+prerequisite_quest_ids = PackedStringArray()
+rewards = {
+"coins": 30,
+"xp": 20
+}
+is_complete = false
+dialogue_trigger_id = ""
+residence_hotspot_id = "front_door"
+time_condition = ""

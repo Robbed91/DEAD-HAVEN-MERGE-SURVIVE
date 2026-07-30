@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="QuestDefinition" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data_models/quest_definition.gd" id="1_ee0hs"]
+
+[resource]
+script = ExtResource("1_ee0hs")
+id = "q_restore_fireplace"
+title = "Restore the Fireplace"
+description = "A working hearth means heat and a place to cook."
+quest_type = 1
+requirements = {
+"tool_3": 1
+}
+prerequisite_quest_ids = PackedStringArray()
+rewards = {
+"coins": 40,
+"xp": 30
+}
+is_complete = false
+dialogue_trigger_id = ""
+residence_hotspot_id = "fireplace"
+time_condition = ""

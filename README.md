@@ -35,25 +35,25 @@ cool blue-grey exteriors. See `scripts/ui/theme_factory.gd` for the exact
 palette values and `ART_ASSET_GUIDE.md` for how it's applied to
 environments and characters.
 
-## Current status: Phase 2 - Merge board
+## Current status: Phase 3 - Residence system
 
-The project foundation (Phase 1: navigation, save/load, settings, the UI
-theme, placeholder screens) is done, and the merge board is now real and
-playable: a 7x9 grid, drag-and-drop, all 9 merge chains from the design
-spec plus 4 reward chains (101 items total), producers, energy, storage,
-item info/detail panels, discovery rewards and animated feedback. **It is
-not yet the full game** - residence repair tasks that consume merge items,
-story, scavenging, survivors-as-characters, vehicles and defence events are
-scoped for the phases that follow (see `DEVELOPMENT_LOG.md` for the
-authoritative phase-by-phase plan and status).
+Phase 1 (foundation) and Phase 2 (merge board) are done, and now Hollow
+Creek Farmhouse is a real, playable residence: 9 repair hotspots that each
+require a specific merge-board item, consume it on completion, visibly
+change from damaged to fixed, and grant rewards - including unlocking
+Noah Vance in the Survivors roster. **It is not yet the full game** -
+story/dialogue, scavenging, survivors-as-characters beyond Noah's unlock,
+vehicles and defence events are scoped for the phases that follow (see
+`DEVELOPMENT_LOG.md` for the authoritative phase-by-phase plan and status).
 
 What already works, end to end, in this build:
-- Everything from Phase 1 (main menu, save/load, settings, navigation, dev diagnostics)
-- A real 7x9 merge board: drag-and-drop, merging identical chain+level items into the next level, producers (tap costs 1 energy, 30s cooldown), storage transfer, tap-for-info / long-press-for-detail panels, delete with undo and confirmation for rare items
-- 9 gameplay merge chains (Construction, Tools, Food, Medical, Traps, Fuel, Vehicle Parts, Electronics, Clothing) plus 4 reward chains (Energy, Coins, XP, Haven Tokens) - 101 items total, each with an original procedurally-drawn placeholder icon
+- Everything from Phase 1 (main menu, save/load, settings, navigation, dev diagnostics) and Phase 2 (the full 7x9 merge board, 101 items across 9 gameplay + 4 reward chains, producers, energy, storage)
+- 9 real repair hotspots on Hollow Creek Farmhouse (front door, kitchen windows, living room, fireplace, pantry, upstairs bedroom, barn, rear escape, perimeter traps), each with its own damaged/fixed visual and a task panel showing the required item, owned/needed count, and reward
+- Completing a task consumes the required merge item, grants coins/XP, and visibly repairs that area of the residence with a burst animation
+- "Find on Board" jumps from a task straight to the Merge Board with the exact required chain highlighted - real task highlighting, not just the Phase 2 legend
+- Rescuing Noah Vance (the "Someone's Upstairs" milestone) genuinely unlocks him in the Survivors roster
 - Energy regenerates over time (including while the app is closed) and can be spent by producers; a debug infinite-energy mode exists for testing
 - First-time item discovery grants a coin/energy reward exactly once per item, with a discovery banner
-- A chain-highlight legend as this phase's honest stand-in for task highlighting (no residence tasks exist until Phase 3)
 
 ### Honest limitation
 
@@ -64,9 +64,11 @@ headlessly, which confirmed: the project imports with no script/parse
 errors; every screen instantiates without a runtime error; new game /
 save / reload / corrupted-save-falls-back-to-backup all behave as
 designed; settings changes actually reach the audio bus and rebuilt
-theme; and (new in Phase 2) merging, producers, energy, storage, delete/
-undo and reward collection all behave as designed against the real data
-(see `tests/README.md` for the smoke tests this was checked with). It has
+theme; merging, producers, energy, storage, delete/undo and reward
+collection (Phase 2) all behave as designed against the real data; and
+(new in Phase 3) task requirement checks, item consumption, reward
+delivery, hotspot state changes and the Noah unlock all behave as designed
+too (see `tests/README.md` for the smoke tests this was checked with). It has
 **not** been visually confirmed on a real screen - touch input, drag
 gesture feel, layout at actual device resolutions, and animation timing
 still need a real run in the editor or on a device. Please report anything
@@ -81,14 +83,15 @@ network service, or third-party SDK is required to play.
 ## Project structure
 
 ```
-autoload/         Global singletons: EventBus, ItemDatabase, GameManager, BoardState, SaveManager, AudioManager, SceneRouter
-data/              Content: data/items/ (101 ItemDefinition .tres), data/chains/ (chain metadata) - see data/README.md
-scenes/            One folder per screen; scenes/ui/ holds shared components (top bar, bottom nav, toast, storage panel, item info panel, discovery banner)
+autoload/         Global singletons: EventBus, ItemDatabase, GameManager, BoardState, ResidenceManager, SaveManager, AudioManager, SceneRouter
+data/              Content: data/items/ (101 ItemDefinition .tres), data/chains/ (chain metadata), data/residences/ + data/quests/ (Hollow Creek Farmhouse) - see data/README.md
+scenes/            One folder per screen; scenes/ui/ holds shared components (top bar, bottom nav, toast, storage panel, item info panel, discovery banner, task panel)
 scripts/
   data_models/     Strongly-typed Resource classes (ItemDefinition, ResidenceDefinition, SurvivorDefinition, ...)
   ui/              Theme factory and other UI-only helpers
   merge/           Merge board runtime: item icon renderer, item view, board cell, chain legend icon
-  residence/ quests/ characters/ vehicles/   Reserved for Phase 3+ gameplay logic
+  residence/       Hotspot visual (Phase 3)
+  quests/ characters/ vehicles/   Reserved for Phase 4+ gameplay logic
 assets/            Art/audio; assets/manifests/asset_manifest.json tracks placeholder vs. final status
 shaders/           Reserved for later visual-effects work
 tests/             Headless smoke tests + manual test checklists; see tests/README.md

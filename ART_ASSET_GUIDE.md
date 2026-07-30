@@ -25,6 +25,14 @@ Current placeholder scripts:
 - `scenes/haven/haven_background.gd`
 - `scenes/world_map/world_map_background.gd`
 - `scripts/ui/survivor_silhouette.gd`
+- `scripts/residence/hotspot_visual.gd` (Phase 3) - one reusable
+  before/after patch renderer for every Hollow Creek Farmhouse hotspot: a
+  distinct simple shape per repair area (door, window, couch, hearth,
+  shelving, bed, barn, fence, spikes), damaged colouring before its quest
+  completes and clean colouring plus a checkmark badge after, with a brief
+  dust-burst animation on completion. Same swap-over story as the item
+  icon renderer below: point a hotspot at real layered art later and this
+  stops being called for that hotspot.
 - `scripts/merge/item_icon_renderer.gd` (Phase 2) - one reusable renderer for
   all 101 merge items instead of 101 bespoke drawings: a rarity-tinted
   background, a category-specific silhouette (distinct shape per chain -
