@@ -36,7 +36,7 @@ shocked), separated layers for rigging, and 3 equipment-progression notes
 - [ ] **Noah Vance** (carpenter, rescued Ch.2) - *prompt ready*, `ART_GENERATION_PROMPTS.md` #2
 - [ ] **Lena Ortiz** (mechanic, rescued Ch.5) - not yet prompted; source: `data/characters/lena_ortiz.tres`, `data/dialogue/lena_01-03.tres` (defensive/guarded intro, grease-marked clothing, rolled sleeves, tool pouch, protective eyewear, rust-orange accent, confident posture)
 - [ ] **Dr Imogen Shaw** (former ER doctor, not yet recruitable in-game) - not yet prompted; brief section 17: practical field-medical clothing, medical bag, clean but worn coat, calm expression, green/teal accent
-- [ ] **Riley Chen** (radio technician, not yet recruitable in-game) - not yet prompted; brief section 17: electronics pack, headset, layered clothing, improvised antenna tools, blue accent, alert/analytical posture
+- [ ] **Riley Chen** (radio technician, rescued Ch.6, Phase 10) - not yet prompted; source: `data/characters/riley_chen.tres`, `data/dialogue/riley_01-03.tres` (defensive about the signal at first, found behind a wedged-shut stairwell); brief section 17: electronics pack, headset, layered clothing, improvised antenna tools, blue accent, alert/analytical posture
 - [ ] **Caleb Rusk** (former security officer, not yet recruitable in-game, has a hidden Ashborn tie) - not yet prompted; brief section 17: heavy jacket, protective vest, restrained tactical gear, hidden Ashborn visual clue, suspicious expression
 
 ## 2. The Hollow - 6 enemy concept sheets + production sprites
@@ -77,15 +77,18 @@ background/structure/damage/foreground approach as the exterior prompts.
 - [ ] **Initial/abandoned state** - not yet prompted; source: `scenes/redwater/redwater_background.gd` (current procedural version - dusk canopy/pumps/store/garage composition), brief section 14: damaged canopy, broken shop windows, rusting pumps, garage door partly open, disabled delivery van, overgrown road, Ashborn faction markings, Hollow near abandoned cars
 - [ ] **Upgraded state** - not yet prompted; brief section 14: reinforced shop, secured garage, fuel storage, functional workshop, repaired van, road barriers, rooftop lookout, warning lights, drainage escape tunnel, survivor activity
 
+## 5b. Greybridge School - exterior states (Phase 10)
+
+- [ ] **Current state** - not yet prompted; source: `scenes/greybridge/greybridge_background.gd` (current procedural version - flat cold overcast daylight, brick main building, gymnasium wing, rooftop radio tower, playground fence). No "upgraded" state designed yet in-game (unlike Hollow Creek/Redwater, Greybridge doesn't yet have a post-defence visual change) - add one if/when that's built.
+
 ## 6. Remaining residences (not yet built in-game at all)
 
 Data/quests/scenes don't exist yet for these - illustration work should
 wait until each is actually built (so hotspot positions etc. are known),
 tracked here so the eventual need isn't a surprise:
 
-- [ ] Greybridge School
-- [ ] Saint Mercy Hospital
-- [ ] Northgate Prison
+- [ ] Saint Mercy Hospital (Dr Imogen Shaw's expected rescue location)
+- [ ] Northgate Prison (Caleb Rusk's expected rescue location)
 
 ## 7. Merge board & UI
 
@@ -179,7 +182,7 @@ Each needs arrival/exploration/threat/loot/escape illustrated states.
 ## Priority order if generating in batches
 
 1. Vertical slice (the 10 "prompt ready" items above) - proves the art direction works before mass production
-2. Remaining 5 survivor sheets + remaining 5 Hollow types - characters are seen constantly and currently have zero unique art
+2. Remaining 4 survivor sheets (Lena, Imogen, Riley, Caleb) + remaining 5 Hollow types - characters are seen constantly and currently have zero unique art
 3. Construction chain's 7 sibling chains (item art is the single most-seen asset category)
 4. Farmhouse stages 3-5 + 6 interiors, Redwater's 2 states
 5. Producers, vehicle stages, UI component sheet, icon set

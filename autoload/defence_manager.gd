@@ -3,9 +3,10 @@ extends Node
 ##
 ## A residence's climactic "survive the attack" milestone (spec section
 ## 15) - generalized in Phase 8 to support more than one residence's
-## event (Hollow Creek's "first wave", Redwater's "defend the station")
-## through one shared autoload rather than a duplicate manager per
-## residence. Event definitions and their choice data are deliberately
+## event (Hollow Creek's "first wave", Redwater's "defend the station",
+## Phase 10's Greybridge "greybridge_defence") through one shared
+## autoload rather than a duplicate manager per residence. Event
+## definitions and their choice data are deliberately
 ## kept as inline data here rather than a data/ file - these are a
 ## handful of unique, story-critical events, not a repeatable content
 ## category like items/quests/missions (see DEVELOPMENT_LOG.md Phase 7).
@@ -38,7 +39,16 @@ var events := {
 		"success_coins": 150,
 		"success_xp": 120,
 		"success_chapter": "",
-		"success_flag": "",
+		"success_flag": "greybridge_unlocked",
+	},
+	"greybridge_defence": {
+		"residence_id": "greybridge_school",
+		"energy_cost": 25,
+		"skill_tags": ["electronics", "communications"],
+		"success_coins": 180,
+		"success_xp": 140,
+		"success_chapter": "",
+		"success_flag": "saint_mercy_unlocked",
 	},
 }
 
@@ -80,6 +90,23 @@ var event_choices := {
 			"text": "Use the drainage tunnel to slip out and draw them off.", "success_chance": 0.6,
 			"success_text": "Risky, but it works - you lead them off the property entirely.",
 			"failure_text": "It nearly goes wrong in the tunnel. You make it back, but rattled and short on supplies.",
+		},
+	],
+	"greybridge_defence": [
+		{
+			"text": "Kill the exterior lights and hold the main hall in the dark.", "success_chance": 0.5,
+			"success_text": "Blind and cautious, they lose interest and drift back off the grounds by morning.",
+			"failure_text": "Something finds a way in through the dark anyway. You force it back out the way it came.",
+		},
+		{
+			"text": "Use the PA system to draw them toward the empty gymnasium.", "success_chance": 0.65,
+			"success_text": "The gambit works - the gym takes the brunt of it while the rest of the school stays quiet.",
+			"failure_text": "The PA cuts out halfway through. You scramble to reroute them the hard way.",
+		},
+		{
+			"text": "Hold the stairwell chokepoint to the radio tower.", "success_chance": 0.55,
+			"success_text": "One at a time, the stairwell is easy to hold. The tower stays untouched.",
+			"failure_text": "The chokepoint holds, barely, but the landing below takes real damage.",
 		},
 	],
 }

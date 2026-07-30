@@ -46,18 +46,24 @@ Current placeholder scripts:
   Creek's but a dusk palette (cool violet-to-rust sky, warm canopy red)
   instead of Hollow Creek's day exterior, so the two residences read as
   distinct places even as procedural placeholders.
+- `scenes/greybridge/greybridge_background.gd` (Phase 10) - Greybridge
+  School's exterior, a third distinct palette/time-of-day again (flat
+  cold overcast daylight) so all three residences read as different
+  places at a glance.
 - `scenes/world_map/world_map_background.gd`
 - `scripts/ui/survivor_silhouette.gd`
-- `scripts/residence/hotspot_visual.gd` (Phase 3, extended Phase 8) - one
-  reusable before/after patch renderer shared by every residence's
+- `scripts/residence/hotspot_visual.gd` (Phase 3, extended Phase 8/10) -
+  one reusable before/after patch renderer shared by every residence's
   hotspots: a distinct simple shape per repair area (Hollow Creek: door,
   window, couch, hearth, shelving, bed, barn, fence, spikes; Redwater:
   pumps, garage bay, store shelves, office window, generator vents, fence
-  posts, drainage arc, workbench), damaged colouring before its quest
-  completes and clean colouring plus a checkmark badge after, with a brief
-  dust-burst animation on completion. Same swap-over story as the item
-  icon renderer below: point a hotspot at real layered art later and this
-  stops being called for that hotspot.
+  posts, drainage arc, workbench; Greybridge: double doors, basketball
+  hoop, book spines, cafeteria table, boiler tank, desk, chain-link
+  fencing, radio mast), damaged colouring before its quest completes and
+  clean colouring plus a checkmark badge after, with a brief dust-burst
+  animation on completion. Same swap-over story as the item icon renderer
+  below: point a hotspot at real layered art later and this stops being
+  called for that hotspot.
 - `scripts/merge/item_icon_renderer.gd` (Phase 2) - one reusable renderer for
   all 101 merge items instead of 101 bespoke drawings: a rarity-tinted
   background, a category-specific silhouette (distinct shape per chain -
@@ -86,10 +92,11 @@ individual pieces can animate/update independently:
 9. Weather effects
 10. Particle effects
 
-`haven_background.gd` and `redwater_background.gd` each currently draw
-layers 1-4 procedurally in a single script, one per residence; splitting
-these into separate nodes/textures is expected once real art replaces the
-placeholders (tracked as high priority in the asset manifest).
+`haven_background.gd`, `redwater_background.gd` and
+`greybridge_background.gd` each currently draw layers 1-4 procedurally in
+a single script, one per residence; splitting these into separate nodes/
+textures is expected once real art replaces the placeholders (tracked as
+high priority in the asset manifest).
 
 ## Dialogue portraits (Phase 4)
 

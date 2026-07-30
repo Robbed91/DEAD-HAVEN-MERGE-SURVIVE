@@ -11,6 +11,7 @@ const SCENE_PATHS: Dictionary = {
 	"main_menu": "res://scenes/main_menu/main_menu.tscn",
 	"haven": "res://scenes/haven/haven.tscn",
 	"redwater": "res://scenes/redwater/redwater.tscn",
+	"greybridge": "res://scenes/greybridge/greybridge.tscn",
 	"dialogue": "res://scenes/dialogue/dialogue.tscn",
 	"scavenging": "res://scenes/scavenging/scavenging.tscn",
 	"vehicle": "res://scenes/vehicle/vehicle.tscn",

@@ -131,6 +131,23 @@
       "optimisation_status": "n/a - procedural draw calls, not a texture"
     },
     {
+      "asset_id": "greybridge_exterior",
+      "name": "Greybridge School exterior",
+      "category": "environment",
+      "file_path": "scenes/greybridge/greybridge_background.gd",
+      "source_file_path": "scenes/greybridge/greybridge_background.gd",
+      "dimensions": "720x1280 (viewport-relative, procedural)",
+      "format": "Control._draw() procedural script",
+      "transparency": false,
+      "animation_type": "none",
+      "frame_count": 0,
+      "status": "procedural_placeholder",
+      "scenes_using_it": ["scenes/greybridge/greybridge.tscn"],
+      "replacement_priority": "high - third primary gameplay backdrop; deliberately a flat cold overcast daylight palette distinct from both other residences",
+      "licence_or_generation_source": "n/a - procedural, no external source",
+      "optimisation_status": "n/a - procedural draw calls, not a texture"
+    },
+    {
       "asset_id": "world_map_background",
       "name": "World map",
       "category": "environment",

@@ -125,12 +125,15 @@ func try_complete_quest(quest_id: String) -> Dictionary:
 	# and the merge board is in use; Chapter 2 ("Someone Upstairs") opens
 	# with the noises that lead to finding Noah. Chapter 4 ("The First
 	# Wave") is set by DefenceManager on a successful Hollow Creek defence.
-	# Chapter 5 ("The Station") opens once Lena is found at Redwater. There
-	# is no chapter_3 beat yet - see DEVELOPMENT_LOG.md Known issues.
+	# Chapter 5 ("The Station") opens once Lena is found at Redwater;
+	# Chapter 6 ("The Signal") opens once Riley is found at Greybridge.
+	# There is no chapter_3 beat yet - see DEVELOPMENT_LOG.md Known issues.
 	if quest_id == "q_secure_front_door":
 		GameManager.advance_chapter("chapter_2_someone_upstairs")
 	if quest_id == "q_rescue_lena":
 		GameManager.advance_chapter("chapter_5_the_station")
+	if quest_id == "q_rescue_riley":
+		GameManager.advance_chapter("chapter_6_the_signal")
 
 	_maybe_discover_vehicle()
 

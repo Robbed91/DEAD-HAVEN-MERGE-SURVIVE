@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="DialogueEntry" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data_models/dialogue_entry.gd" id="1_ril01"]
+
+[resource]
+script = ExtResource("1_ril01")
+id = "riley_01"
+speaker_id = ""
+portrait_key = ""
+expression_key = "neutral"
+text = "The stairwell to the roof is wedged shut with a filing cabinet. Through the gap, a faint recorded loop keeps playing on repeat, over and over, on an old radio."
+background_scene_path = ""
+animation = ""
+sound_cue = ""
+branching_options = Array[Dictionary]([])
+next_id = "riley_02"

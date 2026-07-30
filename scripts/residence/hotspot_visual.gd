@@ -128,6 +128,45 @@ func _draw() -> void:
 				Vector2(s.x * 0.42, s.y * 0.55), Vector2(s.x * 0.5, s.y * 0.2), Vector2(s.x * 0.58, s.y * 0.55),
 			])
 			draw_polyline(pts2, base, 3.0)
+		"main_hall":
+			draw_rect(Rect2(s.x * 0.12, s.y * 0.2, s.x * 0.76, s.y * 0.65), base, false, 3.0)
+			draw_line(Vector2(s.x * 0.5, s.y * 0.2), Vector2(s.x * 0.5, s.y * 0.85), base, 3.0)
+			if not fixed:
+				draw_line(Vector2(s.x * 0.14, s.y * 0.24), Vector2(s.x * 0.86, s.y * 0.8), accent, 2.5)
+		"gymnasium":
+			draw_rect(Rect2(s.x * 0.3, s.y * 0.18, s.x * 0.06, s.y * 0.5), base)
+			draw_arc(Vector2(s.x * 0.6, s.y * 0.5), s.x * 0.16, 0, TAU, 20, base, 3.0)
+			if fixed:
+				draw_circle(Vector2(s.x * 0.6, s.y * 0.5), s.x * 0.04, accent)
+		"library":
+			for i in 5:
+				var bx: float = s.x * (0.18 + i * 0.14)
+				draw_rect(Rect2(bx, s.y * (0.85 - (0.1 + 0.06 * (i % 3))), s.x * 0.08, s.y * (0.1 + 0.06 * (i % 3))), base)
+		"cafeteria":
+			draw_rect(Rect2(s.x * 0.2, s.y * 0.42, s.x * 0.6, s.y * 0.1), base)
+			draw_rect(Rect2(s.x * 0.24, s.y * 0.58, s.x * 0.52, s.y * 0.06), base)
+			draw_rect(Rect2(s.x * 0.24, s.y * 0.7, s.x * 0.52, s.y * 0.06), base)
+		"boiler_room":
+			draw_rect(Rect2(s.x * 0.32, s.y * 0.25, s.x * 0.36, s.y * 0.55), base, false, 3.0)
+			for i in 3:
+				draw_line(Vector2(s.x * 0.32, s.y * (0.38 + i * 0.14)), Vector2(s.x * 0.16, s.y * (0.38 + i * 0.14)), accent if not fixed else base, 2.5)
+		"admin_office":
+			draw_rect(Rect2(s.x * 0.2, s.y * 0.5, s.x * 0.6, s.y * 0.12), base)
+			draw_rect(Rect2(s.x * 0.66, s.y * 0.25, s.x * 0.14, s.y * 0.37), base)
+		"playground_fence":
+			for i in 6:
+				var fx: float = s.x * (0.06 + i * 0.15)
+				draw_line(Vector2(fx, s.y * 0.85), Vector2(fx + s.x * 0.075, s.y * 0.35), base, 2.0)
+				draw_line(Vector2(fx + s.x * 0.075, s.y * 0.85), Vector2(fx, s.y * 0.35), base, 2.0)
+		"radio_tower":
+			var tpts := PackedVector2Array([
+				Vector2(s.x * 0.42, s.y * 0.9), Vector2(s.x * 0.5, s.y * 0.12), Vector2(s.x * 0.58, s.y * 0.9),
+			])
+			draw_polyline(tpts, base, 3.0)
+			draw_line(Vector2(s.x * 0.44, s.y * 0.55), Vector2(s.x * 0.56, s.y * 0.55), base, 2.5)
+			draw_line(Vector2(s.x * 0.46, s.y * 0.72), Vector2(s.x * 0.54, s.y * 0.72), base, 2.5)
+			if fixed:
+				draw_circle(Vector2(s.x * 0.5, s.y * 0.12), s.x * 0.03, accent)
 		_:
 			draw_circle(s * 0.5, s.x * 0.3, base)
 

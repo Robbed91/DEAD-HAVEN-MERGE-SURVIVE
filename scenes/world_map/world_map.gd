@@ -1,10 +1,12 @@
 extends Control
 ## WorldMap
 ##
-## Phase 1 placeholder for residences: a single active location marker
-## (Hollow Creek Farmhouse) with a gentle pulse, and locked markers for the
-## residences documented in the design spec. Routes, weather overlays and
-## day/night cycling are Phase 8 (World map expansion) work.
+## Hollow Creek Farmhouse's marker (a single active location with a gentle
+## pulse) is always reachable; Redwater Service Station (Phase 8) and
+## Greybridge School (Phase 10) unlock and become real navigable markers
+## once their story flag is set; Saint Mercy Hospital and Northgate Prison
+## remain locked placeholders. Routes, weather overlays and day/night
+## cycling are still unbuilt.
 ##
 ## Phase 5 adds real scavenging location markers, built from
 ## ScavengingManager's content - positions are display-only UI data here
@@ -21,10 +23,11 @@ const SCAVENGING_MARKER_POSITIONS := {
 
 func _ready() -> void:
 	%HollowCreekMarker.pressed.connect(func(): SceneRouter.go_to("haven"))
-	for locked_name in ["GreybridgeMarker", "SaintMercyMarker", "NorthgateMarker"]:
-		var marker: Button = get_node("%" + locked_name)
-		marker.pressed.connect(func(): EventBus.show_toast.emit("Locked - reach this residence by progressing the campaign."))
 	_setup_redwater_marker()
+	_setup_greybridge_marker()
+	for locked_name in ["SaintMercyMarker", "NorthgateMarker"]:
+		var locked_marker: Button = get_node("%" + locked_name)
+		locked_marker.pressed.connect(func(): EventBus.show_toast.emit("Locked - reach this residence by progressing the campaign."))
 	_pulse_marker(%HollowCreekMarker)
 	_build_scavenging_markers()
 	_build_vehicle_marker()
@@ -41,6 +44,19 @@ func _setup_redwater_marker() -> void:
 		marker.text = "⛽"
 		marker.tooltip_text = "Redwater Service Station"
 		marker.pressed.connect(func(): SceneRouter.go_to("redwater"))
+	else:
+		marker.pressed.connect(func(): EventBus.show_toast.emit("Locked - reach this residence by progressing the campaign."))
+
+## Same pattern as Redwater, one residence later: opens once
+## story_flags["greybridge_unlocked"] is set by a successful
+## redwater_defence (Phase 10).
+func _setup_greybridge_marker() -> void:
+	var marker: Button = %GreybridgeMarker
+	if GameManager.get_story_flag("greybridge_unlocked", false):
+		marker.modulate.a = 1.0
+		marker.text = "🏫"
+		marker.tooltip_text = "Greybridge School"
+		marker.pressed.connect(func(): SceneRouter.go_to("greybridge"))
 	else:
 		marker.pressed.connect(func(): EventBus.show_toast.emit("Locked - reach this residence by progressing the campaign."))
 

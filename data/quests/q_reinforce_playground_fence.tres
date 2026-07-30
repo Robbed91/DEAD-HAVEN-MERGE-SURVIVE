@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="QuestDefinition" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data_models/quest_definition.gd" id="1_rpf02"]
+
+[resource]
+script = ExtResource("1_rpf02")
+id = "q_reinforce_playground_fence"
+title = "Reinforce the Playground Fence"
+description = "Low chain-link around the old playground - easy to climb, easier to fix properly before it matters."
+quest_type = 1
+requirements = {
+"construction_4": 1
+}
+prerequisite_quest_ids = PackedStringArray()
+rewards = {
+"coins": 45,
+"xp": 35
+}
+is_complete = false
+dialogue_trigger_id = ""
+residence_hotspot_id = "playground_fence"
+time_condition = ""

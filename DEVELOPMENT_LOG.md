@@ -1537,6 +1537,120 @@ system. Illustrated art remains gated on an image-generation tool
 becoming available - `ART_ILLUSTRATION_CHECKLIST.md` is ready whenever
 that happens.
 
+## Phase 10: Greybridge School - complete
+
+Third residence, following Phase 8's Redwater pattern exactly: a new
+`ResidenceDefinition`, 8 quests, a rescue (Riley Chen, a radio technician,
+found guarding the roof's radio tower), her own 3-part dialogue scene, a
+third `DefenceManager` event, and a new screen/background. The one
+deliberate design choice beyond "repeat the pattern": `greybridge_defence`'s
+`skill_tags` are `["electronics", "communications"]` - Riley's own skills
+- specifically so her skill bonus is live immediately on her own rescue,
+closing the "skill bonus mechanism real but nobody currently unlocked
+matches it" known issue every phase since 6 has carried forward.
+
+### Files created
+
+- `data/residences/greybridge_school.tres` - 8 hotspots (main hall,
+  gymnasium, library, cafeteria, boiler room, admin office, playground
+  fence, radio tower), covering construction/clothing/electronics/food/
+  tool/trap chains.
+- `data/quests/q_clear_main_hall.tres`, `q_salvage_gymnasium.tres`,
+  `q_restore_library.tres`, `q_restock_cafeteria.tres`,
+  `q_restart_boiler.tres`, `q_secure_admin_office.tres`,
+  `q_reinforce_playground_fence.tres`, and the rescue quest
+  `q_rescue_riley.tres` (`electronics_3`, `unlock_survivor: riley_chen`,
+  `dialogue_trigger_id: riley_01`).
+- `data/dialogue/riley_01.tres`/`riley_02.tres`/`riley_03.tres` - Riley
+  found behind a wedged-shut stairwell, defensive about the radio signal
+  she's kept running, then a branching trust choice.
+- `scenes/greybridge/greybridge.gd`/`.tscn` and
+  `scenes/greybridge/greybridge_background.gd` - a third distinct
+  palette/time-of-day (flat cold overcast daylight) so all three
+  residences read as different places even as procedural placeholders;
+  the radio tower is drawn as its own foreground silhouette above the
+  main building, the actual `radio_tower` hotspot's location.
+- Tests: `tests/smoke_test_greybridge.gd`/`.tscn`.
+
+### Files modified
+
+- `autoload/defence_manager.gd` - new `greybridge_defence` event
+  (`residence_id: greybridge_school`, `skill_tags: ["electronics",
+  "communications"]`, `success_flag: saint_mercy_unlocked`); also filled
+  in `redwater_defence`'s previously-empty `success_flag` with
+  `greybridge_unlocked` - Phase 8 left it blank because Greybridge didn't
+  exist yet to unlock.
+- `autoload/residence_manager.gd` - `q_rescue_riley` advances the chapter
+  to `chapter_6_the_signal`.
+- `scripts/residence/hotspot_visual.gd` - a distinct placeholder shape
+  per Greybridge hotspot id (double doors, a basketball hoop, book
+  spines, a cafeteria table, a boiler tank, a desk, chain-link diamond
+  fencing, and a radio mast).
+- `scenes/world_map/world_map.gd`/`.tscn` - `_setup_greybridge_marker()`
+  (identical shape to `_setup_redwater_marker()`), routing to the new
+  screen once `greybridge_unlocked` is set; refactored the locked-marker
+  loop since Greybridge moved out of it.
+- `scenes/haven/haven.gd`, `scenes/redwater/redwater.gd`,
+  `scenes/defence/defence.gd` - added Chapter 6's title and
+  `greybridge_defence`'s/`riley_chen`'s labels so both other residence
+  screens and the shared Defence screen display them correctly.
+- `autoload/scene_router.gd` - added `"greybridge"`.
+- `tests/smoke_test.gd` - added `greybridge.tscn` to the coverage list.
+
+### Features completed
+
+- **A third full residence**, same shape as Hollow Creek and Redwater:
+  8 data-driven hotspots, one of them a rescue that unlocks a survivor
+  and advances the story.
+- **The skill-bonus mechanism is no longer inert for its own rescue** -
+  Riley's `electronics`/`communications` skills match
+  `greybridge_defence`'s own `skill_tags`, verified directly in
+  `smoke_test_greybridge.gd` rather than just asserted in a comment.
+- **`redwater_defence` now actually unlocks something** - Phase 8 shipped
+  it with an empty `success_flag` because there was nothing yet to
+  unlock; that gap is closed.
+
+### Tests performed
+
+Same headless approach as every phase, `timeout`-wrapped throughout:
+
+- `godot4 --headless --path . --import` - clean, zero script/parse errors.
+- Full existing suite (`smoke_test`, `smoke_test_save`,
+  `smoke_test_settings`, `smoke_test_merge`, `smoke_test_residence`,
+  `smoke_test_dialogue`, `smoke_test_scavenging`,
+  `smoke_test_vehicle_survivors`, `smoke_test_defence`,
+  `smoke_test_redwater`) - all still pass, no regressions.
+- `tests/smoke_test_greybridge.tscn` (new) - residence data loads with 8
+  hotspots; completing every hotspot except the rescue leaves
+  `greybridge_defence` un-attemptable; completing `q_rescue_riley` unlocks
+  `riley_chen`, advances the chapter to `chapter_6_the_signal`, and its
+  `dialogue_trigger_id` is `riley_01`; `greybridge_defence`'s
+  `skill_tags` are directly asserted to overlap `riley_chen`'s real
+  skills (not a re-implementation - the actual `CharacterDatabase`
+  record); a forced success spends the event's own energy cost, marks
+  only itself survived, and sets `saint_mercy_unlocked`; a full
+  save/reload round trip preserves all of it.
+
+### Known issues
+
+- **Not visually confirmed**, same caveat as every phase.
+- **8 hotspots, not spec's fuller count** - same "concrete and earned"
+  trade-off every residence's content generation has made.
+- **Saint Mercy Hospital and Northgate Prison remain locked
+  placeholders** - Dr Imogen Shaw and Caleb Rusk still have no rescue
+  path. Caleb in particular has `trap`/`defence` skills that would make
+  *every* existing defence event's bonus live at once, once he exists.
+- **No route/travel scene between residences**, same gap Phase 8 flagged.
+- **Godot binary still not persisted** in this environment.
+
+### Exact next phase
+
+Saint Mercy Hospital (Dr Imogen Shaw) and/or Northgate Prison (Caleb
+Rusk) - the same pattern a third time - then the remaining 5 scavenging
+locations, then a real look at whether the story-flag/chapter chain needs
+a proper main-story arc connecting all five residences rather than each
+one only advancing its own next-door neighbour.
+
 ### Commands required to run or export the project
 
 ```bash
@@ -1548,7 +1662,7 @@ godot4 --path /path/to/dead-haven-merge-survive
 godot4 --headless --path /path/to/dead-haven-merge-survive --import
 
 # Run the full smoke test suite (always with a timeout wrapper)
-for f in smoke_test smoke_test_save smoke_test_settings smoke_test_merge smoke_test_residence smoke_test_dialogue smoke_test_scavenging smoke_test_vehicle_survivors smoke_test_defence smoke_test_redwater; do
+for f in smoke_test smoke_test_save smoke_test_settings smoke_test_merge smoke_test_residence smoke_test_dialogue smoke_test_scavenging smoke_test_vehicle_survivors smoke_test_defence smoke_test_redwater smoke_test_greybridge; do
   timeout 30 godot4 --headless --path /path/to/dead-haven-merge-survive "tests/$f.tscn"
 done
 

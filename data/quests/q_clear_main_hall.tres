@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="QuestDefinition" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data_models/quest_definition.gd" id="1_cmh01"]
+
+[resource]
+script = ExtResource("1_cmh01")
+id = "q_clear_main_hall"
+title = "Clear the Main Hall"
+description = "Part of the ceiling came down years ago. The debris still blocks the only way in."
+quest_type = 1
+requirements = {
+"construction_3": 1
+}
+prerequisite_quest_ids = PackedStringArray()
+rewards = {
+"coins": 35,
+"xp": 25
+}
+is_complete = false
+dialogue_trigger_id = ""
+residence_hotspot_id = "main_hall"
+time_condition = ""

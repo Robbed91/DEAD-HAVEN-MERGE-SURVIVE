@@ -12,14 +12,17 @@ const SURVIVOR_NAMES := {
 	"mara_vale": "Mara Vale",
 	"noah_vance": "Noah Vance",
 	"lena_ortiz": "Lena Ortiz",
+	"riley_chen": "Riley Chen",
 }
 const EVENT_LABELS := {
 	"hollow_creek_first_wave": "The First Night",
 	"redwater_defence": "Defend the Station",
+	"greybridge_defence": "Defend the School",
 }
 const ENCOUNTER_INTROS := {
 	"hollow_creek_first_wave": "Night falls, and they come from the treeline. What now?",
 	"redwater_defence": "Movement at the fence line as the light fades. What now?",
+	"greybridge_defence": "They're coming across the playground as the light dies. What now?",
 }
 
 @onready var _title_label: Label = %TitleLabel
