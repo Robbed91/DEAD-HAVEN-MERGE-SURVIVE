@@ -118,6 +118,7 @@ func new_game() -> void:
 	BoardState.reset_new_board()
 	ResidenceManager.reset_new_game()
 	ScavengingManager.apply_save_data({})
+	VehicleManager.reset_new_game()
 	SaveManager.save_game()
 	EventBus.game_loaded.emit()
 
@@ -140,6 +141,7 @@ func to_save_data() -> Dictionary:
 		"board": BoardState.to_save_data(),
 		"residence": ResidenceManager.to_save_data(),
 		"scavenging": ScavengingManager.to_save_data(),
+		"vehicle": VehicleManager.to_save_data(),
 	}
 
 func apply_save_data(data: Dictionary) -> void:
@@ -153,6 +155,7 @@ func apply_save_data(data: Dictionary) -> void:
 	BoardState.apply_save_data(data.get("board", {}))
 	ResidenceManager.apply_save_data(data.get("residence", {}))
 	ScavengingManager.apply_save_data(data.get("scavenging", {}))
+	VehicleManager.apply_save_data(data.get("vehicle", {}))
 	AudioManager.apply_volume_settings()
 
 # -- Resources ---------------------------------------------------------------

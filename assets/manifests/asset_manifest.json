@@ -60,11 +60,19 @@
     },
     {
       "name": "Delivery van upgrade stages (9 stages)",
-      "file_path": "assets/environments/vehicles/delivery_van/",
+      "file_path": "assets/environments/vehicles/delivery_van/ (scripts/vehicle/vehicle_visual.gd draws the current placeholder)",
       "required_dimensions": "512x384",
       "animation_frames": 0,
+      "status": "procedural_placeholder",
+      "replacement_priority": "medium - one evolving procedural silhouette stands in for what should be 9 distinct illustrated stages"
+    },
+    {
+      "name": "Survivor portraits (6 survivors x expression/outfit set)",
+      "file_path": "data/characters/*.tres (portraits/expressions Dictionaries, currently empty)",
+      "required_dimensions": "per ART_ASSET_GUIDE.md Characters section",
+      "animation_frames": 0,
       "status": "not_started",
-      "replacement_priority": "medium - required for Phase 6"
+      "replacement_priority": "high - SurvivorSilhouette (colour-coded, no per-survivor detail) is the only visual for all 6 right now, both on the roster and in dialogue"
     }
   ]
 }

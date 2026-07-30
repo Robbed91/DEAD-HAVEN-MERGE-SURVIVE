@@ -46,15 +46,23 @@ func launch_mission(mission_id: String) -> Dictionary:
 		return {"success": false, "reason": "no_energy"}
 	return {"success": true}
 
-## Rolls choice_index's success_chance, grants the mission's base
-## loot_table plus the choice's success_loot (on success) or applies its
-## failure_penalty (on failure), and returns display text for the UI.
-func resolve_choice(mission_id: String, choice_index: int) -> Dictionary:
+const SKILL_SUCCESS_BONUS := 0.15
+
+## Rolls choice_index's success_chance (boosted if the sent survivor has a
+## skill matching one of the mission's recommended_equipment tags - Phase
+## 6 closing the Phase 5 "no skill effects" known issue), grants the
+## mission's base loot_table plus the choice's success_loot (on success)
+## or applies its failure_penalty (on failure), and returns display text
+## for the UI.
+func resolve_choice(mission_id: String, choice_index: int, survivor_id: String = "") -> Dictionary:
 	var mission := get_mission(mission_id)
 	if mission == null or choice_index < 0 or choice_index >= mission.encounter_choices.size():
 		return {"success": false, "reason": "invalid_choice"}
 	var choice: Dictionary = mission.encounter_choices[choice_index]
-	var succeeded: bool = randf() < float(choice.get("success_chance", 0.5))
+	var chance: float = float(choice.get("success_chance", 0.5))
+	if _survivor_has_matching_skill(survivor_id, mission.recommended_equipment):
+		chance = minf(chance + SKILL_SUCCESS_BONUS, 0.95)
+	var succeeded: bool = randf() < chance
 
 	_grant_rewards(mission.loot_table)
 	var outcome_text: String
@@ -69,6 +77,17 @@ func resolve_choice(mission_id: String, choice_index: int) -> Dictionary:
 	SaveManager.request_autosave()
 	EventBus.mission_completed.emit(mission_id, succeeded)
 	return {"success": true, "outcome_success": succeeded, "text": outcome_text}
+
+func _survivor_has_matching_skill(survivor_id: String, tags: PackedStringArray) -> bool:
+	if survivor_id.is_empty():
+		return false
+	var survivor := CharacterDatabase.get_survivor(survivor_id)
+	if survivor == null:
+		return false
+	for skill in survivor.skills:
+		if tags.has(skill):
+			return true
+	return false
 
 func _grant_rewards(rewards: Dictionary) -> void:
 	for key in rewards:

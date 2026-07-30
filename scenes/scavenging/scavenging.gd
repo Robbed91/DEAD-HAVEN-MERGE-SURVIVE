@@ -89,7 +89,7 @@ func _show_encounter() -> void:
 		_choices_box.add_child(btn)
 
 func _on_choice_pressed(choice_index: int) -> void:
-	var result := ScavengingManager.resolve_choice(_mission_id, choice_index)
+	var result := ScavengingManager.resolve_choice(_mission_id, choice_index, _selected_survivor_id)
 	%EncounterPanel.visible = false
 	%OutcomePanel.visible = true
 	var prefix: String = "Success. " if result.outcome_success else "It went sideways. "

@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="SurvivorDefinition" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data_models/survivor_definition.gd" id="1_1q4de"]
+
+[resource]
+script = ExtResource("1_1q4de")
+id = "lena_ortiz"
+display_name = "Lena Ortiz"
+role = "Mechanic"
+biography = "A mechanic with a talent for keeping engines running on nothing but scraps and stubbornness. Not yet found."
+personality_traits = PackedStringArray("direct", "brave", "impatient")
+skills = PackedStringArray("vehicle_parts", "fuel", "vehicle_repair")
+portraits = {}
+expressions = {}
+personal_quest_id = ""
+relationship_links = PackedStringArray()
+trust = 0
+health = 100
+morale = 70
+is_recruited = false
+assigned_residence_id = ""
+injury_state = "healthy"

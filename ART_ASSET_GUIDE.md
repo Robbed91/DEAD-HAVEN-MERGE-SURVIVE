@@ -75,6 +75,16 @@ content (e.g. Noah's `"injured"` line) but nothing currently varies the
 portrait rendering by expression; that's still tracked under "Characters"
 below, since it's the same underlying asset gap.
 
+## Vehicle (Phase 6)
+
+`scripts/vehicle/vehicle_visual.gd` draws the delivery van as a single
+procedural silhouette rather than 9 separate illustrations: body colour
+shifts from rust to olive with upgrade progress, and each stage lights up
+one more concrete drawn detail (wheels, fuel cap, storage rack, window
+tint, front ram, roof box, antenna). Real art would replace this with 9
+actual illustrated stages per spec section 13 - tracked in the asset
+manifest.
+
 ## Characters - required set per survivor (not yet produced)
 
 For each main survivor (Mara Vale, Noah Vance, Lena Ortiz, Dr Imogen Shaw,

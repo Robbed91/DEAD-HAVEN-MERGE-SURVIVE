@@ -128,9 +128,28 @@ func try_complete_quest(quest_id: String) -> Dictionary:
 	if quest_id == "q_secure_front_door":
 		GameManager.advance_chapter("chapter_2_someone_upstairs")
 
+	_maybe_discover_vehicle()
+
 	EventBus.quest_completed.emit(quest_id)
 	SaveManager.request_autosave()
 	return {"success": true, "hotspot_id": quest.residence_hotspot_id}
+
+## The delivery van (spec: found while following Chapter 5's radio signal)
+## is simplified here to "discovered once every Hollow Creek Farmhouse
+## hotspot is repaired" - a concrete, earned milestone that doesn't need
+## Chapter 5's still-unbuilt story beat to exist first. See
+## DEVELOPMENT_LOG.md Phase 6 Known issues.
+func _maybe_discover_vehicle() -> void:
+	if VehicleManager.is_discovered("delivery_van"):
+		return
+	var residence := get_residence("hollow_creek_farmhouse")
+	if residence == null:
+		return
+	for hotspot in residence.hotspots:
+		if get_hotspot_state(hotspot.id) != ResidenceHotspot.State.COMPLETED:
+			return
+	VehicleManager.discover_vehicle("delivery_van")
+	EventBus.show_toast.emit("You found an old delivery van behind the barn.")
 
 func to_save_data() -> Dictionary:
 	return {

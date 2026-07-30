@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="SurvivorDefinition" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data_models/survivor_definition.gd" id="1_67geq"]
+
+[resource]
+script = ExtResource("1_67geq")
+id = "riley_chen"
+display_name = "Riley Chen"
+role = "Radio Technician"
+biography = "A radio technician who kept broadcasting long after most stations went dark. Not yet found."
+personality_traits = PackedStringArray("curious", "methodical")
+skills = PackedStringArray("electronics", "communications", "map_discovery")
+portraits = {}
+expressions = {}
+personal_quest_id = ""
+relationship_links = PackedStringArray()
+trust = 0
+health = 100
+morale = 70
+is_recruited = false
+assigned_residence_id = ""
+injury_state = "healthy"

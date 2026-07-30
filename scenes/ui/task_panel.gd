@@ -1,9 +1,11 @@
 extends CanvasLayer
 class_name TaskPanel
-## Repair-task popup shown when a Haven hotspot is tapped: task name,
-## description, required item (with an owned/needed count), a button that
-## routes to the Merge Board with the right chain highlighted ("Find on
-## Board" - spec section 19), and Complete once the requirement is met.
+## Task popup: name, description, required item (with an owned/needed
+## count), a button that routes to the Merge Board with the right chain
+## highlighted ("Find on Board" - spec section 19), and Complete once the
+## requirement is met. Used for Haven hotspot repairs (show_for_hotspot)
+## and, since Phase 6, survivor personal quests (show_for_quest) - both
+## are just QuestDefinition underneath.
 
 signal completed(hotspot_id: String)
 
@@ -35,6 +37,20 @@ func show_for_hotspot(hotspot_id: String) -> void:
 	if quest == null:
 		EventBus.show_toast.emit("Already repaired.")
 		return
+	_show_quest(quest)
+
+## For quests not tied to a hotspot (e.g. a survivor's personal quest) -
+## same panel, same Complete/Find-on-Board flow, just reached a different
+## way. Completion still emits `completed` with an empty hotspot_id;
+## callers that only care about hotspots already handle that as a no-op.
+func show_for_quest(quest_id: String) -> void:
+	var quest := ResidenceManager.get_quest(quest_id)
+	if quest == null or ResidenceManager.is_quest_complete(quest_id):
+		EventBus.show_toast.emit("Nothing more to do here.")
+		return
+	_show_quest(quest)
+
+func _show_quest(quest: QuestDefinition) -> void:
 	_quest_id = quest.id
 
 	_title_label.text = quest.title

@@ -863,3 +863,186 @@ done
 godot4 --headless --path /path/to/dead-haven-merge-survive \
   --export-debug "Android" build/android/dead_haven.apk
 ```
+
+---
+
+## Phase 6: Vehicles and survivors - complete
+
+### Files created
+
+Content: 6 `data/characters/*.tres` (`SurvivorDefinition` - Mara Vale,
+Noah Vance, Lena Ortiz, Dr Imogen Shaw, Riley Chen, Caleb Rusk, all fully
+populated per design spec section 11 even though only Mara/Noah have an
+unlock path yet - same "content ready ahead of its consuming system"
+approach as Phase 2's 101 items), `data/quests/pq_noah_workbench.tres`
+(Noah's personal quest - the first `SURVIVOR_PERSONAL`-type quest that
+isn't tied to a residence hotspot), `data/vehicles/delivery_van.tres`
+(`VehicleDefinition`, 9 upgrade stages per spec section 13). Generated
+once by a script run through the Godot binary and deleted, same pattern
+as every phase's content so far.
+
+New autoloads: `autoload/character_database.gd` (indexes survivor
+content, same shape as `ItemDatabase`), `autoload/vehicle_manager.gd`
+(owns discovery + current-stage runtime state - not mutated on the loaded
+`VehicleDefinition`, same pattern `ResidenceManager` uses for hotspot
+state - plus the upgrade flow: check requirements, consume items, advance
+stage).
+
+New screen: `scenes/vehicle/vehicle.gd`/`.tscn` with
+`scripts/vehicle/vehicle_visual.gd` - a single procedural van silhouette
+that visibly evolves across all 9 stages (body colour shifts rust-to-olive
+with progress, and each stage lights up one more concrete drawn detail -
+wheels, fuel cap, storage rack, window tint, front ram, roof box, antenna)
+rather than needing 9 separate illustrations.
+
+Tests: `tests/smoke_test_vehicle_survivors.gd`/`.tscn`.
+
+### Files modified
+
+- `project.godot` - registered `CharacterDatabase` and `VehicleManager`;
+  added `"vehicle"` to `SceneRouter.SCENE_PATHS`.
+- `autoload/event_bus.gd` - added `vehicle_discovered`, `vehicle_stage_changed`.
+- `autoload/game_manager.gd` - `new_game()`/`to_save_data()`/
+  `apply_save_data()` now also cover `VehicleManager`.
+- `autoload/residence_manager.gd` - `try_complete_quest()` now also calls
+  a new `_maybe_discover_vehicle()` check after advancing a hotspot.
+- `autoload/scavenging_manager.gd` - `resolve_choice()` gained an optional
+  `survivor_id` parameter; when the sent survivor has a skill matching the
+  mission's `recommended_equipment` tags, success chance gets a +0.15
+  bonus (capped at 0.95) - this closes Phase 5's "no skill effects on
+  odds" known issue.
+- `scenes/scavenging/scavenging.gd` - passes `_selected_survivor_id`
+  through to `resolve_choice()`.
+- `scenes/survivors/survivors.gd`/`.tscn` - full rewrite: real
+  `SurvivorDefinition` data instead of Phase 1's hardcoded `ROSTER`
+  constant; unlocked cards show real role/biography/skills; a card with
+  an incomplete personal quest is tappable and opens a `TaskPanel`.
+- `scenes/ui/task_panel.gd` - generalized: the hotspot-specific lookup
+  moved into `show_for_hotspot()`, with a new `show_for_quest(quest_id)`
+  entry point (used by Survivors) sharing the same underlying
+  `_show_quest()` renderer - both are just a `QuestDefinition` underneath.
+- `scenes/world_map/world_map.gd`/`.tscn` - added a vehicle marker (🚐),
+  shown once the van is discovered.
+- `tests/smoke_test.gd` - added `vehicle.tscn` to the coverage list.
+
+### Features completed
+
+- **Real survivor roster**: unlocked cards (Mara always, Noah once
+  rescued) show actual biography, role and skills from data instead of a
+  hardcoded name/role pair; locked cards stay "???" per the Phase 1
+  placeholder pattern (real portraits are still an art-asset gap, not a
+  logic gap - see `ART_ASSET_GUIDE.md`).
+- **Personal quests, proven end to end**: Noah's "Noah's Workbench" quest
+  is the first `SURVIVOR_PERSONAL`-type quest that isn't tied to a
+  residence hotspot - `try_complete_quest()` already handled this
+  correctly (it only advances a hotspot `if residence_hotspot_id` is set),
+  so no special-casing was needed, just a quest with that field left empty
+  and a new UI entry point (`TaskPanel.show_for_quest()`) to reach it.
+- **Vehicle discovery tied to a real milestone**: completing all 9 Hollow
+  Creek Farmhouse hotspots discovers the delivery van - a concrete, earned
+  trigger rather than an arbitrary unlock (see Known issues for why this
+  isn't the design spec's literal Chapter 5 radio-signal beat).
+- **9-stage vehicle upgrade**: each stage requires and consumes a specific
+  merge-board item (drawing from Vehicle Parts, Fuel, Construction and
+  Electronics chains), gated exactly like a residence task - shows the
+  requirement, disables Upgrade until met, consumes on success.
+- **Skill-based scavenging bonus**: sending a survivor whose skill tags
+  match a mission's `recommended_equipment` (e.g. Noah's `"tool"` skill on
+  the Farm Shed mission, which recommends `"tool"`) now measurably
+  improves the odds, closing the gap Phase 5 flagged.
+
+### Tests performed
+
+Same headless-binary approach as every phase, with `timeout` wrappers on
+every run:
+
+- `godot4 --headless --path . --import` - clean, zero script/parse errors.
+- `tests/smoke_test.tscn` (now also covering `vehicle.tscn`),
+  `tests/smoke_test_save.tscn`, `tests/smoke_test_settings.tscn`,
+  `tests/smoke_test_merge.tscn`, `tests/smoke_test_residence.tscn`,
+  `tests/smoke_test_dialogue.tscn`, `tests/smoke_test_scavenging.tscn` -
+  all still pass, no regressions.
+- `tests/smoke_test_vehicle_survivors.tscn` (new) - 6 survivors load with
+  the expected shape; the van is genuinely undiscovered at game start and
+  refuses to upgrade (`not_discovered`); completing all 9 Hollow Creek
+  Farmhouse hotspots (looping through every hotspot's active quest,
+  spawning what it needs, completing it) discovers the van; upgrading
+  without the stage-1 item is refused (`requirements_not_met`), spawning
+  it and retrying consumes it and advances to stage 1; Noah's personal
+  quest completes through the generic quest path with an empty
+  `hotspot_id` (verifying no hotspot coupling leaked in); the skill-match
+  function is called directly (not reimplemented in the test) and confirmed
+  true for Noah on the Farm Shed mission, false for Mara, false for no
+  survivor selected, plus a deterministic zero-chance-stays-zero check
+  when there's no matching skill; a full save/reload round trip preserves
+  vehicle discovery, stage, and the personal quest completion. **One test
+  bug was caught and fixed while writing this**: an early draft asserted
+  Noah should still be locked at a point in the test where all 9 hotspots
+  (including his own rescue quest) had already been completed as part of
+  triggering vehicle discovery - the assertion was simply wrong about the
+  test's own setup, not a game bug; removed rather than working around.
+
+### Known issues
+
+- **Not visually confirmed**, same caveat as every phase. Card layout with
+  the new skills line and personal-quest button, and whether the evolving
+  van silhouette actually reads as "changing" at real screen size, both
+  need a real screen.
+- **Vehicle discovery is simplified from the design spec's Chapter 5 beat.**
+  Spec ties finding the van to following the radio signal in Chapter 5,
+  which needs Chapter 3/4 content (scavenging framed narratively, a
+  defence event, the radio message itself) that doesn't exist yet. "All 9
+  hotspots repaired" is a real, earned substitute milestone - not a random
+  unlock - but it isn't the literal story beat.
+- **Only Mara and Noah are actually reachable.** Lena, Imogen, Riley and
+  Caleb have full `SurvivorDefinition` content (bio, skills, personality)
+  but no rescue quest/trigger yet - they need Redwater Service Station and
+  beyond (Phase 8) or dedicated scavenging encounters to actually recruit.
+  Their entries exist and are correct, just permanently locked in this
+  build.
+- **Survivor trust/health/morale are inert.** `SurvivorDefinition.trust`/
+  `.health`/`.morale` are set (Noah defaults to 100/70) but nothing reads
+  or changes them yet - Phase 4's `noah_trusted` story flag is a separate,
+  simpler mechanism that doesn't feed into this schema's `trust` field.
+  Wiring real stat changes (e.g. injuries from a failed scavenging
+  encounter, morale from story choices) is follow-up work once something
+  actually needs to consume them.
+- **No vehicle stats (fuel_use/reliability/storage_capacity/noise/
+  protection/range_km) affect anything yet.** They're set on
+  `VehicleDefinition` per spec section 13 but nothing reads them - they
+  matter once scavenging mission range/capacity or a defence event reads
+  vehicle state, neither of which exists yet.
+- **Only one vehicle exists.** Spec section 13 lists future vehicles
+  (trail motorcycle, farm pickup, armoured bus, utility truck, riverboat)
+  as later content - not attempted this phase.
+- **Godot binary still not persisted** in this environment - same caveat
+  as every phase so far.
+
+### Exact next phase
+
+**Phase 7: Defence** - preparation tasks, trap placement, an animated
+attack sequence, and success/failure consequences that damage rather than
+end the game (matching this phase's and Phase 5's non-blocking-failure
+principle). This is also milestone 10 for Hollow Creek Farmhouse
+("Survive the first night attack") - the one milestone every prior phase
+has deliberately left out - and unlocks Chapter 4 ("The First Wave").
+
+### Commands required to run or export the project
+
+```bash
+# Open and run in the editor
+# (Godot 4.3+, standard build, GDScript-only project)
+godot4 --path /path/to/dead-haven-merge-survive
+
+# Headless import check (populates .godot/ cache, surfaces parse errors)
+godot4 --headless --path /path/to/dead-haven-merge-survive --import
+
+# Run the full smoke test suite (always with a timeout wrapper)
+for f in smoke_test smoke_test_save smoke_test_settings smoke_test_merge smoke_test_residence smoke_test_dialogue smoke_test_scavenging smoke_test_vehicle_survivors; do
+  timeout 30 godot4 --headless --path /path/to/dead-haven-merge-survive "tests/$f.tscn"
+done
+
+# Android export (after templates/SDK/keystore are configured in the editor)
+godot4 --headless --path /path/to/dead-haven-merge-survive \
+  --export-debug "Android" build/android/dead_haven.apk
+```

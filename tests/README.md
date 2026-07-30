@@ -16,6 +16,7 @@ godot4 --headless --path . tests/smoke_test_merge.tscn
 godot4 --headless --path . tests/smoke_test_residence.tscn
 godot4 --headless --path . tests/smoke_test_dialogue.tscn
 godot4 --headless --path . tests/smoke_test_scavenging.tscn
+godot4 --headless --path . tests/smoke_test_vehicle_survivors.tscn
 ```
 
 All of the above are cheap to run with a `timeout` wrapper (e.g.
@@ -37,6 +38,7 @@ opt-in, point Godot at them directly as shown above.
 - **smoke_test_residence** (Phase 3) - residence/hotspot/quest data loads correctly; a task refuses to complete before its required item exists; completing it consumes the item, grants coins/XP, and flips the hotspot to COMPLETED; re-completing the same quest is rejected; completing the Noah-rescue quest unlocks him via the generic `unlock_survivor` reward; `get_active_quest_for_hotspot()` returns null once a hotspot's task is done; a full save/reload round trip preserves completed quests, hotspot state and the Noah unlock.
 - **smoke_test_dialogue** (Phase 4) - the intro dialogue chain's `next_id` links resolve correctly end to end; `q_rescue_noah`'s `dialogue_trigger_id` and its branching options are wired as expected; applying a branching choice's effects grants the right reward and sets the right story flag; completing the front-door quest advances the chapter exactly once (re-advancing to the same chapter is a verified no-op); a full save/reload round trip preserves the chapter and story flags. This test also caught a real regression during development - see DEVELOPMENT_LOG.md Phase 4 "Tests performed" for the `smoke_test.tscn` hang it led to finding and fixing.
 - **smoke_test_scavenging** (Phase 5) - mission content loads (5 locations, each with 2 encounter choices); launching a mission spends its energy cost and is refused with `no_energy` when there isn't enough; a forced-success resolve (temporarily overriding a loaded mission's `success_chance` in memory) grants both the base loot table and the choice's bonus loot; a forced-failure resolve applies exactly the configured penalty and never sets `GameManager.is_game_active` to false; completion counts and a save/reload round trip both check out.
+- **smoke_test_vehicle_survivors** (Phase 6) - 6 survivors load with the expected shape; the delivery van is genuinely undiscovered at game start and refuses to upgrade; completing all 9 Hollow Creek Farmhouse hotspots discovers it; upgrading without the stage-1 item is refused, spawning it and retrying consumes it and advances the stage; Noah's personal quest completes through the generic quest path with no hotspot involved; the actual skill-matching function (not a reimplementation) is confirmed true for Noah on a matching mission and false for Mara/no-survivor; a save/reload round trip preserves vehicle discovery, stage, and quest completion.
 
 ## What these do NOT cover
 
@@ -48,9 +50,9 @@ or in the editor's running game view; an equivalent Phase 2 checklist for
 drag/merge/producer gestures hasn't been written yet (see DEVELOPMENT_LOG.md
 Known issues).
 
-Results as of Phase 5 (Godot 4.3.stable, downloaded fresh into this
+Results as of Phase 6 (Godot 4.3.stable, downloaded fresh into this
 development container - see DEVELOPMENT_LOG.md Known issues about it not
-persisting between sessions): all seven pass. Run each with a `timeout`
+persisting between sessions): all eight pass. Run each with a `timeout`
 wrapper if you're scripting this - both `smoke_test.tscn` (Phase 4) and
 the one-off `generate_scavenging.gd` content script (Phase 5) genuinely
 hung from real bugs during development (see DEVELOPMENT_LOG.md for both),

@@ -40,6 +40,10 @@ signal dialogue_finished(entry_id: String)
 # -- Scavenging (Phase 5) -----------------------------------------------
 signal mission_completed(mission_id: String, outcome_success: bool)
 
+# -- Vehicles (Phase 6) ------------------------------------------------
+signal vehicle_discovered(vehicle_id: String)
+signal vehicle_stage_changed(vehicle_id: String, new_stage: int)
+
 # -- Lightweight UI feedback ----------------------------------------------
 ## Used by any screen to surface a short non-blocking message, e.g. for
 ## systems that are not implemented yet in the current development phase.

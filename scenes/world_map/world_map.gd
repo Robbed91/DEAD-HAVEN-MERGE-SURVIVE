@@ -26,6 +26,25 @@ func _ready() -> void:
 		marker.pressed.connect(func(): EventBus.show_toast.emit("Locked - reach this residence by progressing the campaign."))
 	_pulse_marker(%HollowCreekMarker)
 	_build_scavenging_markers()
+	_build_vehicle_marker()
+
+func _build_vehicle_marker() -> void:
+	if not VehicleManager.is_discovered("delivery_van"):
+		return
+	var marker := Button.new()
+	marker.text = "🚐"
+	marker.tooltip_text = "Old Delivery Van"
+	marker.set_anchors_preset(Control.PRESET_TOP_LEFT)
+	marker.anchor_left = 0.5
+	marker.anchor_right = 0.5
+	marker.anchor_top = 0.9
+	marker.anchor_bottom = 0.9
+	marker.offset_left = -24.0
+	marker.offset_right = 24.0
+	marker.offset_top = -24.0
+	marker.offset_bottom = 24.0
+	marker.pressed.connect(func(): SceneRouter.go_to("vehicle"))
+	%MapArea.add_child(marker)
 
 func _build_scavenging_markers() -> void:
 	var layer: Control = %MapArea

@@ -1,0 +1,44 @@
+[gd_resource type="Resource" script_class="VehicleDefinition" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data_models/vehicle_definition.gd" id="1_uhafj"]
+
+[resource]
+script = ExtResource("1_uhafj")
+id = "delivery_van"
+display_name = "Old Delivery Van"
+upgrade_stage_names = PackedStringArray("Abandoned Wreck", "Engine Repaired", "Tyres Replaced", "Fuel System Restored", "Storage Racks Added", "Reinforced Windows", "Front Ram Installed", "Roof Storage Installed", "Long-Range Expedition Configuration")
+current_stage = 0
+stage_scene_paths = {}
+stage_requirements = {
+1: {
+"vehicle_parts_3": 1
+},
+2: {
+"vehicle_parts_2": 1
+},
+3: {
+"fuel_3": 1
+},
+4: {
+"construction_3": 1
+},
+5: {
+"construction_4": 1
+},
+6: {
+"construction_5": 1
+},
+7: {
+"construction_3": 1
+},
+8: {
+"electronics_4": 1
+}
+}
+fuel_use = 1.0
+reliability = 0.3
+storage_capacity = 4
+noise = 0.6
+protection = 0.15
+range_km = 8.0
+is_discovered = false

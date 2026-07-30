@@ -19,6 +19,7 @@ const SCENES := [
 	"res://scenes/dev_diagnostics/dev_diagnostics.tscn",
 	"res://scenes/dialogue/dialogue.tscn",
 	"res://scenes/scavenging/scavenging.tscn",
+	"res://scenes/vehicle/vehicle.tscn",
 ]
 
 var _step_index: int = 0
