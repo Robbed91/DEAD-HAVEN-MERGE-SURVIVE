@@ -37,8 +37,13 @@ func _ready() -> void:
 	_continue_button.pressed.connect(_on_continue_pressed)
 
 	if start_id.is_empty() or not DialogueManager.has_entry(start_id):
-		push_error("Dialogue: no valid start_id in pending params, returning to %s" % _return_scene_key)
-		SceneRouter.go_to(_return_scene_key, {}, false)
+		# Guard against navigating out from under a caller that instantiated
+		# this scene directly for inspection (e.g. tests/smoke_test.gd)
+		# rather than via SceneRouter - see haven.gd for the same pattern
+		# and DEVELOPMENT_LOG.md Phase 4 for the bug this once caused.
+		if get_tree().current_scene == self:
+			push_error("Dialogue: no valid start_id in pending params, returning to %s" % _return_scene_key)
+			SceneRouter.go_to(_return_scene_key, {}, false)
 		return
 	_show_entry(start_id)
 

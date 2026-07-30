@@ -1,0 +1,46 @@
+[gd_resource type="Resource" script_class="ScavengingMission" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data_models/scavenging_mission.gd" id="1_xrgq2"]
+
+[resource]
+script = ExtResource("1_xrgq2")
+id = "petrol_station"
+location_name = "Petrol Station"
+danger_rating = 2
+duration_seconds = 300
+recommended_equipment = PackedStringArray("fuel", "trap")
+loot_table = {
+"coin_reward_2": 1,
+"fuel_2": 1
+}
+survivor_encounter_ids = PackedStringArray()
+story_condition = ""
+zombie_threat = 2
+human_threat = 1
+noise_level = 1
+encounter_scene_path = ""
+energy_cost = 10
+encounter_choices = Array[Dictionary]([{
+"failure_penalty": {
+"energy": 5
+},
+"failure_text": "The cap seal breaks loudly. You grab what spilled out and go.",
+"success_chance": 0.65,
+"success_loot": {
+"coins": 15,
+"fuel_3": 1
+},
+"success_text": "The tank still has fuel. You fill your containers and slip away.",
+"text": "Siphon the underground tank quietly."
+}, {
+"failure_penalty": {
+"coins": 10
+},
+"failure_text": "The office door was rigged. You get out with nothing extra.",
+"success_chance": 0.5,
+"success_loot": {
+"vehicle_parts_2": 1
+},
+"success_text": "Whoever left the truck is long gone - but they left tools behind.",
+"text": "Check the office for the truck's owner."
+}])

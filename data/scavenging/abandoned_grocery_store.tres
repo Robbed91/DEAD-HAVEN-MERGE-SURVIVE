@@ -1,0 +1,46 @@
+[gd_resource type="Resource" script_class="ScavengingMission" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data_models/scavenging_mission.gd" id="1_mh1e3"]
+
+[resource]
+script = ExtResource("1_mh1e3")
+id = "abandoned_grocery_store"
+location_name = "Abandoned Grocery Store"
+danger_rating = 1
+duration_seconds = 240
+recommended_equipment = PackedStringArray("food", "trap")
+loot_table = {
+"coin_reward_2": 1,
+"food_2": 1
+}
+survivor_encounter_ids = PackedStringArray()
+story_condition = ""
+zombie_threat = 2
+human_threat = 0
+noise_level = 2
+encounter_scene_path = ""
+energy_cost = 8
+encounter_choices = Array[Dictionary]([{
+"failure_penalty": {
+"energy": 5
+},
+"failure_text": "Something big slams against the door. You grab what's close and run.",
+"success_chance": 0.6,
+"success_loot": {
+"coins": 15,
+"food_3": 1
+},
+"success_text": "You shoulder through and grab what you can before whatever's inside notices.",
+"text": "Force the front entrance."
+}, {
+"failure_penalty": {
+"coins": 10
+},
+"failure_text": "The hatch gives way loudly. You bail before anything finds you.",
+"success_chance": 0.8,
+"success_loot": {
+"food_2": 1
+},
+"success_text": "The roof hatch is rusted but quiet. You slip in and out clean.",
+"text": "Search for a roof access point."
+}])

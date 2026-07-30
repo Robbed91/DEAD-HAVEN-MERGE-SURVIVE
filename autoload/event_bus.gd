@@ -37,6 +37,9 @@ signal survivor_unlocked(survivor_id: String)
 signal chapter_changed(chapter_id: String)
 signal dialogue_finished(entry_id: String)
 
+# -- Scavenging (Phase 5) -----------------------------------------------
+signal mission_completed(mission_id: String, outcome_success: bool)
+
 # -- Lightweight UI feedback ----------------------------------------------
 ## Used by any screen to surface a short non-blocking message, e.g. for
 ## systems that are not implemented yet in the current development phase.

@@ -1,0 +1,45 @@
+[gd_resource type="Resource" script_class="ScavengingMission" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data_models/scavenging_mission.gd" id="1_t247v"]
+
+[resource]
+script = ExtResource("1_t247v")
+id = "farm_shed"
+location_name = "Farm Shed"
+danger_rating = 1
+duration_seconds = 200
+recommended_equipment = PackedStringArray("tool")
+loot_table = {
+"construction_2": 1,
+"tool_2": 1
+}
+survivor_encounter_ids = PackedStringArray()
+story_condition = ""
+zombie_threat = 1
+human_threat = 0
+noise_level = 1
+encounter_scene_path = ""
+energy_cost = 8
+encounter_choices = Array[Dictionary]([{
+"failure_penalty": {
+"energy": 4
+},
+"failure_text": "The door comes off its frame loudly, but you salvage what you can before backing off.",
+"success_chance": 0.75,
+"success_loot": {
+"construction_3": 1
+},
+"success_text": "The hinges give easily. Inside: exactly the kind of lumber you needed.",
+"text": "Pry the rotted hinges off."
+}, {
+"failure_penalty": {
+"coins": 8
+},
+"failure_text": "Glass everywhere - you cut your hand grabbing what you can reach.",
+"success_chance": 0.7,
+"success_loot": {
+"tool_3": 1
+},
+"success_text": "Quieter than the door. A workbench full of tools inside.",
+"text": "Break a window instead."
+}])

@@ -683,3 +683,183 @@ done
 godot4 --headless --path /path/to/dead-haven-merge-survive \
   --export-debug "Android" build/android/dead_haven.apk
 ```
+
+---
+
+## Phase 5: Scavenging - complete
+
+### Files created
+
+Content: 5 `data/scavenging/*.tres` (`ScavengingMission`) - Abandoned
+Grocery Store, Petrol Station, Farm Shed, Roadside Wreck, Medical Clinic,
+each with a danger rating, threat/noise flavour values, a base loot table
+drawing from existing merge chains, and one 2-choice encounter. Generated
+once by a script run through the Godot binary and deleted, same pattern
+as every phase's content so far.
+
+New autoload: `autoload/scavenging_manager.gd` - owns mission content and
+the two-step flow (`launch_mission()` spends energy, `resolve_choice()`
+rolls the chosen option and grants rewards).
+
+New screen: `scenes/scavenging/scavenging.gd`/`.tscn` - survivor picker ->
+Send -> encounter choice buttons -> outcome text, all in one screen with
+three panels toggled by visibility rather than separate scenes.
+
+Tests: `tests/smoke_test_scavenging.gd`/`.tscn`.
+
+### Files modified
+
+- `project.godot` - registered `ScavengingManager`.
+- `autoload/event_bus.gd` - added `mission_completed`.
+- `autoload/game_manager.gd` - `get_unlocked_survivor_ids()` (Mara always
+  included, plus whatever's in `unlocked_survivor_ids`); `new_game()`,
+  `to_save_data()` and `apply_save_data()` now also cover
+  `ScavengingManager`.
+- `scripts/data_models/scavenging_mission.gd` - added `energy_cost` and
+  `encounter_choices` fields. **This is a deliberate extension beyond the
+  design spec's literal section 31 field list** (ID, Location, Threat
+  level, Duration, Requirements, Encounter table, Loot table, Story
+  conditions) - that list doesn't actually specify what an encounter
+  *contains*, and section 10's "choice-based encounter system" needs
+  somewhere to hold each choice's text/odds/outcomes. Extending the
+  existing Resource class was simpler and more consistent than inventing
+  a whole separate `EncounterDefinition` type for one phase's needs.
+- `scenes/world_map/world_map.gd`/`.tscn` - added 5 scavenging location
+  markers (📦), built from `ScavengingManager` content, positioned via a
+  display-only lookup table in the script (not a schema field - see the
+  `encounter_choices` note above for the general principle: UI-only data
+  doesn't need to live in a shared content schema).
+- `scenes/dialogue/dialogue.gd` - proactively applied the same
+  `get_tree().current_scene == self` guard from Phase 4's bug fix, since
+  the same unconditional-navigation-in-`_ready()` pattern was present
+  here too (never actually triggered a hang, since `dialogue.tscn` wasn't
+  in `smoke_test.gd`'s coverage list yet - fixed before it could be).
+- `tests/smoke_test.gd` - added `dialogue.tscn` and `scavenging.tscn` to
+  the coverage list (both now guarded against the instantiate-as-child
+  pattern; see above).
+
+### Features completed
+
+- **Real mission flow**: pick a survivor from whoever's unlocked (Mara is
+  always available; Noah too once rescued), spend energy to send them,
+  choose how to handle the encounter, see the outcome - all from one
+  screen, all backed by real state changes.
+- **Choice-based encounters, not passive timers**: each mission's
+  encounter is 2 meaningfully different choices (e.g. "force the entrance"
+  vs. "find a quieter way in") with different success odds and different
+  rewards - a higher-risk choice can pay out more, matching spec section
+  10's own supermarket example.
+- **Non-blocking failure**: a failed encounter still costs something small
+  (coins or energy) but never removes a board item, never blocks
+  progression, and never ends the session - verified directly in the
+  smoke test (`GameManager.is_game_active` stays true through a forced
+  failure).
+- **Real loot**: missions grant actual merge-board items (spawned via
+  `BoardState.spawn_item()`, not a fake currency), plus coins/energy on
+  top - a genuine second way to get board content beyond producers.
+- **World Map integration**: 5 tappable scavenging markers alongside the
+  existing residence markers, each routing straight into that location's
+  mission flow.
+
+### Tests performed
+
+Same headless-binary approach as every phase so far, with `timeout`
+wrappers on every run per Phase 4's lesson:
+
+- `godot4 --headless --path . --import` - clean, zero script/parse errors.
+- **A real bug was caught and fixed during content generation this
+  phase**: the one-off `tools/generate_scavenging.gd` script assigned an
+  untyped `Array` (from a `Dictionary` literal) to `ScavengingMission`'s
+  typed `encounter_choices: Array[Dictionary]` field, which Godot rejects
+  with a script error - and because that error happened inside
+  `_initialize()` before `quit()` was reached, the headless `SceneTree`
+  process just sat idling forever with no window and no error surfaced
+  until the `timeout`-wrapped run was inspected directly. **General
+  lesson recorded for future phases**: any headless one-off `SceneTree`
+  script needs a `timeout` wrapper the first time it's run, because a
+  script error partway through `_initialize()` hangs the process rather
+  than exiting non-zero. Fixed by building the typed array explicitly
+  (`var choices: Array[Dictionary] = []; for c in ...: choices.append(c)`)
+  instead of relying on implicit conversion.
+- `tests/smoke_test.tscn` (now covering `dialogue.tscn` and
+  `scavenging.tscn` too), `tests/smoke_test_save.tscn`,
+  `tests/smoke_test_settings.tscn`, `tests/smoke_test_merge.tscn`,
+  `tests/smoke_test_residence.tscn`, `tests/smoke_test_dialogue.tscn` -
+  all still pass, no regressions.
+- `tests/smoke_test_scavenging.tscn` (new) - mission content loads (5
+  missions, each with 2 encounter choices); launching spends the
+  mission's energy cost and refuses with `no_energy` when there isn't
+  enough; a forced-success resolve (by temporarily overriding a loaded
+  mission's `success_chance` to 1.0 in memory, not touching the `.tres`
+  file) grants both the base loot table and the choice's `success_loot`;
+  a forced-failure resolve (`success_chance` 0.0) applies exactly the
+  configured `failure_penalty` and leaves `GameManager.is_game_active`
+  true; completion counts and a full save/reload round trip both check
+  out.
+
+### Known issues
+
+- **Not visually confirmed**, same caveat as every phase. Marker
+  placement on the map, panel transitions on the scavenging screen, and
+  whether the encounter choices read clearly all need a real screen.
+- **Missions resolve synchronously, not as timed/background operations.**
+  `duration_seconds` is shown as flavour text (via the danger/threat
+  summary line) but nothing actually makes the player wait or lets them
+  leave and come back later - spec's "Duration" field implies a real time
+  cost that this phase doesn't implement. A true async mission (send,
+  leave the screen, come back after `duration_seconds` to collect results)
+  is a reasonable next enhancement but adds real complexity (surviving app
+  close mid-mission, a mission-in-progress indicator elsewhere in the UI)
+  that this phase's scope didn't need to prove the core loop works.
+- **No survivor skill effects on odds.** Picking Noah over Mara (or vice
+  versa) currently only changes flavour text ("Noah Vance heads out to...")
+  - `success_chance` is fixed per choice regardless of who's sent, because
+  neither survivor has real `SurvivorDefinition`-backed skills data yet
+  (that's Phase 6). Once it exists, `resolve_choice()` is the one place
+  a skill-based modifier needs to plug in.
+- **No vehicle, food/medical, or equipment preparation step.** Spec
+  section 10 describes choosing a vehicle, supplies, weapons and
+  inventory capacity before a mission; none of that exists yet (vehicles
+  are Phase 6, and there's no pre-mission "loadout" system at all) - this
+  phase's "preparation" is just picking who goes.
+- **5 of the design spec's 10 initial scavenging locations exist**
+  (grocery store, petrol station, farm shed, roadside wreck, medical
+  clinic). The other 5 (construction yard, police checkpoint, forest
+  campsite, suburban house, warehouse) follow the same pattern and can be
+  added the same way - not added this phase to keep scope focused on
+  proving the mechanic works end to end first.
+- **`ScavengingMission.encounter_choices` is a schema extension** beyond
+  the design spec's literal field list, as noted under Files modified -
+  documented there rather than repeated here.
+- **Godot binary still not persisted** in this environment - same caveat
+  as every phase so far.
+
+### Exact next phase
+
+**Phase 6: Vehicles and survivors** - vehicle repair/upgrades (the
+delivery van, 9 stages per spec section 13), a real `SurvivorDefinition`-
+backed roster (skills, health, morale, personal quests) replacing the
+Phase 1 placeholder roster and Phase 3/5's name-only survivor references,
+and the skill-based mission-odds modifier flagged above. This is also
+when Chapter 5 ("Follow the Signal") becomes reachable.
+
+### Commands required to run or export the project
+
+```bash
+# Open and run in the editor
+# (Godot 4.3+, standard build, GDScript-only project)
+godot4 --path /path/to/dead-haven-merge-survive
+
+# Headless import check (populates .godot/ cache, surfaces parse errors)
+godot4 --headless --path /path/to/dead-haven-merge-survive --import
+
+# Run the full smoke test suite (always with a timeout wrapper - see
+# "Tests performed" above for why)
+for f in smoke_test smoke_test_save smoke_test_settings smoke_test_merge smoke_test_residence smoke_test_dialogue smoke_test_scavenging; do
+  timeout 30 godot4 --headless --path /path/to/dead-haven-merge-survive "tests/$f.tscn"
+done
+
+# Android export (after templates/SDK/keystore are configured in the editor)
+godot4 --headless --path /path/to/dead-haven-merge-survive \
+  --export-debug "Android" build/android/dead_haven.apk
+```

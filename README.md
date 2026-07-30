@@ -35,23 +35,21 @@ cool blue-grey exteriors. See `scripts/ui/theme_factory.gd` for the exact
 palette values and `ART_ASSET_GUIDE.md` for how it's applied to
 environments and characters.
 
-## Current status: Phase 4 - Story
+## Current status: Phase 5 - Scavenging
 
-Phases 1-3 (foundation, merge board, residence system) are done, and now
-the game has a real dialogue engine and its first two story beats: an
-intro scene on first arrival, and a real scene (with a genuine choice) for
-rescuing Noah Vance instead of a generic toast. **It is not yet the full
-game** - scavenging, survivors-as-characters beyond Noah's unlock,
-vehicles and defence events are scoped for the phases that follow (see
+Phases 1-4 (foundation, merge board, residence system, story) are done,
+and now the World Map has 5 real scavenging locations: send a survivor,
+face a choice-based encounter, and come back with real loot. **It is not
+yet the full game** - a real survivor roster with skills, vehicles, and
+defence events are scoped for the phases that follow (see
 `DEVELOPMENT_LOG.md` for the authoritative phase-by-phase plan and status).
 
 What already works, end to end, in this build:
-- Everything from Phase 1 (main menu, save/load, settings, navigation, dev diagnostics), Phase 2 (the full 7x9 merge board, 101 items across 9 gameplay + 4 reward chains, producers, energy, storage) and Phase 3 (9 real repair hotspots on Hollow Creek Farmhouse, task panels, "Find on Board" task highlighting)
-- A real dialogue engine: speaker/portrait/text, linear chains, and branching choices that grant rewards and set persisted story flags
-- An intro scene the first time you reach Haven after starting a new game
-- A real "Someone's Upstairs" scene when you rescue Noah Vance, ending in a genuine trust-or-wary choice (both still rescue him - the choice flavors the reward, not whether he's saved, matching the design spec's milestone)
+- Everything from Phase 1 (main menu, save/load, settings, navigation, dev diagnostics), Phase 2 (the full 7x9 merge board, 101 items across 9 gameplay + 4 reward chains, producers, energy, storage), Phase 3 (9 real repair hotspots on Hollow Creek Farmhouse, task panels, "Find on Board" task highlighting) and Phase 4 (a real dialogue engine, an intro scene, and Noah Vance's rescue scene with a genuine choice)
+- 5 scavenging locations on the World Map (Abandoned Grocery Store, Petrol Station, Farm Shed, Roadside Wreck, Medical Clinic) - pick a survivor, spend energy to send them, choose how to handle the encounter, and get real merge-board loot back
+- Failure at a scavenging encounter costs a little (coins or energy) but never blocks progress or removes anything you already have
 - Chapter tracking ("Chapter 1: The Open Door" -> "Chapter 2: Someone Upstairs" once the front door is secured), shown on Haven's header
-- Energy regenerates over time (including while the app is closed) and can be spent by producers; a debug infinite-energy mode exists for testing
+- Energy regenerates over time (including while the app is closed) and can be spent by producers or scavenging missions; a debug infinite-energy mode exists for testing
 - First-time item discovery grants a coin/energy reward exactly once per item, with a discovery banner
 
 ### Honest limitation
@@ -66,10 +64,12 @@ designed; settings changes actually reach the audio bus and rebuilt
 theme; merging, producers, energy, storage, delete/undo and reward
 collection (Phase 2) all behave as designed against the real data; task
 requirement checks, item consumption, reward delivery, hotspot state
-changes and the Noah unlock (Phase 3) all behave as designed; and (new in
-Phase 4) dialogue chain/branch resolution, choice rewards and story flags,
-and chapter advancement all behave as designed too (see `tests/README.md`
-for the smoke tests this was checked with). It has
+changes and the Noah unlock (Phase 3) all behave as designed; dialogue
+chain/branch resolution, choice rewards and story flags, and chapter
+advancement (Phase 4) all behave as designed; and (new in Phase 5)
+scavenging's energy cost, forced success/failure encounter resolution,
+loot delivery and non-blocking-failure guarantee all behave as designed
+too (see `tests/README.md` for the smoke tests this was checked with). It has
 **not** been visually confirmed on a real screen - touch input, drag
 gesture feel, layout at actual device resolutions, and animation timing
 still need a real run in the editor or on a device. Please report anything
@@ -84,15 +84,15 @@ network service, or third-party SDK is required to play.
 ## Project structure
 
 ```
-autoload/         Global singletons: EventBus, ItemDatabase, GameManager, BoardState, ResidenceManager, DialogueManager, SaveManager, AudioManager, SceneRouter
-data/              Content: data/items/ (101 ItemDefinition .tres), data/chains/, data/residences/ + data/quests/ (Hollow Creek Farmhouse), data/dialogue/ (intro + Noah rescue) - see data/README.md
-scenes/            One folder per screen; scenes/ui/ holds shared components (top bar, bottom nav, toast, storage panel, item info panel, discovery banner, task panel); scenes/dialogue/ is the Phase 4 dialogue screen
+autoload/         Global singletons: EventBus, ItemDatabase, GameManager, BoardState, ResidenceManager, DialogueManager, ScavengingManager, SaveManager, AudioManager, SceneRouter
+data/              Content: data/items/ (101 ItemDefinition .tres), data/chains/, data/residences/ + data/quests/ (Hollow Creek Farmhouse), data/dialogue/ (intro + Noah rescue), data/scavenging/ (5 locations) - see data/README.md
+scenes/            One folder per screen; scenes/ui/ holds shared components (top bar, bottom nav, toast, storage panel, item info panel, discovery banner, task panel); scenes/dialogue/ and scenes/scavenging/ are the Phase 4/5 screens
 scripts/
-  data_models/     Strongly-typed Resource classes (ItemDefinition, ResidenceDefinition, SurvivorDefinition, ...)
+  data_models/     Strongly-typed Resource classes (ItemDefinition, ResidenceDefinition, SurvivorDefinition, ScavengingMission, ...)
   ui/              Theme factory and other UI-only helpers
   merge/           Merge board runtime: item icon renderer, item view, board cell, chain legend icon
   residence/       Hotspot visual (Phase 3)
-  characters/ vehicles/   Reserved for Phase 5+ gameplay logic
+  characters/ vehicles/   Reserved for Phase 6+ gameplay logic
 assets/            Art/audio; assets/manifests/asset_manifest.json tracks placeholder vs. final status
 shaders/           Reserved for later visual-effects work
 tests/             Headless smoke tests + manual test checklists; see tests/README.md

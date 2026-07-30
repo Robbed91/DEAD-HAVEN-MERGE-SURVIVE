@@ -1,0 +1,46 @@
+[gd_resource type="Resource" script_class="ScavengingMission" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data_models/scavenging_mission.gd" id="1_nqk8o"]
+
+[resource]
+script = ExtResource("1_nqk8o")
+id = "medical_clinic"
+location_name = "Medical Clinic"
+danger_rating = 3
+duration_seconds = 320
+recommended_equipment = PackedStringArray("medical", "trap")
+loot_table = {
+"medical_2": 1
+}
+survivor_encounter_ids = PackedStringArray()
+story_condition = ""
+zombie_threat = 3
+human_threat = 0
+noise_level = 1
+encounter_scene_path = ""
+energy_cost = 12
+encounter_choices = Array[Dictionary]([{
+"failure_penalty": {
+"energy": 6
+},
+"failure_text": "They take longer to clear than you hoped. You grab what's nearest and retreat.",
+"success_chance": 0.75,
+"success_loot": {
+"medical_3": 1
+},
+"success_text": "Patience pays off. You clear the pharmacy shelf by shelf, undetected.",
+"text": "Wait for them to clear before moving in."
+}, {
+"failure_penalty": {
+"coins": 10,
+"energy": 8
+},
+"failure_text": "They hear you immediately. You barely make it out with anything at all.",
+"success_chance": 0.4,
+"success_loot": {
+"medical_2": 1,
+"medical_3": 1
+},
+"success_text": "Reckless, but it pays off - twice the supplies for the risk.",
+"text": "Move fast and grab everything you can."
+}])

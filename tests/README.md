@@ -15,7 +15,15 @@ godot4 --headless --path . tests/smoke_test_settings.tscn
 godot4 --headless --path . tests/smoke_test_merge.tscn
 godot4 --headless --path . tests/smoke_test_residence.tscn
 godot4 --headless --path . tests/smoke_test_dialogue.tscn
+godot4 --headless --path . tests/smoke_test_scavenging.tscn
 ```
+
+All of the above are cheap to run with a `timeout` wrapper (e.g.
+`timeout 30 godot4 ...`) and it's worth always doing so - see Phase 5's
+entry in `DEVELOPMENT_LOG.md` for a real case where a headless
+`SceneTree` script hung indefinitely instead of exiting non-zero after a
+script error, and would have looked like a stuck terminal rather than a
+failure without a timeout.
 
 None of these are wired up as the project's `run/main_scene` - they're
 opt-in, point Godot at them directly as shown above.
@@ -28,6 +36,7 @@ opt-in, point Godot at them directly as shown above.
 - **smoke_test_merge** (Phase 2) - starting board layout; a valid merge and its discovery reward; invalid merges (producers, mismatched chains) and max-level merges are correctly rejected; producer tap spends energy and enforces cooldown, and the debug reset-cooldowns tool clears it; debug infinite-energy mode spends without deducting; storage transfer both directions; soft-delete + undo; reward-chain item collection grants the right amount; a full save/reload round trip preserves item count, storage contents and discovery state.
 - **smoke_test_residence** (Phase 3) - residence/hotspot/quest data loads correctly; a task refuses to complete before its required item exists; completing it consumes the item, grants coins/XP, and flips the hotspot to COMPLETED; re-completing the same quest is rejected; completing the Noah-rescue quest unlocks him via the generic `unlock_survivor` reward; `get_active_quest_for_hotspot()` returns null once a hotspot's task is done; a full save/reload round trip preserves completed quests, hotspot state and the Noah unlock.
 - **smoke_test_dialogue** (Phase 4) - the intro dialogue chain's `next_id` links resolve correctly end to end; `q_rescue_noah`'s `dialogue_trigger_id` and its branching options are wired as expected; applying a branching choice's effects grants the right reward and sets the right story flag; completing the front-door quest advances the chapter exactly once (re-advancing to the same chapter is a verified no-op); a full save/reload round trip preserves the chapter and story flags. This test also caught a real regression during development - see DEVELOPMENT_LOG.md Phase 4 "Tests performed" for the `smoke_test.tscn` hang it led to finding and fixing.
+- **smoke_test_scavenging** (Phase 5) - mission content loads (5 locations, each with 2 encounter choices); launching a mission spends its energy cost and is refused with `no_energy` when there isn't enough; a forced-success resolve (temporarily overriding a loaded mission's `success_chance` in memory) grants both the base loot table and the choice's bonus loot; a forced-failure resolve applies exactly the configured penalty and never sets `GameManager.is_game_active` to false; completion counts and a save/reload round trip both check out.
 
 ## What these do NOT cover
 
@@ -39,10 +48,12 @@ or in the editor's running game view; an equivalent Phase 2 checklist for
 drag/merge/producer gestures hasn't been written yet (see DEVELOPMENT_LOG.md
 Known issues).
 
-Results as of Phase 4 (Godot 4.3.stable, downloaded fresh into this
+Results as of Phase 5 (Godot 4.3.stable, downloaded fresh into this
 development container - see DEVELOPMENT_LOG.md Known issues about it not
-persisting between sessions): all six pass. Run each with a `timeout`
-wrapper if you're scripting this - `smoke_test.tscn` genuinely hung during
-Phase 4 development from a real bug (see DEVELOPMENT_LOG.md), and while
-that specific bug is fixed, a `timeout` around any headless run here is
-cheap insurance against a future regression doing the same thing.
+persisting between sessions): all seven pass. Run each with a `timeout`
+wrapper if you're scripting this - both `smoke_test.tscn` (Phase 4) and
+the one-off `generate_scavenging.gd` content script (Phase 5) genuinely
+hung from real bugs during development (see DEVELOPMENT_LOG.md for both),
+and while those specific bugs are fixed, a `timeout` around any headless
+run here is cheap insurance against a future regression doing the same
+thing.

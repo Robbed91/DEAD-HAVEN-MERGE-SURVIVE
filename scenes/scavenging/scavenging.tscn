@@ -1,0 +1,107 @@
+[gd_scene load_steps=4 format=3 uid="uid://scavenging_scene"]
+
+[ext_resource type="Script" path="res://scenes/scavenging/scavenging.gd" id="1"]
+[ext_resource type="PackedScene" path="res://scenes/ui/top_resource_bar.tscn" id="2"]
+[ext_resource type="PackedScene" path="res://scenes/ui/toast.tscn" id="3"]
+
+[node name="Scavenging" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+script = ExtResource("1")
+
+[node name="Layout" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_constants/separation = 0
+
+[node name="TopResourceBar" parent="Layout" instance=ExtResource("2")]
+layout_mode = 2
+
+[node name="Margin" type="MarginContainer" parent="Layout"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_right = 20
+theme_override_constants/margin_top = 16
+theme_override_constants/margin_bottom = 16
+
+[node name="Content" type="VBoxContainer" parent="Layout/Margin"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="TitleLabel" type="Label" parent="Layout/Margin/Content"]
+unique_name_in_owner = true
+layout_mode = 2
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 22
+text = "Location"
+
+[node name="FlavorLabel" type="Label" parent="Layout/Margin/Content"]
+unique_name_in_owner = true
+layout_mode = 2
+horizontal_alignment = 1
+autowrap_mode = 3
+modulate = Color(1, 1, 1, 0.75)
+theme_override_font_sizes/font_size = 14
+text = "Danger 1/5"
+
+[node name="PrepPanel" type="VBoxContainer" parent="Layout/Margin/Content"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="PrepLabel" type="Label" parent="Layout/Margin/Content/PrepPanel"]
+layout_mode = 2
+text = "Send a survivor:"
+
+[node name="SurvivorBox" type="VBoxContainer" parent="Layout/Margin/Content/PrepPanel"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="SendButton" type="Button" parent="Layout/Margin/Content/PrepPanel"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 56)
+layout_mode = 2
+text = "Send"
+
+[node name="EncounterPanel" type="VBoxContainer" parent="Layout/Margin/Content"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="EncounterLabel" type="Label" parent="Layout/Margin/Content/EncounterPanel"]
+unique_name_in_owner = true
+layout_mode = 2
+autowrap_mode = 3
+text = "Encounter text."
+
+[node name="ChoicesBox" type="VBoxContainer" parent="Layout/Margin/Content/EncounterPanel"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="OutcomePanel" type="VBoxContainer" parent="Layout/Margin/Content"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="OutcomeLabel" type="Label" parent="Layout/Margin/Content/OutcomePanel"]
+unique_name_in_owner = true
+layout_mode = 2
+autowrap_mode = 3
+text = "Outcome text."
+
+[node name="ReturnButton" type="Button" parent="Layout/Margin/Content/OutcomePanel"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 56)
+layout_mode = 2
+text = "Return to Map"
+
+[node name="Toast" parent="." instance=ExtResource("3")]

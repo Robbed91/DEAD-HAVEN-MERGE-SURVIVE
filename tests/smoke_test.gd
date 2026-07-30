@@ -1,10 +1,12 @@
 extends Node
 ## SmokeTest
 ##
-## Headless-runnable smoke test that instantiates every Phase 1 screen in
-## turn as a child of this node (deliberately NOT via SceneRouter.go_to,
-## which would replace this very scene) and exits with a clear pass/fail
-## line. Not wired up as the default main scene - run it directly:
+## Headless-runnable smoke test that instantiates every screen in turn as a
+## child of this node (deliberately NOT via SceneRouter.go_to, which would
+## replace this very scene - screens must tolerate being instantiated this
+## way for inspection; see DEVELOPMENT_LOG.md Phase 4 for a real bug this
+## caught) and exits with a clear pass/fail line. Not wired up as the
+## default main scene - run it directly:
 ##
 ##   godot4 --headless --path . tests/smoke_test.tscn
 
@@ -15,6 +17,8 @@ const SCENES := [
 	"res://scenes/survivors/survivors.tscn",
 	"res://scenes/settings/settings.tscn",
 	"res://scenes/dev_diagnostics/dev_diagnostics.tscn",
+	"res://scenes/dialogue/dialogue.tscn",
+	"res://scenes/scavenging/scavenging.tscn",
 ]
 
 var _step_index: int = 0

@@ -117,6 +117,7 @@ func new_game() -> void:
 	is_game_active = true
 	BoardState.reset_new_board()
 	ResidenceManager.reset_new_game()
+	ScavengingManager.apply_save_data({})
 	SaveManager.save_game()
 	EventBus.game_loaded.emit()
 
@@ -138,6 +139,7 @@ func to_save_data() -> Dictionary:
 		"settings": settings.duplicate(true),
 		"board": BoardState.to_save_data(),
 		"residence": ResidenceManager.to_save_data(),
+		"scavenging": ScavengingManager.to_save_data(),
 	}
 
 func apply_save_data(data: Dictionary) -> void:
@@ -150,6 +152,7 @@ func apply_save_data(data: Dictionary) -> void:
 	_apply_offline_energy_regen()
 	BoardState.apply_save_data(data.get("board", {}))
 	ResidenceManager.apply_save_data(data.get("residence", {}))
+	ScavengingManager.apply_save_data(data.get("scavenging", {}))
 	AudioManager.apply_volume_settings()
 
 # -- Resources ---------------------------------------------------------------
@@ -209,6 +212,14 @@ func unlock_survivor(survivor_id: String) -> void:
 func is_survivor_unlocked(survivor_id: String) -> bool:
 	var unlocked: Array = profile.unlocked_survivor_ids
 	return unlocked.has(survivor_id)
+
+## Mara is always unlocked (she's the player character); everyone else
+## comes from profile.unlocked_survivor_ids.
+func get_unlocked_survivor_ids() -> Array[String]:
+	var ids: Array[String] = ["mara_vale"]
+	for id in profile.unlocked_survivor_ids:
+		ids.append(String(id))
+	return ids
 
 # -- Story flags & chapters (Phase 4) ----------------------------------------
 

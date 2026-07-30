@@ -12,11 +12,11 @@ matching Resource class in `scripts/data_models/`.
 | `characters/` | `SurvivorDefinition` | Phase 6 |
 | `residences/` | `ResidenceDefinition`, `ResidenceHotspot` | **Phase 3 - populated.** Hollow Creek Farmhouse (9 hotspots); Phase 8 adds Redwater and beyond |
 | `dialogue/` | `DialogueEntry` | **Phase 4 - partially populated.** The Chapter 1 intro (3 entries) and the Chapter 2 Noah-rescue scene (3 entries, one branching) - later chapters' dialogue lands with the phases that unlock them (see DEVELOPMENT_LOG.md) |
-| `scavenging/` | `ScavengingMission` | Phase 5 |
+| `scavenging/` | `ScavengingMission` | **Phase 5 - populated.** 5 of the design spec's 10 initial locations (grocery store, petrol station, farm shed, roadside wreck, medical clinic); the schema also gained an `energy_cost` and `encounter_choices` field beyond spec section 31's literal list - see DEVELOPMENT_LOG.md Phase 5 |
 | `vehicles/` | `VehicleDefinition` | Phase 6 |
 
-`items/`, `chains/`, `residences/`, `quests/` and `dialogue/` were each
-generated once by a script run through the Godot binary (see
+`items/`, `chains/`, `residences/`, `quests/`, `dialogue/` and
+`scavenging/` were each generated once by a script run through the Godot binary (see
 DEVELOPMENT_LOG.md Phase 2-4) and the generator was deleted afterward -
 the `.tres`/`.json` files here are the real content now; edit them
 directly (or write a new one-off script if you need to bulk-regenerate
