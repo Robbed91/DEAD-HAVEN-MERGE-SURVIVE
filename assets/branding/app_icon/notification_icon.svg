@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128">
+  <!-- Dead Haven: Merge & Survive - Android status-bar notification icon.
+       Android tints/masks notification icons itself and requires a flat
+       white silhouette on true transparency (no gradients, no colour,
+       no background layer) - this is a deliberately different asset from
+       icon.svg (the full-colour launcher icon), not a recolour of it. -->
+  <path fill="#ffffff" fill-rule="evenodd" clip-rule="evenodd" d="
+    M20,44 L64,16 L108,44 L108,108 L20,108 Z
+    M52,58 L52,108 L76,108 L76,58 Z
+  "/>
+</svg>

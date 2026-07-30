@@ -7,6 +7,7 @@ extends Node
 ## SceneRouter.go_to(key) so navigation stays consistent and testable.
 
 const SCENE_PATHS: Dictionary = {
+	"splash": "res://scenes/splash/splash.tscn",
 	"main_menu": "res://scenes/main_menu/main_menu.tscn",
 	"haven": "res://scenes/haven/haven.tscn",
 	"redwater": "res://scenes/redwater/redwater.tscn",

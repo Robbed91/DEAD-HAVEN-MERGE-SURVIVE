@@ -4,7 +4,16 @@ class_name ThemeFactory
 ## (palette, button/panel styling, touch target sizes, text scale, high
 ## contrast) lives in one reviewable place instead of scattered .tres files.
 
-# -- Palette (see README "Visual identity") --------------------------------
+# -- Palette (see README "Visual identity" and ART_STYLE_GUIDE.md) --------
+# Semantic roles (ART_STYLE_GUIDE.md section 2), each backed by one
+# canonical hex value so code and art-generation prompts always agree:
+#   Haven charcoal    -> CHARCOAL / CHARCOAL_LIGHT  (panels, nav, framing)
+#   Survival olive     -> OLIVE / OLIVE_DARK          (primary actions, safe markers)
+#   Rust orange         -> RUST / RUST_LIGHT / RUST_DARK (warnings, construction, highlights)
+#   Emergency red       -> WARN_RED                    (danger, injury, horde only)
+#   Warm cream          -> CREAM                        (task cards, dialogue, light text)
+#   Safe-haven amber    -> SAFE_AMBER                   (completed-residence glow, rewards)
+#   Storm blue-grey      -> STORM_BLUEGREY               (exteriors, locked content, night)
 const CHARCOAL := Color("1c1b1a")
 const CHARCOAL_LIGHT := Color("2a2825")
 const OLIVE := Color("6b7a56")
@@ -16,6 +25,8 @@ const CREAM := Color("e8dcc5")
 const WARN_RED := Color("b23a2e")
 const WOOD := Color("6b4a35")
 const METAL := Color("8a8f8a")
+const SAFE_AMBER := Color("e2a24a")
+const STORM_BLUEGREY := Color("3c4650")
 
 # High-contrast alternates - larger contrast ratio against CHARCOAL/CREAM.
 const HC_BG := Color("000000")

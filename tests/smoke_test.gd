@@ -11,6 +11,7 @@ extends Node
 ##   godot4 --headless --path . tests/smoke_test.tscn
 
 const SCENES := [
+	"res://scenes/splash/splash.tscn",
 	"res://scenes/haven/haven.tscn",
 	"res://scenes/redwater/redwater.tscn",
 	"res://scenes/merge_board/merge_board.tscn",

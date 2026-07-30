@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 360" width="360" height="360">
+  <!-- Dead Haven: Merge & Survive - stacked logo, dark-background version
+       (app store listing squares, loading screens, anywhere a tall/square
+       lockup reads better than the wide horizontal logo). Mark centered on
+       top, wordmark centered below. -->
+  <defs>
+    <radialGradient id="s_glow" cx="50%" cy="46%" r="60%">
+      <stop offset="0%" stop-color="#f4dfa1" stop-opacity="0.95"/>
+      <stop offset="55%" stop-color="#e2a24a" stop-opacity="0.55"/>
+      <stop offset="100%" stop-color="#e2a24a" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="s_sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#232a30"/>
+      <stop offset="100%" stop-color="#171615"/>
+    </linearGradient>
+    <filter id="s_rough" x="-20%" y="-20%" width="140%" height="140%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" seed="7" result="noise"/>
+      <feDisplacementMap in="SourceGraphic" in2="noise" scale="2.2"/>
+    </filter>
+  </defs>
+
+  <g transform="translate(116,20) scale(1.0)">
+    <rect width="128" height="128" rx="14" fill="url(#s_sky)"/>
+    <rect x="0" y="104" width="128" height="24" fill="#141311"/>
+    <ellipse cx="64" cy="70" rx="52" ry="58" fill="url(#s_glow)"/>
+    <rect x="40" y="30" width="48" height="76" rx="2" fill="#4a3527"/>
+    <rect x="44" y="34" width="40" height="72" fill="#12100e"/>
+    <g stroke="#8f4a26" stroke-width="7" stroke-linecap="round">
+      <line x1="44" y1="46" x2="84" y2="42"/>
+      <line x1="44" y1="64" x2="84" y2="61"/>
+      <line x1="44" y1="82" x2="84" y2="80"/>
+      <line x1="44" y1="98" x2="84" y2="97"/>
+    </g>
+    <g fill="#f6e2ab" opacity="0.85">
+      <rect x="46" y="52" width="34" height="4" rx="1"/>
+      <rect x="46" y="70" width="34" height="4" rx="1"/>
+      <rect x="46" y="88" width="34" height="4" rx="1"/>
+    </g>
+    <g fill="#3c4650">
+      <ellipse cx="103" cy="66" rx="6.5" ry="7.5"/>
+      <path d="M94 108 C93 90 96 80 103 76 C110 80 113 90 112 108 Z"/>
+    </g>
+  </g>
+
+  <g transform="translate(180,225)" text-anchor="middle">
+    <text x="0" y="0" font-family="'Arial Black','Arial',sans-serif" font-weight="900"
+          font-size="54" letter-spacing="1" fill="#e8dcc5" transform="scale(0.92,1)"
+          filter="url(#s_rough)">DEAD HAVEN</text>
+    <rect x="-150" y="18" width="300" height="5" fill="#b5502b"/>
+    <rect x="-150" y="18" width="42" height="5" fill="#e8dcc5" opacity="0.85"/>
+    <rect x="-60" y="18" width="42" height="5" fill="#e8dcc5" opacity="0.85"/>
+    <rect x="80" y="18" width="42" height="5" fill="#e8dcc5" opacity="0.85"/>
+    <text x="0" y="52" font-family="Arial,sans-serif" font-weight="600"
+          font-size="24" letter-spacing="5" fill="#cf6a3f">MERGE &amp; SURVIVE</text>
+  </g>
+</svg>

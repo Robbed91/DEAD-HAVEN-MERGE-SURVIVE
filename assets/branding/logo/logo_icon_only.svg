@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128">
+  <!-- Dead Haven: Merge & Survive - icon-only mark. Same boarded-doorway
+       motif as icon.svg (the actual Godot launcher icon at repo root),
+       duplicated here as the standalone brand mark so logo compositions
+       don't need to reference outside assets/branding/. Keep both files
+       visually identical if either changes. -->
+  <defs>
+    <radialGradient id="glow" cx="50%" cy="46%" r="60%">
+      <stop offset="0%" stop-color="#f4dfa1" stop-opacity="0.95"/>
+      <stop offset="55%" stop-color="#e2a24a" stop-opacity="0.55"/>
+      <stop offset="100%" stop-color="#e2a24a" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#232a30"/>
+      <stop offset="100%" stop-color="#171615"/>
+    </linearGradient>
+  </defs>
+  <rect width="128" height="128" fill="url(#sky)"/>
+  <rect x="0" y="104" width="128" height="24" fill="#141311"/>
+  <ellipse cx="64" cy="70" rx="52" ry="58" fill="url(#glow)"/>
+  <rect x="40" y="30" width="48" height="76" rx="2" fill="#4a3527"/>
+  <rect x="44" y="34" width="40" height="72" fill="#12100e"/>
+  <g stroke="#8f4a26" stroke-width="7" stroke-linecap="round">
+    <line x1="44" y1="46" x2="84" y2="42"/>
+    <line x1="44" y1="64" x2="84" y2="61"/>
+    <line x1="44" y1="82" x2="84" y2="80"/>
+    <line x1="44" y1="98" x2="84" y2="97"/>
+  </g>
+  <g fill="#cfcac0">
+    <circle cx="48" cy="45.5" r="1.4"/>
+    <circle cx="80" cy="42.4" r="1.4"/>
+    <circle cx="48" cy="63.6" r="1.4"/>
+    <circle cx="80" cy="61.2" r="1.4"/>
+    <circle cx="48" cy="81.6" r="1.4"/>
+    <circle cx="80" cy="80.1" r="1.4"/>
+  </g>
+  <g fill="#f6e2ab" opacity="0.85">
+    <rect x="46" y="52" width="34" height="4" rx="1"/>
+    <rect x="46" y="70" width="34" height="4" rx="1"/>
+    <rect x="46" y="88" width="34" height="4" rx="1"/>
+  </g>
+  <g fill="#3c4650">
+    <ellipse cx="103" cy="66" rx="6.5" ry="7.5"/>
+    <path d="M94 108 C93 90 96 80 103 76 C110 80 113 90 112 108 Z"/>
+    <path d="M91 92 L84 102" stroke="#3c4650" stroke-width="4" stroke-linecap="round"/>
+    <path d="M115 90 L121 101" stroke="#3c4650" stroke-width="4" stroke-linecap="round"/>
+  </g>
+  <rect x="2" y="2" width="124" height="124" rx="14" fill="none" stroke="#0c0b0a" stroke-width="4" opacity="0.6"/>
+</svg>
