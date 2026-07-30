@@ -1190,6 +1190,185 @@ expansion (the remaining locked residence markers, routes, weather). This
 is also where the `redwater_unlocked` flag this phase introduced finally
 does something - flip Redwater from "coming soon" to actually reachable.
 
+## Phase 8: Additional content - complete
+
+### Files created
+
+New residence: `data/residences/redwater_service_station.tres` - Redwater
+Service Station, the second residence, reachable once
+`GameManager.story_flags["redwater_unlocked"]` is set (Phase 7). 8
+hotspots (fuel pumps, service bay, convenience store, cashier's office,
+generator room, perimeter fence, drainage tunnel, garage workshop) rather
+than spec's fuller 10 - the same "concrete and earned over exhaustive"
+trade-off every phase's content generation has made, covering every item
+chain the residence's flavour touches (fuel, tool, food, construction,
+electronics, trap) plus the rescue.
+
+New quests: `data/quests/q_clear_fuel_pumps.tres`,
+`q_repair_service_bay.tres`, `q_restock_convenience_store.tres`,
+`q_board_office_windows.tres`, `q_restart_generator.tres`,
+`q_reinforce_perimeter_fence.tres`, `q_clear_drainage_tunnel.tres`, and
+`q_rescue_lena.tres` (the rescue quest - `medical_3`, `unlock_survivor:
+lena_ortiz`, `dialogue_trigger_id: lena_01`, same shape as Phase 3's
+`q_rescue_noah`).
+
+New dialogue: `data/dialogue/lena_01.tres`/`lena_02.tres`/`lena_03.tres` -
+Lena Ortiz found barricaded in the garage workshop, defensive at first
+(she assumes anyone knocking is there to siphon the pumps dry), then a
+branching trust choice mirroring Noah's rescue beat.
+
+New screen: `scenes/redwater/redwater.gd`/`.tscn` and
+`scenes/redwater/redwater_background.gd` - the same data-driven
+hotspot/task-panel screen shape as `scenes/haven/haven.gd`, reused
+deliberately rather than re-architected (a residence screen is a
+residence screen regardless of which `ResidenceDefinition` backs it). The
+background is a dusk forecourt/canopy/store/garage illustration in the
+same layered `_draw()` placeholder technique as Hollow Creek's, given a
+distinct palette and time of day on purpose so the two residences read as
+different places rather than a reskin.
+
+Tests: `tests/smoke_test_redwater.gd`/`.tscn`.
+
+### Files modified
+
+- `project.godot` - added `"redwater"` to `SceneRouter.SCENE_PATHS`.
+- `autoload/defence_manager.gd` - **generalized from one hardcoded
+  residence/event to a dictionary of events keyed by `event_id`**
+  (`events`, `event_choices`), so Redwater's own "Defend the Station"
+  attack (`redwater_defence`) is a second entry rather than a duplicated
+  manager. Every function (`can_attempt`, `launch`, `resolve_choice`,
+  `all_hotspots_complete`, `has_survived`, ...) now takes `event_id`
+  instead of assuming Hollow Creek.
+- `scenes/defence/defence.gd`/`.tscn` - now reads `event_id` and
+  `return_scene_key` from `SceneRouter.take_pending_params()` instead of
+  being hardcoded to Hollow Creek's event, so the same screen serves both
+  residences' defence encounters.
+- `autoload/residence_manager.gd` - `try_complete_quest()` now also
+  handles a `set_story_flag` reward key (alongside `coins`/`xp`/`energy`/
+  `unlock_survivor`), and advances the chapter to
+  `chapter_5_the_station` specifically on `q_rescue_lena`'s completion.
+- `scenes/ui/task_panel.gd` - **bug fix**: `show_for_hotspot()` took no
+  `residence_id` and silently defaulted to `"hollow_creek_farmhouse"`,
+  which would have made every Redwater hotspot's task panel report
+  "Already repaired." (`ResidenceManager.get_active_quest_for_hotspot()`
+  looks the hotspot up inside a specific residence's own hotspot list -
+  Redwater's hotspot ids don't exist in Hollow Creek's). Now takes an
+  explicit `residence_id`; both `haven.gd` and `redwater.gd` pass their
+  own. `tests/smoke_test_redwater.gd` asserts the wrong-residence lookup
+  fails and the right one succeeds, specifically to guard this.
+- `scripts/residence/hotspot_visual.gd` - added a distinct hand-drawn
+  placeholder shape per Redwater hotspot id (pumps, garage bay slats,
+  store shelves, office window, generator vents, fence posts, drainage
+  arc, workbench), matching the "distinct shape per hotspot, not a blank
+  circle" policy the file's own docstring already commits to for Hollow
+  Creek.
+- `scenes/world_map/world_map.gd`/`.tscn` - the Redwater marker now
+  actually routes to `SceneRouter.go_to("redwater")` once
+  `redwater_unlocked` is set, replacing Phase 7's "found, not yet
+  reachable" placeholder toast. **Bug fix while re-running the full smoke
+  suite**: `MapArea` (the scavenging/vehicle marker container) was
+  missing `unique_name_in_owner = true`, so every `%MapArea` lookup in
+  `_build_scavenging_markers()`/`_build_vehicle_marker()` was silently
+  failing with a script error on every World Map load - present since
+  Phase 5, never caught because a script error doesn't fail
+  `smoke_test.gd`'s pass/fail check (no `quit(1)`) the way a `_fail()`
+  call does. Fixed by adding the flag; confirmed clean in
+  `smoke_test.tscn`'s output afterward.
+- `scenes/haven/haven.gd` - added `"chapter_5_the_station"` to the
+  chapter title lookup (both residence screens show whichever chapter is
+  current, not just their own).
+- `tests/smoke_test.gd` - added `redwater.tscn` to the coverage list.
+- `tests/smoke_test_defence.gd` - narrowed its own docstring/scope note
+  now that a second event exists; unchanged otherwise (it still only
+  exercises `hollow_creek_first_wave` - `smoke_test_redwater.gd` covers
+  `redwater_defence`).
+
+### Features completed
+
+- **A second full residence**, symmetric with Hollow Creek: 8 data-driven
+  hotspots, each gated behind a merge-chain item requirement, one of them
+  a rescue (Lena Ortiz) that unlocks a survivor and advances the story.
+- **DefenceManager generalized to N events instead of 1** - proven by
+  `redwater_defence` resolving completely independently of
+  `hollow_creek_first_wave` (surviving one doesn't mark the other
+  survived; each has its own energy cost, choices, and skill tags).
+  Lena's own skills (`vehicle_parts`, `fuel`, `vehicle_repair`) don't
+  match Redwater's `trap`/`defence` tags, so - same honest situation
+  Phases 6 and 7 both documented - the skill bonus mechanism is exercised
+  but currently inert for her specifically.
+- **`set_story_flag` as a generic quest reward key**, not just the
+  `unlock_survivor`/`coins`/`xp`/`energy` set Phase 3 originally shipped -
+  used by Lena's rescue but available to any future quest.
+  **Chapter 5 opens on her rescue** specifically, the same
+  "one hardcoded `quest_id` check advances the story" pattern
+  `q_secure_front_door` established in Phase 3.
+- **Two residence-shaped bugs caught and fixed by building a second
+  residence**: the `task_panel.gd` residence_id default (would have
+  silently broken every Redwater task) and the World Map's missing
+  `unique_name_in_owner` on `MapArea` (silently broke every map marker
+  since Phase 5). Both are exactly the kind of assumption that only
+  surfaces once "the thing" stops being singular - the same value Phase 6
+  got from generalizing scavenging skill bonuses, applied here to
+  residences and defence events.
+
+### Tests performed
+
+Same headless-binary approach as every phase, `timeout`-wrapped throughout:
+
+- `godot4 --headless --path . --import` - clean, zero script/parse errors.
+- `tests/smoke_test.tscn`, `tests/smoke_test_save.tscn`,
+  `tests/smoke_test_settings.tscn`, `tests/smoke_test_merge.tscn`,
+  `tests/smoke_test_residence.tscn`, `tests/smoke_test_dialogue.tscn`,
+  `tests/smoke_test_scavenging.tscn`,
+  `tests/smoke_test_vehicle_survivors.tscn`,
+  `tests/smoke_test_defence.tscn` - all still pass, no regressions (this
+  run is also what caught the `MapArea` bug above, in
+  `smoke_test.tscn`'s `world_map.tscn` instantiation step).
+- `tests/smoke_test_redwater.tscn` (new) - residence data loads with 8
+  hotspots; `get_active_quest_for_hotspot("fuel_pumps",
+  "hollow_creek_farmhouse")` correctly resolves to nothing while the same
+  call with `"redwater_service_station"` resolves to
+  `q_clear_fuel_pumps`, guarding the `task_panel.gd` fix; completing every
+  hotspot except the rescue leaves `redwater_defence` un-attemptable;
+  completing `q_rescue_lena` unlocks `lena_ortiz`, advances the chapter to
+  `chapter_5_the_station`, and its `dialogue_trigger_id` is `lena_01`;
+  once all 8 are done, `redwater_defence` becomes attemptable, spends its
+  own `energy_cost`, and a forced success marks it (and only it) survived,
+  independent of Hollow Creek's own event; a full save/reload round trip
+  preserves all of it.
+
+### Known issues
+
+- **Not visually confirmed**, same caveat as every phase. The dusk
+  forecourt background's readability against the hotspot layer, and
+  whether the palette shift from Hollow Creek reads as intentional rather
+  than inconsistent, both need a real screen.
+- **8 hotspots, not spec's 10** - see Files created; every merge chain the
+  location's flavour would plausibly touch is covered, but "roof" and
+  "staff room" specifically weren't given their own milestone.
+- **No route/travel scene between residences** - `SceneRouter.go_to`
+  jumps straight from World Map to Redwater the same way it does for
+  Hollow Creek, with no travel-time or vehicle-use step, even though the
+  delivery van (Phase 6) narratively exists for exactly this.
+- **3 residences remain locked placeholders on the World Map** (Greybridge
+  School, Saint Mercy Hospital, Northgate Prison) - map markers only, no
+  content behind them yet.
+- **Lena's skills have no defence event to bonus at Redwater specifically**
+  - same "mechanism real, no matching recruit yet for this exact case"
+  situation Phases 6 and 7 both flagged, just inverted (a survivor exists,
+  the tags on Redwater's own event don't happen to match her).
+- **Godot binary still not persisted** in this environment - same caveat
+  as every phase so far.
+
+### Exact next phase
+
+**Phase 9: Polish** - per the original spec's phase list: animation/
+juice pass on existing systems, audio, accessibility, performance
+profiling on Android, and a first real look at the illustrated-art
+question (see `ART_ASSET_GUIDE.md` - every visual in the project through
+Phase 8 is procedural placeholder art via `_draw()`, by necessity of this
+environment having no image-generation tool).
+
 ### Commands required to run or export the project
 
 ```bash
@@ -1201,7 +1380,7 @@ godot4 --path /path/to/dead-haven-merge-survive
 godot4 --headless --path /path/to/dead-haven-merge-survive --import
 
 # Run the full smoke test suite (always with a timeout wrapper)
-for f in smoke_test smoke_test_save smoke_test_settings smoke_test_merge smoke_test_residence smoke_test_dialogue smoke_test_scavenging smoke_test_vehicle_survivors smoke_test_defence; do
+for f in smoke_test smoke_test_save smoke_test_settings smoke_test_merge smoke_test_residence smoke_test_dialogue smoke_test_scavenging smoke_test_vehicle_survivors smoke_test_defence smoke_test_redwater; do
   timeout 30 godot4 --headless --path /path/to/dead-haven-merge-survive "tests/$f.tscn"
 done
 

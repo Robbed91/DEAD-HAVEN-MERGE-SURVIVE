@@ -1,0 +1,105 @@
+[gd_resource type="Resource" script_class="ResidenceDefinition" load_steps=11 format=3]
+
+[ext_resource type="Script" path="res://scripts/data_models/residence_hotspot.gd" id="1_3ynot"]
+[ext_resource type="Script" path="res://scripts/data_models/residence_definition.gd" id="2_x0jd1"]
+
+[sub_resource type="Resource" id="Resource_fp001"]
+script = ExtResource("1_3ynot")
+id = "fuel_pumps"
+display_name = "Fuel Pumps"
+area_position = Vector2(0.28, 0.66)
+state = 0
+required_task_ids = PackedStringArray("q_clear_fuel_pumps")
+visual_variant_scenes = {}
+transition_animation = "construction_repair"
+completion_reward = {}
+
+[sub_resource type="Resource" id="Resource_sb001"]
+script = ExtResource("1_3ynot")
+id = "service_bay"
+display_name = "Service Bay"
+area_position = Vector2(0.74, 0.56)
+state = 0
+required_task_ids = PackedStringArray("q_repair_service_bay")
+visual_variant_scenes = {}
+transition_animation = "construction_repair"
+completion_reward = {}
+
+[sub_resource type="Resource" id="Resource_cs001"]
+script = ExtResource("1_3ynot")
+id = "convenience_store"
+display_name = "Convenience Store"
+area_position = Vector2(0.5, 0.42)
+state = 0
+required_task_ids = PackedStringArray("q_restock_convenience_store")
+visual_variant_scenes = {}
+transition_animation = "construction_repair"
+completion_reward = {}
+
+[sub_resource type="Resource" id="Resource_co001"]
+script = ExtResource("1_3ynot")
+id = "cashier_office"
+display_name = "Cashier's Office"
+area_position = Vector2(0.62, 0.34)
+state = 0
+required_task_ids = PackedStringArray("q_board_office_windows")
+visual_variant_scenes = {}
+transition_animation = "construction_repair"
+completion_reward = {}
+
+[sub_resource type="Resource" id="Resource_gr001"]
+script = ExtResource("1_3ynot")
+id = "generator_room"
+display_name = "Generator Room"
+area_position = Vector2(0.87, 0.7)
+state = 0
+required_task_ids = PackedStringArray("q_restart_generator")
+visual_variant_scenes = {}
+transition_animation = "construction_repair"
+completion_reward = {}
+
+[sub_resource type="Resource" id="Resource_pf001"]
+script = ExtResource("1_3ynot")
+id = "perimeter_fence"
+display_name = "Perimeter Fence"
+area_position = Vector2(0.08, 0.8)
+state = 0
+required_task_ids = PackedStringArray("q_reinforce_perimeter_fence")
+visual_variant_scenes = {}
+transition_animation = "construction_repair"
+completion_reward = {}
+
+[sub_resource type="Resource" id="Resource_dt001"]
+script = ExtResource("1_3ynot")
+id = "drainage_tunnel"
+display_name = "Drainage Tunnel"
+area_position = Vector2(0.92, 0.88)
+state = 0
+required_task_ids = PackedStringArray("q_clear_drainage_tunnel")
+visual_variant_scenes = {}
+transition_animation = "construction_repair"
+completion_reward = {}
+
+[sub_resource type="Resource" id="Resource_gw001"]
+script = ExtResource("1_3ynot")
+id = "garage_workshop"
+display_name = "Garage Workshop"
+area_position = Vector2(0.78, 0.74)
+state = 0
+required_task_ids = PackedStringArray("q_rescue_lena")
+visual_variant_scenes = {}
+transition_animation = "construction_repair"
+completion_reward = {}
+
+[resource]
+script = ExtResource("2_x0jd1")
+id = "redwater_service_station"
+display_name = "Redwater Service Station"
+description = "A roadside fuel stop and garage, spotted from Hollow Creek's upper windows during the first attack. Someone was living here."
+environment_scene_path = "res://scenes/redwater/redwater.tscn"
+hotspots = Array[ExtResource("1_3ynot")]([SubResource("Resource_fp001"), SubResource("Resource_sb001"), SubResource("Resource_cs001"), SubResource("Resource_co001"), SubResource("Resource_gr001"), SubResource("Resource_pf001"), SubResource("Resource_dt001"), SubResource("Resource_gw001")])
+chapter_ids = PackedStringArray("chapter_5_the_station")
+unlock_requirements = {
+"story_flag": "redwater_unlocked"
+}
+completion_rewards = {}

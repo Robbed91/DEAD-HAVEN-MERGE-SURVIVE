@@ -89,9 +89,9 @@ func requirements_met(quest_id: String) -> bool:
 	return true
 
 ## Verifies requirements, consumes items, grants rewards (including the
-## "unlock_survivor" special-case reward key), advances the linked
-## hotspot, and persists. Returns a result dict rather than throwing,
-## matching BoardState's tap_producer()/try_merge() pattern.
+## "unlock_survivor" and "set_story_flag" special-case reward keys),
+## advances the linked hotspot, and persists. Returns a result dict rather
+## than throwing, matching BoardState's tap_producer()/try_merge() pattern.
 func try_complete_quest(quest_id: String) -> Dictionary:
 	if is_quest_complete(quest_id):
 		return {"success": false, "reason": "already_complete"}
@@ -114,6 +114,8 @@ func try_complete_quest(quest_id: String) -> Dictionary:
 		GameManager.add_energy(int(quest.rewards.energy))
 	if quest.rewards.has("unlock_survivor"):
 		GameManager.unlock_survivor(String(quest.rewards.unlock_survivor))
+	if quest.rewards.has("set_story_flag"):
+		GameManager.set_story_flag(String(quest.rewards.set_story_flag), true)
 
 	if not quest.residence_hotspot_id.is_empty():
 		hotspot_states[quest.residence_hotspot_id] = ResidenceHotspot.State.COMPLETED
@@ -121,12 +123,14 @@ func try_complete_quest(quest_id: String) -> Dictionary:
 
 	# Chapter 1 (spec: "The Open Door") ends once the front door is secured
 	# and the merge board is in use; Chapter 2 ("Someone Upstairs") opens
-	# with the noises that lead to finding Noah. Later chapters need
-	# scavenging (Phase 5), a vehicle (Phase 6) and a defence event (Phase 7)
-	# that don't exist yet, so progression stops here for now - see
-	# DEVELOPMENT_LOG.md Known issues.
+	# with the noises that lead to finding Noah. Chapter 4 ("The First
+	# Wave") is set by DefenceManager on a successful Hollow Creek defence.
+	# Chapter 5 ("The Station") opens once Lena is found at Redwater. There
+	# is no chapter_3 beat yet - see DEVELOPMENT_LOG.md Known issues.
 	if quest_id == "q_secure_front_door":
 		GameManager.advance_chapter("chapter_2_someone_upstairs")
+	if quest_id == "q_rescue_lena":
+		GameManager.advance_chapter("chapter_5_the_station")
 
 	_maybe_discover_vehicle()
 

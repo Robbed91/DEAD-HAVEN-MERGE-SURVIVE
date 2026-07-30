@@ -23,12 +23,19 @@ implemented.
 Current placeholder scripts:
 - `scenes/main_menu/main_menu_background.gd`
 - `scenes/haven/haven_background.gd`
+- `scenes/redwater/redwater_background.gd` (Phase 8) - Redwater Service
+  Station's exterior, same layered-illustration technique as Hollow
+  Creek's but a dusk palette (cool violet-to-rust sky, warm canopy red)
+  instead of Hollow Creek's day exterior, so the two residences read as
+  distinct places even as procedural placeholders.
 - `scenes/world_map/world_map_background.gd`
 - `scripts/ui/survivor_silhouette.gd`
-- `scripts/residence/hotspot_visual.gd` (Phase 3) - one reusable
-  before/after patch renderer for every Hollow Creek Farmhouse hotspot: a
-  distinct simple shape per repair area (door, window, couch, hearth,
-  shelving, bed, barn, fence, spikes), damaged colouring before its quest
+- `scripts/residence/hotspot_visual.gd` (Phase 3, extended Phase 8) - one
+  reusable before/after patch renderer shared by every residence's
+  hotspots: a distinct simple shape per repair area (Hollow Creek: door,
+  window, couch, hearth, shelving, bed, barn, fence, spikes; Redwater:
+  pumps, garage bay, store shelves, office window, generator vents, fence
+  posts, drainage arc, workbench), damaged colouring before its quest
   completes and clean colouring plus a checkmark badge after, with a brief
   dust-burst animation on completion. Same swap-over story as the item
   icon renderer below: point a hotspot at real layered art later and this
@@ -61,10 +68,10 @@ individual pieces can animate/update independently:
 9. Weather effects
 10. Particle effects
 
-`haven_background.gd` currently draws layers 1-4 procedurally in a single
-script for Hollow Creek Farmhouse; splitting these into separate nodes/
-textures is expected once real art replaces the placeholder (tracked as
-high priority in the asset manifest).
+`haven_background.gd` and `redwater_background.gd` each currently draw
+layers 1-4 procedurally in a single script, one per residence; splitting
+these into separate nodes/textures is expected once real art replaces the
+placeholders (tracked as high priority in the asset manifest).
 
 ## Dialogue portraits (Phase 4)
 

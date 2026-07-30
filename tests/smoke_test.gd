@@ -12,6 +12,7 @@ extends Node
 
 const SCENES := [
 	"res://scenes/haven/haven.tscn",
+	"res://scenes/redwater/redwater.tscn",
 	"res://scenes/merge_board/merge_board.tscn",
 	"res://scenes/world_map/world_map.tscn",
 	"res://scenes/survivors/survivors.tscn",

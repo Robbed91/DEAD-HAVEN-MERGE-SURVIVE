@@ -92,6 +92,42 @@ func _draw() -> void:
 					Vector2(s.x * (0.29 + i * 0.2), s.y * 0.85),
 				])
 				draw_colored_polygon(pts, base)
+		"fuel_pumps":
+			for i in 2:
+				draw_rect(Rect2(s.x * (0.22 + i * 0.36), s.y * 0.3, s.x * 0.22, s.y * 0.55), base)
+				if fixed:
+					draw_rect(Rect2(s.x * (0.28 + i * 0.36), s.y * 0.4, s.x * 0.1, s.y * 0.12), accent)
+		"service_bay":
+			draw_rect(Rect2(s.x * 0.12, s.y * 0.2, s.x * 0.76, s.y * 0.6), base, false, 3.0)
+			for i in 4:
+				draw_line(Vector2(s.x * 0.12, s.y * (0.32 + i * 0.12)), Vector2(s.x * 0.88, s.y * (0.32 + i * 0.12)), base, 2.0)
+		"convenience_store":
+			for i in 3:
+				draw_rect(Rect2(s.x * (0.15 + i * 0.24), s.y * 0.25, s.x * 0.18, s.y * 0.55), base)
+		"cashier_office":
+			draw_rect(Rect2(s.x * 0.2, s.y * 0.2, s.x * 0.6, s.y * 0.5), base, false, 3.0)
+			draw_line(Vector2(s.x * 0.5, s.y * 0.2), Vector2(s.x * 0.5, s.y * 0.7), base, 2.0)
+			if not fixed:
+				draw_line(Vector2(s.x * 0.22, s.y * 0.22), Vector2(s.x * 0.78, s.y * 0.68), accent, 2.5)
+		"generator_room":
+			draw_rect(Rect2(s.x * 0.28, s.y * 0.2, s.x * 0.44, s.y * 0.6), base)
+			for i in 3:
+				draw_line(Vector2(s.x * 0.34, s.y * (0.32 + i * 0.14)), Vector2(s.x * 0.66, s.y * (0.32 + i * 0.14)), accent, 2.0)
+		"perimeter_fence":
+			for i in 5:
+				draw_line(Vector2(s.x * (0.1 + i * 0.18), s.y * 0.85), Vector2(s.x * (0.1 + i * 0.18), s.y * 0.3), base, 3.0)
+			draw_line(Vector2(s.x * 0.1, s.y * 0.45), Vector2(s.x * 0.82, s.y * 0.45), base, 2.0)
+			draw_line(Vector2(s.x * 0.1, s.y * 0.65), Vector2(s.x * 0.82, s.y * 0.65), base, 2.0)
+		"drainage_tunnel":
+			draw_arc(Vector2(s.x * 0.5, s.y * 0.7), s.x * 0.32, PI, TAU, 20, base, 4.0)
+			if fixed:
+				draw_circle(Vector2(s.x * 0.5, s.y * 0.68), s.x * 0.12, accent)
+		"garage_workshop":
+			draw_rect(Rect2(s.x * 0.18, s.y * 0.55, s.x * 0.64, s.y * 0.16), base)
+			var pts2 := PackedVector2Array([
+				Vector2(s.x * 0.42, s.y * 0.55), Vector2(s.x * 0.5, s.y * 0.2), Vector2(s.x * 0.58, s.y * 0.55),
+			])
+			draw_polyline(pts2, base, 3.0)
 		_:
 			draw_circle(s * 0.5, s.x * 0.3, base)
 

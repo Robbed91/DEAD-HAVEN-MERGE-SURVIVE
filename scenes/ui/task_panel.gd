@@ -32,8 +32,8 @@ func _ready() -> void:
 	_find_button.pressed.connect(_on_find_pressed)
 	_complete_button.pressed.connect(_on_complete_pressed)
 
-func show_for_hotspot(hotspot_id: String) -> void:
-	var quest := ResidenceManager.get_active_quest_for_hotspot(hotspot_id)
+func show_for_hotspot(hotspot_id: String, residence_id: String = "hollow_creek_farmhouse") -> void:
+	var quest := ResidenceManager.get_active_quest_for_hotspot(hotspot_id, residence_id)
 	if quest == null:
 		EventBus.show_toast.emit("Already repaired.")
 		return

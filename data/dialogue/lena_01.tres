@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="DialogueEntry" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data_models/dialogue_entry.gd" id="1_len01"]
+
+[resource]
+script = ExtResource("1_len01")
+id = "lena_01"
+speaker_id = ""
+portrait_key = ""
+expression_key = "neutral"
+text = "The workshop door is jammed from the inside, furniture stacked against it. At the sound of your knock, something metal slides and clatters to the floor."
+background_scene_path = ""
+animation = ""
+sound_cue = ""
+branching_options = Array[Dictionary]([])
+next_id = "lena_02"

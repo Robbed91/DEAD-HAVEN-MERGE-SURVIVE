@@ -1,0 +1,23 @@
+[gd_resource type="Resource" script_class="QuestDefinition" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data_models/quest_definition.gd" id="1_rql01"]
+
+[resource]
+script = ExtResource("1_rql01")
+id = "q_rescue_lena"
+title = "Someone's Locked In"
+description = "A workshop door, barricaded from the inside. Someone's still in there, and they're not opening up for just anyone."
+quest_type = 2
+requirements = {
+"medical_3": 1
+}
+prerequisite_quest_ids = PackedStringArray()
+rewards = {
+"coins": 60,
+"unlock_survivor": "lena_ortiz",
+"xp": 50
+}
+is_complete = false
+dialogue_trigger_id = "lena_01"
+residence_hotspot_id = "garage_workshop"
+time_condition = ""

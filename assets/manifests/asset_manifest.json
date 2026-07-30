@@ -27,6 +27,14 @@
       "replacement_priority": "high - primary gameplay backdrop; needs layered PSD-style import (background/structure/damage/foreground) per section 20 of the design spec when real art lands"
     },
     {
+      "name": "Redwater Service Station exterior",
+      "file_path": "scenes/redwater/redwater_background.gd",
+      "required_dimensions": "720x1280 (viewport-relative, procedural)",
+      "animation_frames": 0,
+      "status": "procedural_placeholder",
+      "replacement_priority": "high - second primary gameplay backdrop; deliberately a dusk palette distinct from Hollow Creek's day exterior, needs the same layered PSD-style import (sky/structure/damage/foreground) per section 20 of the design spec when real art lands"
+    },
+    {
       "name": "World map",
       "file_path": "scenes/world_map/world_map_background.gd",
       "required_dimensions": "720x1280 (viewport-relative, procedural)",

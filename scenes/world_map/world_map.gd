@@ -29,19 +29,18 @@ func _ready() -> void:
 	_build_scavenging_markers()
 	_build_vehicle_marker()
 
-## Redwater Service Station itself isn't built until Phase 8, but
-## surviving the first night attack (Phase 7) is a real, earned story
-## beat that should feel different from "just locked" - so once
-## GameManager.story_flags["redwater_unlocked"] is set, the marker's
-## message changes to something honest about what's actually true: found,
-## not yet reachable, rather than still framed as locked.
+## Redwater Service Station opens up once GameManager.story_flags
+## ["redwater_unlocked"] is set - surviving Hollow Creek's first night
+## attack (Phase 7). Phase 8 builds the residence itself, so the marker
+## now actually routes there instead of the "found, not yet reachable"
+## placeholder message Phase 7 shipped with.
 func _setup_redwater_marker() -> void:
 	var marker: Button = %RedwaterMarker
 	if GameManager.get_story_flag("redwater_unlocked", false):
-		marker.modulate.a = 0.85
-		marker.text = "📍"
-		marker.tooltip_text = "Redwater Service Station - located, not yet reachable"
-		marker.pressed.connect(func(): EventBus.show_toast.emit("You know where it is now. The route there isn't ready yet."))
+		marker.modulate.a = 1.0
+		marker.text = "⛽"
+		marker.tooltip_text = "Redwater Service Station"
+		marker.pressed.connect(func(): SceneRouter.go_to("redwater"))
 	else:
 		marker.pressed.connect(func(): EventBus.show_toast.emit("Locked - reach this residence by progressing the campaign."))
 

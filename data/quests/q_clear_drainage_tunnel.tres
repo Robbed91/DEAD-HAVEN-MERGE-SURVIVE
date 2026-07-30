@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="QuestDefinition" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data_models/quest_definition.gd" id="1_cdt01"]
+
+[resource]
+script = ExtResource("1_cdt01")
+id = "q_clear_drainage_tunnel"
+title = "Clear the Drainage Tunnel"
+description = "A drainage tunnel runs under the lot - useful, if it wasn't half-collapsed. Worth clearing, one way or another."
+quest_type = 1
+requirements = {
+"construction_5": 1
+}
+prerequisite_quest_ids = PackedStringArray()
+rewards = {
+"coins": 45,
+"xp": 35
+}
+is_complete = false
+dialogue_trigger_id = ""
+residence_hotspot_id = "drainage_tunnel"
+time_condition = ""
