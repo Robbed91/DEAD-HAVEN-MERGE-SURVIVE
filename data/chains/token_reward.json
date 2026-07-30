@@ -1,0 +1,21 @@
+{
+	"category": "Haven Tokens",
+	"chain_id": "token_reward",
+	"is_reward_chain": true,
+	"item_ids": [
+		"token_reward_1",
+		"token_reward_2",
+		"token_reward_3",
+		"token_reward_4",
+		"token_reward_5",
+		"token_reward_6",
+		"token_reward_7"
+	],
+	"per_level_value": 1,
+	"producer_item_id": "",
+	"resource": "haven_tokens",
+	"task_tags": [
+		"reward",
+		"haven_tokens"
+	]
+}

@@ -6,8 +6,8 @@ matching Resource class in `scripts/data_models/`.
 
 | Folder | Resource | Populated in |
 |---|---|---|
-| `items/` | `ItemDefinition` | Phase 2 (merge board) |
-| `chains/` | grouping data for the 9 merge chains in the design spec | Phase 2 |
+| `items/` | `ItemDefinition` | **Phase 2 - populated.** 101 items: 9 gameplay chains from the design spec (Construction/Tool/Food/Medical/Trap/Fuel/Vehicle Parts/Electronics/Clothing) + 4 reward chains (Energy/Coins/XP/Haven Tokens) |
+| `chains/` | grouping metadata (item id order, producer id, task tags, reward-chain resource/value) | **Phase 2 - populated.** One `.json` per chain, 13 total |
 | `quests/` | `QuestDefinition` | Phase 3 onward |
 | `characters/` | `SurvivorDefinition` | Phase 6 |
 | `residences/` | `ResidenceDefinition`, `ResidenceHotspot` | Phase 3 (Hollow Creek Farmhouse), Phase 8 (Redwater and beyond) |
@@ -15,5 +15,9 @@ matching Resource class in `scripts/data_models/`.
 | `scavenging/` | `ScavengingMission` | Phase 5 |
 | `vehicles/` | `VehicleDefinition` | Phase 6 |
 
-Phase 1 only establishes the folder structure and the Resource classes
-themselves; these folders are intentionally empty until their phase lands.
+`items/` and `chains/` were generated once by a script run through the
+Godot binary (see DEVELOPMENT_LOG.md Phase 2) and the generator was then
+deleted - the `.tres`/`.json` files here are the real content now; edit
+them directly (or write a new one-off script if you need to bulk-regenerate
+after a schema change). Every other folder is still just the empty
+structure until its phase lands.

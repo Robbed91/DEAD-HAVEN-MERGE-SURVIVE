@@ -1,0 +1,22 @@
+{
+	"category": "Tools",
+	"chain_id": "tool",
+	"is_reward_chain": false,
+	"item_ids": [
+		"tool_1",
+		"tool_2",
+		"tool_3",
+		"tool_4",
+		"tool_5",
+		"tool_6",
+		"tool_7"
+	],
+	"producer_item_id": "tool_producer",
+	"task_tags": [
+		"tool",
+		"building",
+		"vehicle_repair",
+		"reinforcement",
+		"workshop_upgrade"
+	]
+}

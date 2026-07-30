@@ -1,0 +1,24 @@
+[gd_resource type="Resource" script_class="ItemDefinition" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data_models/item_definition.gd" id="1_ub8g7"]
+
+[resource]
+script = ExtResource("1_ub8g7")
+id = "construction_producer"
+display_name = "Salvaged Tool Crate"
+description = "A Construction producer. Tap to spend energy and generate a level 1 Construction item."
+chain_id = "construction"
+level = 0
+max_level_in_chain = 8
+icon_path = "res://assets/items/construction/producer.png"
+scene_path = ""
+sell_value = 0
+rarity = 1
+is_producer = true
+produces_item_id = "construction_1"
+producer_charges = -1
+producer_cooldown_seconds = 30.0
+task_tags = PackedStringArray("construction", "boarding", "door_repair", "wall_construction", "sleeping_area", "lookout", "producer")
+discovery_reward = {
+"coins": 25
+}

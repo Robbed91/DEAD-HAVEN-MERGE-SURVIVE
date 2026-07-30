@@ -1,0 +1,24 @@
+{
+	"category": "Construction",
+	"chain_id": "construction",
+	"is_reward_chain": false,
+	"item_ids": [
+		"construction_1",
+		"construction_2",
+		"construction_3",
+		"construction_4",
+		"construction_5",
+		"construction_6",
+		"construction_7",
+		"construction_8"
+	],
+	"producer_item_id": "construction_producer",
+	"task_tags": [
+		"construction",
+		"boarding",
+		"door_repair",
+		"wall_construction",
+		"sleeping_area",
+		"lookout"
+	]
+}

@@ -1,0 +1,22 @@
+{
+	"category": "Medical",
+	"chain_id": "medical",
+	"is_reward_chain": false,
+	"item_ids": [
+		"medical_1",
+		"medical_2",
+		"medical_3",
+		"medical_4",
+		"medical_5",
+		"medical_6",
+		"medical_7"
+	],
+	"producer_item_id": "medical_producer",
+	"task_tags": [
+		"medical",
+		"survivor_treatment",
+		"injury_event",
+		"medical_room",
+		"scavenging_penalty_reduction"
+	]
+}

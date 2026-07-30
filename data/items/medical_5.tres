@@ -1,0 +1,25 @@
+[gd_resource type="Resource" script_class="ItemDefinition" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data_models/item_definition.gd" id="1_kfdiu"]
+
+[resource]
+script = ExtResource("1_kfdiu")
+id = "medical_5"
+display_name = "Field Medic Case"
+description = "Field Medic Case - level 5 Medical item."
+chain_id = "medical"
+level = 5
+max_level_in_chain = 7
+icon_path = "res://assets/items/medical/level_5.png"
+scene_path = ""
+sell_value = 125
+rarity = 1
+is_producer = false
+produces_item_id = ""
+producer_charges = -1
+producer_cooldown_seconds = 0.0
+task_tags = PackedStringArray("medical", "survivor_treatment", "injury_event", "medical_room", "scavenging_penalty_reduction", "level_5")
+discovery_reward = {
+"coins": 50,
+"energy": 1
+}

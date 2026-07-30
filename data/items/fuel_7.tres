@@ -1,0 +1,25 @@
+[gd_resource type="Resource" script_class="ItemDefinition" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data_models/item_definition.gd" id="1_2g3ol"]
+
+[resource]
+script = ExtResource("1_2g3ol")
+id = "fuel_7"
+display_name = "Settlement Fuel Stockpile"
+description = "Settlement Fuel Stockpile - level 7 Fuel item."
+chain_id = "fuel"
+level = 7
+max_level_in_chain = 7
+icon_path = "res://assets/items/fuel/level_7.png"
+scene_path = ""
+sell_value = 245
+rarity = 2
+is_producer = false
+produces_item_id = ""
+producer_charges = -1
+producer_cooldown_seconds = 0.0
+task_tags = PackedStringArray("fuel", "vehicle_mission", "generator", "long_distance_scavenging", "residence_power", "level_7")
+discovery_reward = {
+"coins": 70,
+"energy": 1
+}

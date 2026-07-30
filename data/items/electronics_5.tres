@@ -1,0 +1,25 @@
+[gd_resource type="Resource" script_class="ItemDefinition" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data_models/item_definition.gd" id="1_i03ng"]
+
+[resource]
+script = ExtResource("1_i03ng")
+id = "electronics_5"
+display_name = "Communication Set"
+description = "Communication Set - level 5 Electronics item."
+chain_id = "electronics"
+level = 5
+max_level_in_chain = 7
+icon_path = "res://assets/items/electronics/level_5.png"
+scene_path = ""
+sell_value = 125
+rarity = 1
+is_producer = false
+produces_item_id = ""
+producer_charges = -1
+producer_cooldown_seconds = 0.0
+task_tags = PackedStringArray("electronics", "story_progression", "radio_contact", "map_discovery", "warning_system", "survivor_rescue", "level_5")
+discovery_reward = {
+"coins": 50,
+"energy": 1
+}

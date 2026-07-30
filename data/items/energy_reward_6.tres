@@ -1,0 +1,24 @@
+[gd_resource type="Resource" script_class="ItemDefinition" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data_models/item_definition.gd" id="1_33go4"]
+
+[resource]
+script = ExtResource("1_33go4")
+id = "energy_reward_6"
+display_name = "Energy Reservoir"
+description = "Energy Reservoir. Tap to collect 30 energy."
+chain_id = "energy_reward"
+level = 6
+max_level_in_chain = 7
+icon_path = "res://assets/items/energy_reward/level_6.png"
+scene_path = ""
+sell_value = 0
+rarity = 2
+is_producer = false
+produces_item_id = ""
+producer_charges = -1
+producer_cooldown_seconds = 0.0
+task_tags = PackedStringArray("reward", "energy", "level_6")
+discovery_reward = {
+"coins": 30
+}

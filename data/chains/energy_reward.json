@@ -1,0 +1,21 @@
+{
+	"category": "Energy",
+	"chain_id": "energy_reward",
+	"is_reward_chain": true,
+	"item_ids": [
+		"energy_reward_1",
+		"energy_reward_2",
+		"energy_reward_3",
+		"energy_reward_4",
+		"energy_reward_5",
+		"energy_reward_6",
+		"energy_reward_7"
+	],
+	"per_level_value": 5,
+	"producer_item_id": "",
+	"resource": "energy",
+	"task_tags": [
+		"reward",
+		"energy"
+	]
+}

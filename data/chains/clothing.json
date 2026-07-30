@@ -1,0 +1,22 @@
+{
+	"category": "Clothing",
+	"chain_id": "clothing",
+	"is_reward_chain": false,
+	"item_ids": [
+		"clothing_1",
+		"clothing_2",
+		"clothing_3",
+		"clothing_4",
+		"clothing_5",
+		"clothing_6",
+		"clothing_7"
+	],
+	"producer_item_id": "clothing_producer",
+	"task_tags": [
+		"clothing",
+		"survivor_equipment",
+		"dangerous_mission",
+		"cold_weather",
+		"character_appearance"
+	]
+}

@@ -1,0 +1,21 @@
+{
+	"category": "Experience",
+	"chain_id": "xp_reward",
+	"is_reward_chain": true,
+	"item_ids": [
+		"xp_reward_1",
+		"xp_reward_2",
+		"xp_reward_3",
+		"xp_reward_4",
+		"xp_reward_5",
+		"xp_reward_6",
+		"xp_reward_7"
+	],
+	"per_level_value": 15,
+	"producer_item_id": "",
+	"resource": "xp",
+	"task_tags": [
+		"reward",
+		"xp"
+	]
+}

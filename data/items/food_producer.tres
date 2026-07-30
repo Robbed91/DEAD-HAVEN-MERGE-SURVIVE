@@ -1,0 +1,24 @@
+[gd_resource type="Resource" script_class="ItemDefinition" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data_models/item_definition.gd" id="1_06npb"]
+
+[resource]
+script = ExtResource("1_06npb")
+id = "food_producer"
+display_name = "Abandoned Pantry"
+description = "A Food producer. Tap to spend energy and generate a level 1 Food item."
+chain_id = "food"
+level = 0
+max_level_in_chain = 7
+icon_path = "res://assets/items/food/producer.png"
+scene_path = ""
+sell_value = 0
+rarity = 1
+is_producer = true
+produces_item_id = "food_1"
+producer_charges = -1
+producer_cooldown_seconds = 30.0
+task_tags = PackedStringArray("food", "survivor_feeding", "scavenging_prep", "morale", "kitchen_upgrade", "producer")
+discovery_reward = {
+"coins": 25
+}

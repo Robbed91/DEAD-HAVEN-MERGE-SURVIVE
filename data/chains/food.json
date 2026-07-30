@@ -1,0 +1,22 @@
+{
+	"category": "Food",
+	"chain_id": "food",
+	"is_reward_chain": false,
+	"item_ids": [
+		"food_1",
+		"food_2",
+		"food_3",
+		"food_4",
+		"food_5",
+		"food_6",
+		"food_7"
+	],
+	"producer_item_id": "food_producer",
+	"task_tags": [
+		"food",
+		"survivor_feeding",
+		"scavenging_prep",
+		"morale",
+		"kitchen_upgrade"
+	]
+}

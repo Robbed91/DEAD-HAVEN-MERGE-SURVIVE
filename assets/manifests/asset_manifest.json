@@ -43,12 +43,12 @@
       "replacement_priority": "high - see ART_ASSET_GUIDE.md for the full required expression/outfit set per survivor"
     },
     {
-      "name": "Merge chain item icons (9 chains x up to 8 levels)",
-      "file_path": "assets/items/",
+      "name": "Merge chain item icons (9 chains + 4 reward chains, 101 items total)",
+      "file_path": "assets/items/ (each ItemDefinition.icon_path points at its intended final PNG under here; none exist yet)",
       "required_dimensions": "128x128",
-      "animation_frames": "merge burst: 6-8",
-      "status": "not_started",
-      "replacement_priority": "high - required for Phase 2"
+      "animation_frames": "merge burst: procedural expanding-ring placeholder implemented in scripts/merge/item_icon_renderer.gd; a real sprite-sheet burst (6-8 frames) is the eventual replacement",
+      "status": "procedural_placeholder",
+      "replacement_priority": "high - scripts/merge/item_icon_renderer.gd draws a category-silhouette + rarity-colour + level-badge placeholder per item in ItemView; real art needs each icon_path populated and ItemView switched to a TextureRect fallback"
     },
     {
       "name": "The Hollow (infected) sprites - Drifter, Screecher, Breaker, Lurker, Runner, Bloater",

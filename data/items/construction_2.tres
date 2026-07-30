@@ -1,0 +1,25 @@
+[gd_resource type="Resource" script_class="ItemDefinition" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data_models/item_definition.gd" id="1_gcugf"]
+
+[resource]
+script = ExtResource("1_gcugf")
+id = "construction_2"
+display_name = "Wood Offcut"
+description = "Wood Offcut - level 2 Construction item."
+chain_id = "construction"
+level = 2
+max_level_in_chain = 8
+icon_path = "res://assets/items/construction/level_2.png"
+scene_path = ""
+sell_value = 20
+rarity = 0
+is_producer = false
+produces_item_id = ""
+producer_charges = -1
+producer_cooldown_seconds = 0.0
+task_tags = PackedStringArray("construction", "boarding", "door_repair", "wall_construction", "sleeping_area", "lookout", "level_2")
+discovery_reward = {
+"coins": 20,
+"energy": 0
+}

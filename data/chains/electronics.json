@@ -1,0 +1,23 @@
+{
+	"category": "Electronics",
+	"chain_id": "electronics",
+	"is_reward_chain": false,
+	"item_ids": [
+		"electronics_1",
+		"electronics_2",
+		"electronics_3",
+		"electronics_4",
+		"electronics_5",
+		"electronics_6",
+		"electronics_7"
+	],
+	"producer_item_id": "electronics_producer",
+	"task_tags": [
+		"electronics",
+		"story_progression",
+		"radio_contact",
+		"map_discovery",
+		"warning_system",
+		"survivor_rescue"
+	]
+}

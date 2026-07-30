@@ -35,24 +35,25 @@ cool blue-grey exteriors. See `scripts/ui/theme_factory.gd` for the exact
 palette values and `ART_ASSET_GUIDE.md` for how it's applied to
 environments and characters.
 
-## Current status: Phase 1 - Foundation
+## Current status: Phase 2 - Merge board
 
-This build contains the project foundation only: navigation, save/load,
-settings, the UI theme, and placeholder screens for every major system.
-**It is not yet a playable merge-puzzle game** - the merge board, residence
-repair logic, story, scavenging, survivors-as-characters, vehicles and
-defence events are scoped for the phases that follow (see
-`DEVELOPMENT_LOG.md` for the authoritative phase-by-phase plan and status).
+The project foundation (Phase 1: navigation, save/load, settings, the UI
+theme, placeholder screens) is done, and the merge board is now real and
+playable: a 7x9 grid, drag-and-drop, all 9 merge chains from the design
+spec plus 4 reward chains (101 items total), producers, energy, storage,
+item info/detail panels, discovery rewards and animated feedback. **It is
+not yet the full game** - residence repair tasks that consume merge items,
+story, scavenging, survivors-as-characters, vehicles and defence events are
+scoped for the phases that follow (see `DEVELOPMENT_LOG.md` for the
+authoritative phase-by-phase plan and status).
 
 What already works, end to end, in this build:
-- Main menu with New Game / Continue / Settings / Quit
-- New Game vs. Continue correctly detect and load/overwrite a save
-- Local JSON save/load with a backup copy and safe handling of a corrupted save
-- Autosave on resource changes, app pause and app close
-- Bottom navigation between Haven / Merge / World Map / Survivors (Inventory is a stub)
-- A top resource bar showing level, XP, energy, coins and Haven Tokens, live-updating via signals
-- A fully wired Settings screen (audio volumes, vibration, reduced motion, high contrast, colour-blind mode, subtitles, text scale, reset progress)
-- A hidden developer diagnostics menu (debug builds only, reached by tapping the main menu title 5 times)
+- Everything from Phase 1 (main menu, save/load, settings, navigation, dev diagnostics)
+- A real 7x9 merge board: drag-and-drop, merging identical chain+level items into the next level, producers (tap costs 1 energy, 30s cooldown), storage transfer, tap-for-info / long-press-for-detail panels, delete with undo and confirmation for rare items
+- 9 gameplay merge chains (Construction, Tools, Food, Medical, Traps, Fuel, Vehicle Parts, Electronics, Clothing) plus 4 reward chains (Energy, Coins, XP, Haven Tokens) - 101 items total, each with an original procedurally-drawn placeholder icon
+- Energy regenerates over time (including while the app is closed) and can be spent by producers; a debug infinite-energy mode exists for testing
+- First-time item discovery grants a coin/energy reward exactly once per item, with a discovery banner
+- A chain-highlight legend as this phase's honest stand-in for task highlighting (no residence tasks exist until Phase 3)
 
 ### Honest limitation
 
@@ -60,14 +61,16 @@ This container has no display server and no Android SDK/export templates,
 so the assistant could not open the graphical editor or export a real
 APK. It did download a Godot 4.3.stable Linux binary and run the project
 headlessly, which confirmed: the project imports with no script/parse
-errors; every Phase 1 screen instantiates without a runtime error; new
-game / save / reload / corrupted-save-falls-back-to-backup all behave as
-designed; and settings changes actually reach the audio bus and rebuilt
-theme (see `tests/README.md` for the three smoke tests this was checked
-with). It has **not** been visually confirmed on a real screen - touch
-input, layout at actual device resolutions, and animation timing still
-need a real run in the editor or on a device. Please report anything that
-doesn't look/feel right.
+errors; every screen instantiates without a runtime error; new game /
+save / reload / corrupted-save-falls-back-to-backup all behave as
+designed; settings changes actually reach the audio bus and rebuilt
+theme; and (new in Phase 2) merging, producers, energy, storage, delete/
+undo and reward collection all behave as designed against the real data
+(see `tests/README.md` for the smoke tests this was checked with). It has
+**not** been visually confirmed on a real screen - touch input, drag
+gesture feel, layout at actual device resolutions, and animation timing
+still need a real run in the editor or on a device. Please report anything
+that doesn't look/feel right.
 
 ## Technology
 
@@ -78,16 +81,17 @@ network service, or third-party SDK is required to play.
 ## Project structure
 
 ```
-autoload/         Global singletons: EventBus, GameManager, SaveManager, AudioManager, SceneRouter
-data/              Content (item/quest/residence/etc. data) - see data/README.md
-scenes/            One folder per screen; scenes/ui/ holds shared components (top bar, bottom nav, toast)
+autoload/         Global singletons: EventBus, ItemDatabase, GameManager, BoardState, SaveManager, AudioManager, SceneRouter
+data/              Content: data/items/ (101 ItemDefinition .tres), data/chains/ (chain metadata) - see data/README.md
+scenes/            One folder per screen; scenes/ui/ holds shared components (top bar, bottom nav, toast, storage panel, item info panel, discovery banner)
 scripts/
   data_models/     Strongly-typed Resource classes (ItemDefinition, ResidenceDefinition, SurvivorDefinition, ...)
   ui/              Theme factory and other UI-only helpers
-  merge/ residence/ quests/ characters/ vehicles/   Reserved for Phase 2+ gameplay logic
+  merge/           Merge board runtime: item icon renderer, item view, board cell, chain legend icon
+  residence/ quests/ characters/ vehicles/   Reserved for Phase 3+ gameplay logic
 assets/            Art/audio; assets/manifests/asset_manifest.json tracks placeholder vs. final status
 shaders/           Reserved for later visual-effects work
-tests/             Manual test checklists (see tests/PHASE1_MANUAL_CHECKLIST.md); no engine available here to run automated tests
+tests/             Headless smoke tests + manual test checklists; see tests/README.md
 ```
 
 ## Running it

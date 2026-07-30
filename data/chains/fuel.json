@@ -1,0 +1,22 @@
+{
+	"category": "Fuel",
+	"chain_id": "fuel",
+	"is_reward_chain": false,
+	"item_ids": [
+		"fuel_1",
+		"fuel_2",
+		"fuel_3",
+		"fuel_4",
+		"fuel_5",
+		"fuel_6",
+		"fuel_7"
+	],
+	"producer_item_id": "fuel_producer",
+	"task_tags": [
+		"fuel",
+		"vehicle_mission",
+		"generator",
+		"long_distance_scavenging",
+		"residence_power"
+	]
+}

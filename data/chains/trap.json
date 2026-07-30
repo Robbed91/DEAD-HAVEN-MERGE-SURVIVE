@@ -1,0 +1,22 @@
+{
+	"category": "Traps",
+	"chain_id": "trap",
+	"is_reward_chain": false,
+	"item_ids": [
+		"trap_1",
+		"trap_2",
+		"trap_3",
+		"trap_4",
+		"trap_5",
+		"trap_6",
+		"trap_7"
+	],
+	"producer_item_id": "trap_producer",
+	"task_tags": [
+		"trap",
+		"defence",
+		"scavenging_area_security",
+		"horde_prep",
+		"attack_difficulty_reduction"
+	]
+}

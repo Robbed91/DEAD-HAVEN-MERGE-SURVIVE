@@ -15,6 +15,8 @@ any other existing property.
 | Key | Category | Status |
 |---|---|---|
 | `merge` | Merge board | not sourced |
+| `merge_invalid` | Merge board | not sourced |
+| `discovery` | Merge board | not sourced |
 | `item_pickup` | Merge board | not sourced |
 | `producer_activate` | Merge board | not sourced |
 | `construction_hammer` | Residence | not sourced |

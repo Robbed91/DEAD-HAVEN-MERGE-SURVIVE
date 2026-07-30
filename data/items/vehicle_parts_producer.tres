@@ -1,0 +1,24 @@
+[gd_resource type="Resource" script_class="ItemDefinition" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data_models/item_definition.gd" id="1_11er4"]
+
+[resource]
+script = ExtResource("1_11er4")
+id = "vehicle_parts_producer"
+display_name = "Mechanic's Trolley"
+description = "A Vehicle Parts producer. Tap to spend energy and generate a level 1 Vehicle Parts item."
+chain_id = "vehicle_parts"
+level = 0
+max_level_in_chain = 7
+icon_path = "res://assets/items/vehicle_parts/producer.png"
+scene_path = ""
+sell_value = 0
+rarity = 1
+is_producer = true
+produces_item_id = "vehicle_parts_1"
+producer_charges = -1
+producer_cooldown_seconds = 30.0
+task_tags = PackedStringArray("vehicle_parts", "vehicle_repair", "fuel_efficiency", "scavenging_capacity", "route_unlock", "producer")
+discovery_reward = {
+"coins": 25
+}

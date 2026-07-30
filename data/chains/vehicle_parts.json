@@ -1,0 +1,22 @@
+{
+	"category": "Vehicle Parts",
+	"chain_id": "vehicle_parts",
+	"is_reward_chain": false,
+	"item_ids": [
+		"vehicle_parts_1",
+		"vehicle_parts_2",
+		"vehicle_parts_3",
+		"vehicle_parts_4",
+		"vehicle_parts_5",
+		"vehicle_parts_6",
+		"vehicle_parts_7"
+	],
+	"producer_item_id": "vehicle_parts_producer",
+	"task_tags": [
+		"vehicle_parts",
+		"vehicle_repair",
+		"fuel_efficiency",
+		"scavenging_capacity",
+		"route_unlock"
+	]
+}

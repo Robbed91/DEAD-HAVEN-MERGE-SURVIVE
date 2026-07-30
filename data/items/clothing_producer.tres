@@ -1,0 +1,24 @@
+[gd_resource type="Resource" script_class="ItemDefinition" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data_models/item_definition.gd" id="1_6gxhn"]
+
+[resource]
+script = ExtResource("1_6gxhn")
+id = "clothing_producer"
+display_name = "Abandoned Wardrobe"
+description = "A Clothing producer. Tap to spend energy and generate a level 1 Clothing item."
+chain_id = "clothing"
+level = 0
+max_level_in_chain = 7
+icon_path = "res://assets/items/clothing/producer.png"
+scene_path = ""
+sell_value = 0
+rarity = 1
+is_producer = true
+produces_item_id = "clothing_1"
+producer_charges = -1
+producer_cooldown_seconds = 30.0
+task_tags = PackedStringArray("clothing", "survivor_equipment", "dangerous_mission", "cold_weather", "character_appearance", "producer")
+discovery_reward = {
+"coins": 25
+}

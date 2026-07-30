@@ -60,7 +60,15 @@ text = "+20 Energy"
 
 [node name="InfiniteEnergyButton" type="Button" parent="Layout/Scroll/Buttons"]
 unique_name_in_owner = true
-text = "Fill Energy"
+text = "Instant Recharge"
+
+[node name="ToggleInfiniteEnergyButton" type="Button" parent="Layout/Scroll/Buttons"]
+unique_name_in_owner = true
+text = "Infinite Energy: OFF"
+
+[node name="ResetCooldownsButton" type="Button" parent="Layout/Scroll/Buttons"]
+unique_name_in_owner = true
+text = "Reset Producer Cooldowns"
 
 [node name="AddCoinsButton" type="Button" parent="Layout/Scroll/Buttons"]
 unique_name_in_owner = true
@@ -72,8 +80,7 @@ text = "+1 Level"
 
 [node name="AddItemButton" type="Button" parent="Layout/Scroll/Buttons"]
 unique_name_in_owner = true
-text = "Add Any Item"
-tooltip_text = "Available once the merge board lands in Phase 2."
+text = "Add Random Item"
 
 [node name="UnlockResidenceButton" type="Button" parent="Layout/Scroll/Buttons"]
 unique_name_in_owner = true

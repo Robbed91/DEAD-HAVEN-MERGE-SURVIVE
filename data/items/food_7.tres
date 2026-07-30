@@ -1,0 +1,25 @@
+[gd_resource type="Resource" script_class="ItemDefinition" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data_models/item_definition.gd" id="1_ehlpk"]
+
+[resource]
+script = ExtResource("1_ehlpk")
+id = "food_7"
+display_name = "Long-Term Provision Cache"
+description = "Long-Term Provision Cache - level 7 Food item."
+chain_id = "food"
+level = 7
+max_level_in_chain = 7
+icon_path = "res://assets/items/food/level_7.png"
+scene_path = ""
+sell_value = 245
+rarity = 2
+is_producer = false
+produces_item_id = ""
+producer_charges = -1
+producer_cooldown_seconds = 0.0
+task_tags = PackedStringArray("food", "survivor_feeding", "scavenging_prep", "morale", "kitchen_upgrade", "level_7")
+discovery_reward = {
+"coins": 70,
+"energy": 1
+}

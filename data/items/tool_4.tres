@@ -1,0 +1,25 @@
+[gd_resource type="Resource" script_class="ItemDefinition" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data_models/item_definition.gd" id="1_oiv54"]
+
+[resource]
+script = ExtResource("1_oiv54")
+id = "tool_4"
+display_name = "Repair Tool Set"
+description = "Repair Tool Set - level 4 Tools item."
+chain_id = "tool"
+level = 4
+max_level_in_chain = 7
+icon_path = "res://assets/items/tool/level_4.png"
+scene_path = ""
+sell_value = 80
+rarity = 1
+is_producer = false
+produces_item_id = ""
+producer_charges = -1
+producer_cooldown_seconds = 0.0
+task_tags = PackedStringArray("tool", "building", "vehicle_repair", "reinforcement", "workshop_upgrade", "level_4")
+discovery_reward = {
+"coins": 40,
+"energy": 1
+}

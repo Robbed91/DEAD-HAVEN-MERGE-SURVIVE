@@ -1,0 +1,25 @@
+[gd_resource type="Resource" script_class="ItemDefinition" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data_models/item_definition.gd" id="1_pj5w2"]
+
+[resource]
+script = ExtResource("1_pj5w2")
+id = "trap_3"
+display_name = "Noise Trap"
+description = "Noise Trap - level 3 Traps item."
+chain_id = "trap"
+level = 3
+max_level_in_chain = 7
+icon_path = "res://assets/items/trap/level_3.png"
+scene_path = ""
+sell_value = 45
+rarity = 0
+is_producer = false
+produces_item_id = ""
+producer_charges = -1
+producer_cooldown_seconds = 0.0
+task_tags = PackedStringArray("trap", "defence", "scavenging_area_security", "horde_prep", "attack_difficulty_reduction", "level_3")
+discovery_reward = {
+"coins": 30,
+"energy": 1
+}

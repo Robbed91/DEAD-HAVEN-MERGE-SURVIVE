@@ -1,0 +1,25 @@
+[gd_resource type="Resource" script_class="ItemDefinition" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data_models/item_definition.gd" id="1_cd0qg"]
+
+[resource]
+script = ExtResource("1_cd0qg")
+id = "vehicle_parts_7"
+display_name = "Armoured Vehicle Upgrade"
+description = "Armoured Vehicle Upgrade - level 7 Vehicle Parts item."
+chain_id = "vehicle_parts"
+level = 7
+max_level_in_chain = 7
+icon_path = "res://assets/items/vehicle_parts/level_7.png"
+scene_path = ""
+sell_value = 245
+rarity = 2
+is_producer = false
+produces_item_id = ""
+producer_charges = -1
+producer_cooldown_seconds = 0.0
+task_tags = PackedStringArray("vehicle_parts", "vehicle_repair", "fuel_efficiency", "scavenging_capacity", "route_unlock", "level_7")
+discovery_reward = {
+"coins": 70,
+"energy": 1
+}

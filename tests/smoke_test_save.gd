@@ -8,6 +8,12 @@ extends Node
 
 func _ready() -> void:
 	GameManager.new_game()
+	# Baseline captured AFTER new_game(), not hardcoded: Phase 2's starting
+	# board grants first-discovery coin rewards for the starter producers/
+	# items, so the post-new-game total isn't a fixed constant - only the
+	# delta this test itself applies is.
+	var baseline_coins: int = GameManager.resources.coins
+	var baseline_energy: int = GameManager.resources.energy
 	GameManager.add_coins(123)
 	GameManager.add_energy(-30)
 	SaveManager.save_game()
@@ -20,7 +26,7 @@ func _ready() -> void:
 		get_tree().quit(1)
 		return
 	GameManager.apply_save_data(loaded)
-	if GameManager.resources.coins != 373 or GameManager.resources.energy != 70:
+	if GameManager.resources.coins != baseline_coins + 123 or GameManager.resources.energy != baseline_energy - 30:
 		print("SMOKE_SAVE_FAIL: reloaded values wrong: coins=%d energy=%d" % [GameManager.resources.coins, GameManager.resources.energy])
 		get_tree().quit(1)
 		return

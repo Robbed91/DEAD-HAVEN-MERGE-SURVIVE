@@ -1,0 +1,24 @@
+[gd_resource type="Resource" script_class="ItemDefinition" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data_models/item_definition.gd" id="1_jrwn4"]
+
+[resource]
+script = ExtResource("1_jrwn4")
+id = "energy_reward_4"
+display_name = "Energy Core"
+description = "Energy Core. Tap to collect 20 energy."
+chain_id = "energy_reward"
+level = 4
+max_level_in_chain = 7
+icon_path = "res://assets/items/energy_reward/level_4.png"
+scene_path = ""
+sell_value = 0
+rarity = 1
+is_producer = false
+produces_item_id = ""
+producer_charges = -1
+producer_cooldown_seconds = 0.0
+task_tags = PackedStringArray("reward", "energy", "level_4")
+discovery_reward = {
+"coins": 20
+}

@@ -1,9 +1,12 @@
-[gd_scene load_steps=5 format=3 uid="uid://merge_board_scene"]
+[gd_scene load_steps=8 format=3 uid="uid://merge_board_scene"]
 
 [ext_resource type="Script" path="res://scenes/merge_board/merge_board.gd" id="1"]
 [ext_resource type="PackedScene" path="res://scenes/ui/top_resource_bar.tscn" id="2"]
 [ext_resource type="PackedScene" path="res://scenes/ui/bottom_nav.tscn" id="3"]
 [ext_resource type="PackedScene" path="res://scenes/ui/toast.tscn" id="4"]
+[ext_resource type="PackedScene" path="res://scenes/ui/storage_panel.tscn" id="5"]
+[ext_resource type="PackedScene" path="res://scenes/ui/item_info_panel.tscn" id="6"]
+[ext_resource type="PackedScene" path="res://scenes/ui/discovery_banner.tscn" id="7"]
 
 [node name="MergeBoard" type="Control"]
 layout_mode = 3
@@ -22,19 +25,32 @@ theme_override_constants/separation = 0
 [node name="TopResourceBar" parent="Layout" instance=ExtResource("2")]
 layout_mode = 2
 
-[node name="Header" type="Label" parent="Layout"]
+[node name="HeaderRow" type="HBoxContainer" parent="Layout"]
 layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="Header" type="Label" parent="Layout/HeaderRow"]
+layout_mode = 2
+size_flags_horizontal = 3
 horizontal_alignment = 1
-theme_override_font_sizes/font_size = 22
+theme_override_font_sizes/font_size = 20
 text = "Merge Board"
 
-[node name="Note" type="Label" parent="Layout"]
+[node name="StorageButton" type="Button" parent="Layout/HeaderRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(88, 44)
 layout_mode = 2
-horizontal_alignment = 1
-autowrap_mode = 3
-modulate = Color(1, 1, 1, 0.6)
-theme_override_font_sizes/font_size = 15
-text = "Drag, merge and producers arrive in Phase 2. This is the real 7x9 board frame."
+text = "Storage"
+
+[node name="LegendScroll" type="ScrollContainer" parent="Layout"]
+custom_minimum_size = Vector2(0, 52)
+layout_mode = 2
+vertical_scroll_mode = 0
+
+[node name="ChainLegend" type="HBoxContainer" parent="Layout/LegendScroll"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 6
 
 [node name="BoardMargin" type="MarginContainer" parent="Layout"]
 layout_mode = 2
@@ -54,5 +70,21 @@ theme_override_constants/v_separation = 4
 [node name="BottomNav" parent="Layout" instance=ExtResource("3")]
 layout_mode = 2
 active_tab = "merge_board"
+
+[node name="BurstLayer" type="Control" parent="."]
+unique_name_in_owner = true
+mouse_filter = 2
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="StoragePanel" parent="." instance=ExtResource("5")]
+unique_name_in_owner = true
+
+[node name="ItemInfoPanel" parent="." instance=ExtResource("6")]
+unique_name_in_owner = true
+
+[node name="DiscoveryBanner" parent="." instance=ExtResource("7")]
+unique_name_in_owner = true
 
 [node name="Toast" parent="." instance=ExtResource("4")]

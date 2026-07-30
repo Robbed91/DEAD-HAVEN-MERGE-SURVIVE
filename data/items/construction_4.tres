@@ -1,0 +1,25 @@
+[gd_resource type="Resource" script_class="ItemDefinition" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data_models/item_definition.gd" id="1_ytg1f"]
+
+[resource]
+script = ExtResource("1_ytg1f")
+id = "construction_4"
+display_name = "Wooden Board"
+description = "Wooden Board - level 4 Construction item."
+chain_id = "construction"
+level = 4
+max_level_in_chain = 8
+icon_path = "res://assets/items/construction/level_4.png"
+scene_path = ""
+sell_value = 80
+rarity = 0
+is_producer = false
+produces_item_id = ""
+producer_charges = -1
+producer_cooldown_seconds = 0.0
+task_tags = PackedStringArray("construction", "boarding", "door_repair", "wall_construction", "sleeping_area", "lookout", "level_4")
+discovery_reward = {
+"coins": 40,
+"energy": 1
+}

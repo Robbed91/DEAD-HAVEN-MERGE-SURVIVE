@@ -1,0 +1,24 @@
+[gd_resource type="Resource" script_class="ItemDefinition" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data_models/item_definition.gd" id="1_iwx8m"]
+
+[resource]
+script = ExtResource("1_iwx8m")
+id = "tool_producer"
+display_name = "Damaged Workshop Bench"
+description = "A Tools producer. Tap to spend energy and generate a level 1 Tools item."
+chain_id = "tool"
+level = 0
+max_level_in_chain = 7
+icon_path = "res://assets/items/tool/producer.png"
+scene_path = ""
+sell_value = 0
+rarity = 1
+is_producer = true
+produces_item_id = "tool_1"
+producer_charges = -1
+producer_cooldown_seconds = 30.0
+task_tags = PackedStringArray("tool", "building", "vehicle_repair", "reinforcement", "workshop_upgrade", "producer")
+discovery_reward = {
+"coins": 25
+}

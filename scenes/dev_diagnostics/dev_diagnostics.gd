@@ -18,26 +18,63 @@ func _ready() -> void:
 
 	%BackButton.pressed.connect(func(): SceneRouter.back("main_menu"))
 	%AddEnergyButton.pressed.connect(func(): GameManager.add_energy(20))
-	%InfiniteEnergyButton.pressed.connect(func(): GameManager.add_energy(GameManager.resources.energy_max))
+	%InfiniteEnergyButton.pressed.connect(func():
+		GameManager.debug_instant_recharge()
+		EventBus.show_toast.emit("Energy fully recharged.")
+	)
+	%ToggleInfiniteEnergyButton.pressed.connect(_on_toggle_infinite_energy)
+	%ResetCooldownsButton.pressed.connect(func():
+		GameManager.debug_reset_all_cooldowns()
+		EventBus.show_toast.emit("All producer cooldowns reset.")
+	)
 	%AddCoinsButton.pressed.connect(func(): GameManager.add_coins(500))
 	%AddLevelButton.pressed.connect(func(): GameManager.add_xp(GameManager.xp_needed_for_level(GameManager.profile.level)))
+	%AddItemButton.pressed.connect(_on_add_random_item)
 	%ResetSaveButton.pressed.connect(func():
 		GameManager.reset_progress()
 		EventBus.show_toast.emit("Save reset from developer menu.")
 	)
 
-	for key in ["AddItemButton", "UnlockResidenceButton", "TriggerDefenceButton", "TriggerScavengeButton", "UnlockVehicleButton", "HealSurvivorsButton"]:
+	_refresh_infinite_energy_label()
+
+	for key in ["UnlockResidenceButton", "TriggerDefenceButton", "TriggerScavengeButton", "UnlockVehicleButton", "HealSurvivorsButton"]:
 		var btn: Button = get_node("%" + key)
 		btn.disabled = true
+
+func _on_toggle_infinite_energy() -> void:
+	GameManager.set_debug_infinite_energy(not GameManager.debug_infinite_energy)
+	_refresh_infinite_energy_label()
+
+func _refresh_infinite_energy_label() -> void:
+	%ToggleInfiniteEnergyButton.text = "Infinite Energy: %s" % ("ON" if GameManager.debug_infinite_energy else "OFF")
+
+func _on_add_random_item() -> void:
+	var ids := ItemDatabase.get_all_item_ids()
+	if ids.is_empty():
+		return
+	var item_id: String = ids[randi() % ids.size()]
+	var cell := BoardState.find_empty_cell()
+	if cell.x < 0:
+		EventBus.show_toast.emit("Board is full - open Storage first.")
+		return
+	var spawned := BoardState.spawn_item(item_id, cell)
+	if spawned != null:
+		var def := ItemDatabase.get_item(item_id)
+		EventBus.show_toast.emit("Added: %s" % def.display_name)
 
 func _process(_delta: float) -> void:
 	%FpsLabel.text = "FPS: %d" % Engine.get_frames_per_second()
 	%SceneLabel.text = "Scene: %s" % SceneRouter.current_scene_key
-	%StateLabel.text = "Lv %d | XP %d | Energy %d/%d | Coins %d | Tokens %d" % [
+	%StateLabel.text = "Lv %d | XP %d | Energy %d/%d%s | Coins %d | Tokens %d | Board %d/%d | Storage %d/%d" % [
 		GameManager.profile.level,
 		GameManager.profile.xp,
 		GameManager.resources.energy,
 		GameManager.resources.energy_max,
+		" (infinite)" if GameManager.debug_infinite_energy else "",
 		GameManager.resources.coins,
 		GameManager.resources.haven_tokens,
+		BoardState.grid.size(),
+		BoardState.COLUMNS * BoardState.ROWS,
+		BoardState.storage_order.size(),
+		BoardState.storage_capacity,
 	]

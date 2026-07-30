@@ -1,0 +1,24 @@
+[gd_resource type="Resource" script_class="ItemDefinition" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data_models/item_definition.gd" id="1_v8dmb"]
+
+[resource]
+script = ExtResource("1_v8dmb")
+id = "fuel_producer"
+display_name = "Fuel Shed"
+description = "A Fuel producer. Tap to spend energy and generate a level 1 Fuel item."
+chain_id = "fuel"
+level = 0
+max_level_in_chain = 7
+icon_path = "res://assets/items/fuel/producer.png"
+scene_path = ""
+sell_value = 0
+rarity = 1
+is_producer = true
+produces_item_id = "fuel_1"
+producer_charges = -1
+producer_cooldown_seconds = 30.0
+task_tags = PackedStringArray("fuel", "vehicle_mission", "generator", "long_distance_scavenging", "residence_power", "producer")
+discovery_reward = {
+"coins": 25
+}

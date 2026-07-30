@@ -1,0 +1,25 @@
+[gd_resource type="Resource" script_class="ItemDefinition" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data_models/item_definition.gd" id="1_cm1bi"]
+
+[resource]
+script = ExtResource("1_cm1bi")
+id = "trap_6"
+display_name = "Perimeter Defence Kit"
+description = "Perimeter Defence Kit - level 6 Traps item."
+chain_id = "trap"
+level = 6
+max_level_in_chain = 7
+icon_path = "res://assets/items/trap/level_6.png"
+scene_path = ""
+sell_value = 180
+rarity = 2
+is_producer = false
+produces_item_id = ""
+producer_charges = -1
+producer_cooldown_seconds = 0.0
+task_tags = PackedStringArray("trap", "defence", "scavenging_area_security", "horde_prep", "attack_difficulty_reduction", "level_6")
+discovery_reward = {
+"coins": 60,
+"energy": 1
+}

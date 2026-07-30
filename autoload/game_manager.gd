@@ -7,6 +7,13 @@ extends Node
 
 const MAX_ENERGY_DEFAULT := 100
 const XP_CURVE_BASE := 100 # xp needed for level 2; scales per level, see xp_needed_for_level()
+const ENERGY_REGEN_INTERVAL_SECONDS := 180.0 # 1 energy per 3 minutes; rebalance freely
+const ENERGY_REGEN_AMOUNT := 1
+
+var _energy_regen_timer: Timer
+## Debug-only, never persisted: while true, spend_energy() always succeeds
+## without deducting. Toggled from the dev diagnostics screen.
+var debug_infinite_energy: bool = false
 
 var profile: Dictionary = {
 	"survivor_name": "Mara Vale",
@@ -47,6 +54,38 @@ var is_game_active: bool = false
 func is_debug_enabled() -> bool:
 	return OS.is_debug_build()
 
+func _ready() -> void:
+	_energy_regen_timer = Timer.new()
+	_energy_regen_timer.wait_time = ENERGY_REGEN_INTERVAL_SECONDS
+	_energy_regen_timer.one_shot = false
+	_energy_regen_timer.timeout.connect(_on_energy_regen_tick)
+	add_child(_energy_regen_timer)
+	_energy_regen_timer.start()
+
+func _on_energy_regen_tick() -> void:
+	resources.last_energy_tick_unix = Time.get_unix_time_from_system()
+	if resources.energy < resources.energy_max:
+		add_energy(ENERGY_REGEN_AMOUNT)
+
+## Grants energy accrued while the app was closed, based on how much time
+## passed since the save was last written. Capped at one full refill's
+## worth of ticks so an absurd clock jump can't be exploited.
+func _apply_offline_energy_regen() -> void:
+	var last_tick: float = resources.get("last_energy_tick_unix", 0.0)
+	if last_tick <= 0.0:
+		resources.last_energy_tick_unix = Time.get_unix_time_from_system()
+		return
+	var elapsed: float = Time.get_unix_time_from_system() - last_tick
+	if elapsed <= 0.0:
+		resources.last_energy_tick_unix = Time.get_unix_time_from_system()
+		return
+	var ticks := int(elapsed / ENERGY_REGEN_INTERVAL_SECONDS)
+	var max_useful_ticks: int = resources.energy_max # more ticks than this can't matter, energy is already clamped
+	ticks = mini(ticks, max_useful_ticks)
+	if ticks > 0:
+		resources.energy = clampi(resources.energy + ticks * ENERGY_REGEN_AMOUNT, 0, resources.energy_max)
+	resources.last_energy_tick_unix = Time.get_unix_time_from_system()
+
 # -- Lifecycle -------------------------------------------------------------
 
 func new_game() -> void:
@@ -67,8 +106,10 @@ func new_game() -> void:
 		"medicine": 0,
 		"fuel": 0,
 		"morale": 70,
+		"last_energy_tick_unix": Time.get_unix_time_from_system(),
 	}
 	is_game_active = true
+	BoardState.reset_new_board()
 	SaveManager.save_game()
 	EventBus.game_loaded.emit()
 
@@ -88,6 +129,7 @@ func to_save_data() -> Dictionary:
 		"profile": profile.duplicate(true),
 		"resources": resources.duplicate(true),
 		"settings": settings.duplicate(true),
+		"board": BoardState.to_save_data(),
 	}
 
 func apply_save_data(data: Dictionary) -> void:
@@ -97,6 +139,8 @@ func apply_save_data(data: Dictionary) -> void:
 		resources.merge(data["resources"], true)
 	if data.has("settings"):
 		settings.merge(data["settings"], true)
+	_apply_offline_energy_regen()
+	BoardState.apply_save_data(data.get("board", {}))
 	AudioManager.apply_volume_settings()
 
 # -- Resources ---------------------------------------------------------------
@@ -106,8 +150,11 @@ func add_energy(amount: int) -> void:
 	EventBus.energy_changed.emit(resources.energy, resources.energy_max)
 	SaveManager.request_autosave()
 
-## Returns true if there was enough energy to spend.
+## Returns true if there was enough energy to spend (always true in debug
+## infinite-energy mode, and energy is not deducted in that case).
 func spend_energy(amount: int) -> bool:
+	if debug_infinite_energy:
+		return true
 	if resources.energy < amount:
 		return false
 	resources.energy -= amount
@@ -173,3 +220,14 @@ func update_setting(key: String, value: Variant) -> void:
 func reset_progress() -> void:
 	SaveManager.delete_save()
 	new_game()
+
+# -- Debug tools (dev diagnostics screen only, never in release builds) ------
+
+func set_debug_infinite_energy(enabled: bool) -> void:
+	debug_infinite_energy = enabled
+
+func debug_instant_recharge() -> void:
+	add_energy(resources.energy_max)
+
+func debug_reset_all_cooldowns() -> void:
+	BoardState.debug_reset_all_cooldowns()

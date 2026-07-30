@@ -20,6 +20,14 @@ signal level_up(new_level: int)
 signal scene_changed(scene_key: String)
 signal settings_changed()
 
+# -- Merge board -----------------------------------------------------------
+signal board_item_added(instance_id: String)
+signal board_item_moved(instance_id: String)
+signal board_item_removed(instance_id: String)
+signal items_merged(dragged_instance_id: String, target_instance_id: String, resulting_instance_id: String)
+signal item_discovered(item_id: String)
+signal producer_activated(producer_instance_id: String, spawned_instance_id: String)
+
 # -- Lightweight UI feedback ----------------------------------------------
 ## Used by any screen to surface a short non-blocking message, e.g. for
 ## systems that are not implemented yet in the current development phase.

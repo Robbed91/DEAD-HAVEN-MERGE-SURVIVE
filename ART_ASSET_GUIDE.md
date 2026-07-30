@@ -25,6 +25,17 @@ Current placeholder scripts:
 - `scenes/haven/haven_background.gd`
 - `scenes/world_map/world_map_background.gd`
 - `scripts/ui/survivor_silhouette.gd`
+- `scripts/merge/item_icon_renderer.gd` (Phase 2) - one reusable renderer for
+  all 101 merge items instead of 101 bespoke drawings: a rarity-tinted
+  background, a category-specific silhouette (distinct shape per chain -
+  planks for Construction, a hammer for Tools, a cross for Medical, etc.),
+  a level badge, and overlays for producer/cooldown/exhausted/locked/
+  cobweb/bubble states. Every `ItemDefinition.icon_path` already points at
+  its intended final PNG location under `assets/items/`; swapping in real
+  art means populating those files and switching `ItemView` to draw a
+  texture instead of calling this renderer - the renderer itself doesn't
+  need to change or be removed immediately, `ItemView` just needs a real-
+  asset-exists check added when that art lands.
 
 ## Environment layering (per design spec section 20)
 
