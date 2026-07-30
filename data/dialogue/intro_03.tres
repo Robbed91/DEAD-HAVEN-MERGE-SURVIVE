@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="DialogueEntry" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data_models/dialogue_entry.gd" id="1_1yr6m"]
+
+[resource]
+script = ExtResource("1_1yr6m")
+id = "intro_03"
+speaker_id = ""
+portrait_key = ""
+expression_key = "neutral"
+text = "The merge board in her pack hums to life - scavenged parts, sorted and ready. Time to get to work."
+background_scene_path = ""
+animation = ""
+sound_cue = ""
+branching_options = Array[Dictionary]([])
+next_id = ""

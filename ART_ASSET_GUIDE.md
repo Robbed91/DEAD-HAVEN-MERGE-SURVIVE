@@ -66,6 +66,15 @@ script for Hollow Creek Farmhouse; splitting these into separate nodes/
 textures is expected once real art replaces the placeholder (tracked as
 high priority in the asset manifest).
 
+## Dialogue portraits (Phase 4)
+
+The dialogue screen (`scenes/dialogue/`) reuses `SurvivorSilhouette`,
+colour-coded per speaker, rather than a new placeholder - no new visual
+technique was needed this phase. `DialogueEntry.expression_key` is set on
+content (e.g. Noah's `"injured"` line) but nothing currently varies the
+portrait rendering by expression; that's still tracked under "Characters"
+below, since it's the same underlying asset gap.
+
 ## Characters - required set per survivor (not yet produced)
 
 For each main survivor (Mara Vale, Noah Vance, Lena Ortiz, Dr Imogen Shaw,

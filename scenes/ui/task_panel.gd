@@ -74,10 +74,21 @@ func _on_find_pressed() -> void:
 	SceneRouter.go_to("merge_board", {"highlight_chain_id": def.chain_id if def else ""})
 
 func _on_complete_pressed() -> void:
+	var quest := ResidenceManager.get_quest(_quest_id)
+	var dialogue_id: String = quest.dialogue_trigger_id if quest != null else ""
 	var result := ResidenceManager.try_complete_quest(_quest_id)
-	if result.success:
-		EventBus.show_toast.emit("Repaired!")
-		completed.emit(result.hotspot_id)
-	else:
+	if not result.success:
 		EventBus.show_toast.emit("Not enough materials yet.")
+		hide_panel()
+		return
+
 	hide_panel()
+	if not dialogue_id.is_empty():
+		# Skip the on-screen repair burst here - we're leaving Haven for the
+		# dialogue scene immediately, so there's no time to see it play.
+		# The burst still plays for every other hotspot; this one gets a
+		# proper scene instead as its payoff.
+		DialogueManager.start_dialogue(dialogue_id)
+	else:
+		completed.emit(result.hotspot_id)
+		EventBus.show_toast.emit("Repaired!")

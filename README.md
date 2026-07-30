@@ -35,23 +35,22 @@ cool blue-grey exteriors. See `scripts/ui/theme_factory.gd` for the exact
 palette values and `ART_ASSET_GUIDE.md` for how it's applied to
 environments and characters.
 
-## Current status: Phase 3 - Residence system
+## Current status: Phase 4 - Story
 
-Phase 1 (foundation) and Phase 2 (merge board) are done, and now Hollow
-Creek Farmhouse is a real, playable residence: 9 repair hotspots that each
-require a specific merge-board item, consume it on completion, visibly
-change from damaged to fixed, and grant rewards - including unlocking
-Noah Vance in the Survivors roster. **It is not yet the full game** -
-story/dialogue, scavenging, survivors-as-characters beyond Noah's unlock,
+Phases 1-3 (foundation, merge board, residence system) are done, and now
+the game has a real dialogue engine and its first two story beats: an
+intro scene on first arrival, and a real scene (with a genuine choice) for
+rescuing Noah Vance instead of a generic toast. **It is not yet the full
+game** - scavenging, survivors-as-characters beyond Noah's unlock,
 vehicles and defence events are scoped for the phases that follow (see
 `DEVELOPMENT_LOG.md` for the authoritative phase-by-phase plan and status).
 
 What already works, end to end, in this build:
-- Everything from Phase 1 (main menu, save/load, settings, navigation, dev diagnostics) and Phase 2 (the full 7x9 merge board, 101 items across 9 gameplay + 4 reward chains, producers, energy, storage)
-- 9 real repair hotspots on Hollow Creek Farmhouse (front door, kitchen windows, living room, fireplace, pantry, upstairs bedroom, barn, rear escape, perimeter traps), each with its own damaged/fixed visual and a task panel showing the required item, owned/needed count, and reward
-- Completing a task consumes the required merge item, grants coins/XP, and visibly repairs that area of the residence with a burst animation
-- "Find on Board" jumps from a task straight to the Merge Board with the exact required chain highlighted - real task highlighting, not just the Phase 2 legend
-- Rescuing Noah Vance (the "Someone's Upstairs" milestone) genuinely unlocks him in the Survivors roster
+- Everything from Phase 1 (main menu, save/load, settings, navigation, dev diagnostics), Phase 2 (the full 7x9 merge board, 101 items across 9 gameplay + 4 reward chains, producers, energy, storage) and Phase 3 (9 real repair hotspots on Hollow Creek Farmhouse, task panels, "Find on Board" task highlighting)
+- A real dialogue engine: speaker/portrait/text, linear chains, and branching choices that grant rewards and set persisted story flags
+- An intro scene the first time you reach Haven after starting a new game
+- A real "Someone's Upstairs" scene when you rescue Noah Vance, ending in a genuine trust-or-wary choice (both still rescue him - the choice flavors the reward, not whether he's saved, matching the design spec's milestone)
+- Chapter tracking ("Chapter 1: The Open Door" -> "Chapter 2: Someone Upstairs" once the front door is secured), shown on Haven's header
 - Energy regenerates over time (including while the app is closed) and can be spent by producers; a debug infinite-energy mode exists for testing
 - First-time item discovery grants a coin/energy reward exactly once per item, with a discovery banner
 
@@ -65,10 +64,12 @@ errors; every screen instantiates without a runtime error; new game /
 save / reload / corrupted-save-falls-back-to-backup all behave as
 designed; settings changes actually reach the audio bus and rebuilt
 theme; merging, producers, energy, storage, delete/undo and reward
-collection (Phase 2) all behave as designed against the real data; and
-(new in Phase 3) task requirement checks, item consumption, reward
-delivery, hotspot state changes and the Noah unlock all behave as designed
-too (see `tests/README.md` for the smoke tests this was checked with). It has
+collection (Phase 2) all behave as designed against the real data; task
+requirement checks, item consumption, reward delivery, hotspot state
+changes and the Noah unlock (Phase 3) all behave as designed; and (new in
+Phase 4) dialogue chain/branch resolution, choice rewards and story flags,
+and chapter advancement all behave as designed too (see `tests/README.md`
+for the smoke tests this was checked with). It has
 **not** been visually confirmed on a real screen - touch input, drag
 gesture feel, layout at actual device resolutions, and animation timing
 still need a real run in the editor or on a device. Please report anything
@@ -83,15 +84,15 @@ network service, or third-party SDK is required to play.
 ## Project structure
 
 ```
-autoload/         Global singletons: EventBus, ItemDatabase, GameManager, BoardState, ResidenceManager, SaveManager, AudioManager, SceneRouter
-data/              Content: data/items/ (101 ItemDefinition .tres), data/chains/ (chain metadata), data/residences/ + data/quests/ (Hollow Creek Farmhouse) - see data/README.md
-scenes/            One folder per screen; scenes/ui/ holds shared components (top bar, bottom nav, toast, storage panel, item info panel, discovery banner, task panel)
+autoload/         Global singletons: EventBus, ItemDatabase, GameManager, BoardState, ResidenceManager, DialogueManager, SaveManager, AudioManager, SceneRouter
+data/              Content: data/items/ (101 ItemDefinition .tres), data/chains/, data/residences/ + data/quests/ (Hollow Creek Farmhouse), data/dialogue/ (intro + Noah rescue) - see data/README.md
+scenes/            One folder per screen; scenes/ui/ holds shared components (top bar, bottom nav, toast, storage panel, item info panel, discovery banner, task panel); scenes/dialogue/ is the Phase 4 dialogue screen
 scripts/
   data_models/     Strongly-typed Resource classes (ItemDefinition, ResidenceDefinition, SurvivorDefinition, ...)
   ui/              Theme factory and other UI-only helpers
   merge/           Merge board runtime: item icon renderer, item view, board cell, chain legend icon
   residence/       Hotspot visual (Phase 3)
-  quests/ characters/ vehicles/   Reserved for Phase 4+ gameplay logic
+  characters/ vehicles/   Reserved for Phase 5+ gameplay logic
 assets/            Art/audio; assets/manifests/asset_manifest.json tracks placeholder vs. final status
 shaders/           Reserved for later visual-effects work
 tests/             Headless smoke tests + manual test checklists; see tests/README.md

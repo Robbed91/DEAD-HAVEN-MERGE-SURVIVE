@@ -1,0 +1,36 @@
+[gd_resource type="Resource" script_class="DialogueEntry" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data_models/dialogue_entry.gd" id="1_odnax"]
+
+[resource]
+script = ExtResource("1_odnax")
+id = "noah_03"
+speaker_id = "mara_vale"
+portrait_key = "mara_vale"
+expression_key = "neutral"
+text = "I'm not here to hurt you. Let me look at that arm."
+background_scene_path = ""
+animation = ""
+sound_cue = ""
+branching_options = Array[Dictionary]([{
+"condition": "",
+"next_id": "",
+"quest_trigger": "",
+"relationship_changes": {
+"noah_trusted": true
+},
+"reward": {
+"coins": 20
+},
+"text": "Treat his wound and offer him a place here."
+}, {
+"condition": "",
+"next_id": "",
+"quest_trigger": "",
+"relationship_changes": {
+"noah_trusted": false
+},
+"reward": {},
+"text": "Treat his wound, but keep him at a distance for now."
+}])
+next_id = ""

@@ -9,6 +9,7 @@ extends Node
 const SCENE_PATHS: Dictionary = {
 	"main_menu": "res://scenes/main_menu/main_menu.tscn",
 	"haven": "res://scenes/haven/haven.tscn",
+	"dialogue": "res://scenes/dialogue/dialogue.tscn",
 	"merge_board": "res://scenes/merge_board/merge_board.tscn",
 	"world_map": "res://scenes/world_map/world_map.tscn",
 	"survivors": "res://scenes/survivors/survivors.tscn",

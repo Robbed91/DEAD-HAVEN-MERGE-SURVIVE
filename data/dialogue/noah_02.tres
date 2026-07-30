@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="DialogueEntry" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data_models/dialogue_entry.gd" id="1_4o60r"]
+
+[resource]
+script = ExtResource("1_4o60r")
+id = "noah_02"
+speaker_id = "noah_vance"
+portrait_key = "noah_vance"
+expression_key = "injured"
+text = "...Don't- don't come any closer. I didn't take anything, I swear."
+background_scene_path = ""
+animation = ""
+sound_cue = ""
+branching_options = Array[Dictionary]([])
+next_id = "noah_03"

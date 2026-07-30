@@ -33,6 +33,10 @@ signal hotspot_state_changed(hotspot_id: String, new_state: int)
 signal quest_completed(quest_id: String)
 signal survivor_unlocked(survivor_id: String)
 
+# -- Story (Phase 4) --------------------------------------------------------
+signal chapter_changed(chapter_id: String)
+signal dialogue_finished(entry_id: String)
+
 # -- Lightweight UI feedback ----------------------------------------------
 ## Used by any screen to surface a short non-blocking message, e.g. for
 ## systems that are not implemented yet in the current development phase.

@@ -119,6 +119,15 @@ func try_complete_quest(quest_id: String) -> Dictionary:
 		hotspot_states[quest.residence_hotspot_id] = ResidenceHotspot.State.COMPLETED
 		EventBus.hotspot_state_changed.emit(quest.residence_hotspot_id, ResidenceHotspot.State.COMPLETED)
 
+	# Chapter 1 (spec: "The Open Door") ends once the front door is secured
+	# and the merge board is in use; Chapter 2 ("Someone Upstairs") opens
+	# with the noises that lead to finding Noah. Later chapters need
+	# scavenging (Phase 5), a vehicle (Phase 6) and a defence event (Phase 7)
+	# that don't exist yet, so progression stops here for now - see
+	# DEVELOPMENT_LOG.md Known issues.
+	if quest_id == "q_secure_front_door":
+		GameManager.advance_chapter("chapter_2_someone_upstairs")
+
 	EventBus.quest_completed.emit(quest_id)
 	SaveManager.request_autosave()
 	return {"success": true, "hotspot_id": quest.residence_hotspot_id}

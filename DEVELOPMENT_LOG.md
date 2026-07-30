@@ -494,9 +494,190 @@ godot4 --path /path/to/dead-haven-merge-survive
 # Headless import check (populates .godot/ cache, surfaces parse errors)
 godot4 --headless --path /path/to/dead-haven-merge-survive --import
 
-# Run the Phase 2 + Phase 3 smoke tests
+# Run the Phase 2-4 smoke tests
 godot4 --headless --path /path/to/dead-haven-merge-survive tests/smoke_test_merge.tscn
 godot4 --headless --path /path/to/dead-haven-merge-survive tests/smoke_test_residence.tscn
+godot4 --headless --path /path/to/dead-haven-merge-survive tests/smoke_test_dialogue.tscn
+
+# Android export (after templates/SDK/keystore are configured in the editor)
+godot4 --headless --path /path/to/dead-haven-merge-survive \
+  --export-debug "Android" build/android/dead_haven.apk
+```
+
+---
+
+## Phase 4: Story - complete (scoped to what Phases 1-3's systems support)
+
+### Files created
+
+Content: `data/dialogue/intro_01.tres`/`intro_02.tres`/`intro_03.tres` (the
+Chapter 1 arrival beat) and `data/dialogue/noah_01.tres`/`noah_02.tres`/
+`noah_03.tres` (the Chapter 2 Noah-rescue scene, `noah_03` branches into a
+trust-or-wary choice). Generated once by a script run through the Godot
+binary and deleted, same pattern as every phase's content so far.
+
+New autoload: `autoload/dialogue_manager.gd` (loads `DialogueEntry`
+content, `start_dialogue(id, return_scene_key)` is the one entry point
+every trigger calls through).
+
+New screen: `scenes/dialogue/dialogue.gd`/`.tscn` - renders one
+`DialogueEntry` at a time (speaker name, a colour-coded `SurvivorSilhouette`
+portrait, text), advances via `next_id` on tap, or shows branching-option
+buttons that apply `reward` (same coins/xp/energy keys quest rewards use)
+and `relationship_changes` (written into the new story-flags system, see
+below) before continuing.
+
+Tests: `tests/smoke_test_dialogue.gd`/`.tscn`.
+
+### Files modified
+
+- `project.godot` - registered `DialogueManager`; added the `"dialogue"`
+  scene path to `SceneRouter.SCENE_PATHS`.
+- `autoload/event_bus.gd` - added `chapter_changed`, `dialogue_finished`.
+- `autoload/game_manager.gd` - `profile.current_chapter_id` /
+  `profile.story_flags`, `set_story_flag()`/`get_story_flag()`/
+  `advance_chapter()`. **Also fixed a pre-existing bug**: Phase 3's
+  `unlocked_survivor_ids` field was only ever added to `new_game()`'s reset
+  dict, not the outer `var profile` declaration (an `Edit` whose
+  replacement text matched one indentation level but not the other) -
+  harmless in practice since every real codepath calls `new_game()` or
+  `apply_save_data()` before reading `profile`, but a latent crash risk
+  for any future codepath that doesn't. Fixed to keep both copies in sync,
+  and double-checked the new `current_chapter_id`/`story_flags` fields
+  landed in both places this time.
+- `autoload/residence_manager.gd` - `try_complete_quest()` now calls
+  `GameManager.advance_chapter()` when `q_secure_front_door` completes.
+- `scenes/ui/task_panel.gd` - if the completed quest has a
+  `dialogue_trigger_id`, routes to that dialogue instead of the generic
+  "Repaired!" toast (and skips the on-Haven repair-burst animation for
+  that one hotspot, since the scene changes immediately - see Known
+  issues).
+- `scenes/haven/haven.gd`/`.tscn` - added a chapter-title label; launches
+  `intro_01` on first arrival, guarded by `get_tree().current_scene == self`
+  (see Known issues / bugs fixed below) and a `story_flags` seen-flag.
+- `scenes/survivors/survivors.gd` - no functional change this phase, just
+  along for the ride via the `profile` shape fix above.
+- `data/quests/q_rescue_noah.tres` - `dialogue_trigger_id` set to
+  `"noah_01"` (hand-edited, one field, rather than regenerating all 9 quest
+  files through a restored generator script).
+
+### Features completed
+
+- **Real dialogue engine**: `DialogueEntry`'s full schema (speaker,
+  portrait/expression key, text, branching options with reward/
+  relationship_changes, linear `next_id` chaining) is genuinely
+  interpreted, not just defined - the `condition` and `quest_trigger`
+  fields exist and are read but unused by any current content (no
+  dialogue yet needs to gate a choice or fire a quest from within itself),
+  which is honestly noted rather than faked with placeholder logic.
+- **Chapter 1 intro**: plays automatically the first time the player
+  reaches Haven after starting a new game, framing the radio message and
+  the merge board.
+- **Chapter 2 - Noah's rescue**: completing the "Someone's Upstairs" task
+  (spec milestone 6) now plays a real 3-beat scene instead of a toast, and
+  ends on a genuine choice - "offer him a place here" (+20 coins, sets
+  story flag `noah_trusted = true`) vs. "keep him at a distance" (no bonus,
+  `noah_trusted = false`). Both options still rescue him (unlocking him in
+  the roster stays a guaranteed reward of completing the underlying quest,
+  matching the design spec's milestone wording literally - the choice
+  flavors the outcome, it doesn't gate it).
+- **Chapter progression**: `GameManager.profile.current_chapter_id`
+  advances from "The Open Door" to "Someone Upstairs" when the front door
+  is secured (spec: that's exactly where the design doc's own chapter
+  break falls), shown on Haven's header. It does not advance further -
+  see Known issues.
+- **Lightweight relationship placeholder**: `GameManager.story_flags` lets
+  a dialogue choice have a real, persisted consequence (`noah_trusted`)
+  without inventing a numeric trust/friendship/rivalry model that nothing
+  else reads yet - Phase 6 is where a real relationship system with actual
+  mechanical effects belongs.
+
+### Tests performed
+
+Same headless-binary approach as every phase so far:
+
+- `godot4 --headless --path . --import` - clean, zero script/parse errors.
+- **A real regression was caught and fixed during this phase**:
+  `tests/smoke_test.tscn` hung indefinitely after the Haven intro-dialogue
+  change, because `Haven._ready()` called `SceneRouter.start_dialogue()`
+  -> `get_tree().change_scene_to_file()` unconditionally, including when
+  `smoke_test.gd` instantiates Haven as a plain child (deliberately not
+  via `SceneRouter`) to inspect it - which ripped the active scene tree
+  out from under the running test. Fixed by gating the auto-launch on
+  `get_tree().current_scene == self`, i.e. only firing when Haven is
+  genuinely the tree's active scene. Re-ran with a hard `timeout` wrapper
+  afterward to confirm it no longer hangs before trusting a clean pass
+  again.
+- `tests/smoke_test.tscn`, `tests/smoke_test_save.tscn`,
+  `tests/smoke_test_settings.tscn`, `tests/smoke_test_merge.tscn`,
+  `tests/smoke_test_residence.tscn` - all still pass after the fix above,
+  no other regressions.
+- `tests/smoke_test_dialogue.tscn` (new) - the intro chain's `next_id`
+  links resolve in order and end correctly; `q_rescue_noah`'s
+  `dialogue_trigger_id` and `noah_03`'s two branching options are wired as
+  expected; applying a branching choice's effects grants the right coin
+  reward and sets the right story flag; completing the front-door quest
+  advances the chapter exactly once (re-advancing to the same chapter is
+  a verified no-op); a full save/reload round trip preserves the chapter
+  and the story flag.
+
+### Known issues
+
+- **Not visually confirmed**, same caveat as every phase. Text pacing,
+  portrait sizing, and whether tap-to-advance feels responsive all need a
+  real screen.
+- **Chapters 3-5 don't exist yet.** The design spec's own chapter
+  breakdown needs a scavenging mission (Ch. 3, Phase 5), a defence event
+  and a discovered radio message (Ch. 4, Phase 7), and a repaired vehicle
+  plus World Map unlock (Ch. 5, Phase 6/8) - none of those systems are
+  built yet, so `current_chapter_id` caps at "chapter_2_someone_upstairs"
+  honestly rather than faking further chapter titles with nothing behind
+  them.
+- **No portrait art or real expressions** - the dialogue screen reuses
+  Phase 1's `SurvivorSilhouette` placeholder, coloured per speaker; the
+  `expression_key` field is set on content (e.g. Noah's `"injured"`) but
+  nothing currently changes the portrait's rendering based on it.
+  Wiring that up needs either more `SurvivorSilhouette` variants or real
+  art - tracked as a placeholder-art gap, not a logic gap.
+- **No background scene per dialogue beat** - `background_scene_path` is
+  part of the schema and set to `""` on every current entry; the dialogue
+  screen just shows a flat dark panel. Real per-scene backgrounds are an
+  art/polish addition once there's art to show.
+- **The Noah hotspot skips its repair-burst animation** - since
+  completing that task immediately changes scenes to the dialogue screen,
+  there's no time for the on-Haven burst to play; every other hotspot
+  still gets it. Documented as an intentional trade-off in `task_panel.gd`,
+  not an oversight.
+- **`condition` and `quest_trigger` dialogue-option fields are unused.**
+  They're read (no crash, no silent drop) but nothing in this phase's
+  content needs a conditional choice or a dialogue-triggered quest, so
+  there's no logic consuming them yet - real usage arrives whenever a
+  future phase's content actually needs one.
+- **Godot binary still not persisted** in this environment - same caveat
+  as every phase so far.
+
+### Exact next phase
+
+**Phase 5: Scavenging** - mission selection, survivor assignment (blocked
+on Phase 6 existing, so this phase may need to introduce a minimal
+placeholder assignment step or reorder against Phase 6 - to be decided
+when that phase starts), choice-based encounters, loot rewards, mission
+animations. This is also when Chapter 3 ("Before Nightfall") becomes real.
+
+### Commands required to run or export the project
+
+```bash
+# Open and run in the editor
+# (Godot 4.3+, standard build, GDScript-only project)
+godot4 --path /path/to/dead-haven-merge-survive
+
+# Headless import check (populates .godot/ cache, surfaces parse errors)
+godot4 --headless --path /path/to/dead-haven-merge-survive --import
+
+# Run the full smoke test suite
+for f in smoke_test smoke_test_save smoke_test_settings smoke_test_merge smoke_test_residence smoke_test_dialogue; do
+  godot4 --headless --path /path/to/dead-haven-merge-survive "tests/$f.tscn"
+done
 
 # Android export (after templates/SDK/keystore are configured in the editor)
 godot4 --headless --path /path/to/dead-haven-merge-survive \

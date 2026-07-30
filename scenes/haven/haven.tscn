@@ -50,6 +50,21 @@ horizontal_alignment = 1
 theme_override_font_sizes/font_size = 24
 text = "Hollow Creek Farmhouse"
 
+[node name="ChapterLabel" type="Label" parent="Layout/Scene"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -150.0
+offset_top = 50.0
+offset_right = 150.0
+offset_bottom = 74.0
+horizontal_alignment = 1
+modulate = Color(0.91, 0.82, 0.63, 0.9)
+theme_override_font_sizes/font_size = 14
+text = "Chapter 1: The Open Door"
+
 [node name="ProgressLabel" type="Label" parent="Layout/Scene"]
 unique_name_in_owner = true
 layout_mode = 1
@@ -57,9 +72,9 @@ anchors_preset = 5
 anchor_left = 0.5
 anchor_right = 0.5
 offset_left = -100.0
-offset_top = 50.0
+offset_top = 74.0
 offset_right = 100.0
-offset_bottom = 76.0
+offset_bottom = 100.0
 horizontal_alignment = 1
 modulate = Color(1, 1, 1, 0.75)
 theme_override_font_sizes/font_size = 15

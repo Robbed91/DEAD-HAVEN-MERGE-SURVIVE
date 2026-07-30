@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="DialogueEntry" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data_models/dialogue_entry.gd" id="1_lahkr"]
+
+[resource]
+script = ExtResource("1_lahkr")
+id = "noah_01"
+speaker_id = ""
+portrait_key = ""
+expression_key = "neutral"
+text = "The bedroom door creaks open. A man is curled against the wall, feverish, a torn strip of shirt pressed to a wound on his arm."
+background_scene_path = ""
+animation = ""
+sound_cue = ""
+branching_options = Array[Dictionary]([])
+next_id = "noah_02"

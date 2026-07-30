@@ -22,6 +22,9 @@ var profile: Dictionary = {
 	"current_residence_id": "hollow_creek_farmhouse",
 	"tutorial_step": 0,
 	"tutorial_complete": false,
+	"unlocked_survivor_ids": [],
+	"current_chapter_id": "chapter_1_the_open_door",
+	"story_flags": {},
 }
 
 var resources: Dictionary = {
@@ -97,6 +100,8 @@ func new_game() -> void:
 		"tutorial_step": 0,
 		"tutorial_complete": false,
 		"unlocked_survivor_ids": [],
+		"current_chapter_id": "chapter_1_the_open_door",
+		"story_flags": {},
 	}
 	resources = {
 		"energy": MAX_ENERGY_DEFAULT,
@@ -204,6 +209,30 @@ func unlock_survivor(survivor_id: String) -> void:
 func is_survivor_unlocked(survivor_id: String) -> bool:
 	var unlocked: Array = profile.unlocked_survivor_ids
 	return unlocked.has(survivor_id)
+
+# -- Story flags & chapters (Phase 4) ----------------------------------------
+
+## Lightweight placeholder ahead of Phase 6's real trust/friendship/rivalry
+## survivor-relationship system: dialogue choices write arbitrary flags
+## here (e.g. "noah_trusted": true) so a choice has a real, persisted
+## consequence now, without inventing a numeric relationship model that
+## nothing else reads yet.
+func set_story_flag(key: String, value: Variant) -> void:
+	profile.story_flags[key] = value
+	SaveManager.request_autosave()
+
+func get_story_flag(key: String, default_value: Variant = false) -> Variant:
+	return profile.story_flags.get(key, default_value)
+
+## Idempotent for the current chapter - calling this again with the same id
+## (e.g. multiple completion paths racing) is a no-op rather than
+## re-emitting the signal.
+func advance_chapter(chapter_id: String) -> void:
+	if profile.current_chapter_id == chapter_id:
+		return
+	profile.current_chapter_id = chapter_id
+	EventBus.chapter_changed.emit(chapter_id)
+	SaveManager.request_autosave()
 
 # -- Experience & levelling ---------------------------------------------------
 

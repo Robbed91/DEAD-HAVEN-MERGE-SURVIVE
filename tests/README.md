@@ -14,6 +14,7 @@ godot4 --headless --path . tests/smoke_test_save.tscn
 godot4 --headless --path . tests/smoke_test_settings.tscn
 godot4 --headless --path . tests/smoke_test_merge.tscn
 godot4 --headless --path . tests/smoke_test_residence.tscn
+godot4 --headless --path . tests/smoke_test_dialogue.tscn
 ```
 
 None of these are wired up as the project's `run/main_scene` - they're
@@ -26,6 +27,7 @@ opt-in, point Godot at them directly as shown above.
 - **smoke_test_settings** - changes audio/accessibility settings through `GameManager.update_setting()` and asserts the audio bus volume and rebuilt `Theme`'s font size actually reflect them.
 - **smoke_test_merge** (Phase 2) - starting board layout; a valid merge and its discovery reward; invalid merges (producers, mismatched chains) and max-level merges are correctly rejected; producer tap spends energy and enforces cooldown, and the debug reset-cooldowns tool clears it; debug infinite-energy mode spends without deducting; storage transfer both directions; soft-delete + undo; reward-chain item collection grants the right amount; a full save/reload round trip preserves item count, storage contents and discovery state.
 - **smoke_test_residence** (Phase 3) - residence/hotspot/quest data loads correctly; a task refuses to complete before its required item exists; completing it consumes the item, grants coins/XP, and flips the hotspot to COMPLETED; re-completing the same quest is rejected; completing the Noah-rescue quest unlocks him via the generic `unlock_survivor` reward; `get_active_quest_for_hotspot()` returns null once a hotspot's task is done; a full save/reload round trip preserves completed quests, hotspot state and the Noah unlock.
+- **smoke_test_dialogue** (Phase 4) - the intro dialogue chain's `next_id` links resolve correctly end to end; `q_rescue_noah`'s `dialogue_trigger_id` and its branching options are wired as expected; applying a branching choice's effects grants the right reward and sets the right story flag; completing the front-door quest advances the chapter exactly once (re-advancing to the same chapter is a verified no-op); a full save/reload round trip preserves the chapter and story flags. This test also caught a real regression during development - see DEVELOPMENT_LOG.md Phase 4 "Tests performed" for the `smoke_test.tscn` hang it led to finding and fixing.
 
 ## What these do NOT cover
 
@@ -37,6 +39,10 @@ or in the editor's running game view; an equivalent Phase 2 checklist for
 drag/merge/producer gestures hasn't been written yet (see DEVELOPMENT_LOG.md
 Known issues).
 
-Results as of Phase 3 (Godot 4.3.stable, downloaded fresh into this
+Results as of Phase 4 (Godot 4.3.stable, downloaded fresh into this
 development container - see DEVELOPMENT_LOG.md Known issues about it not
-persisting between sessions): all five pass.
+persisting between sessions): all six pass. Run each with a `timeout`
+wrapper if you're scripting this - `smoke_test.tscn` genuinely hung during
+Phase 4 development from a real bug (see DEVELOPMENT_LOG.md), and while
+that specific bug is fixed, a `timeout` around any headless run here is
+cheap insurance against a future regression doing the same thing.
