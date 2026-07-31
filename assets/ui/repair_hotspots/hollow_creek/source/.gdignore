@@ -1,0 +1,3 @@
+# Approved 1024px production masters are retained for future exports but are
+# intentionally excluded from Godot import/export. Runtime scenes use only the
+# optimised 256px derivatives in ../runtime/.

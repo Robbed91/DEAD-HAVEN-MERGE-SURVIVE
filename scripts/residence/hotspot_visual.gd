@@ -15,7 +15,10 @@ const FIXED_COLOR := Color("6b7a56")
 const FIXED_ACCENT := Color("e8dcc5")
 const HOLLOW_RING := preload("res://assets/ui/hollow_creek/hotspot_ring.png")
 const HOLLOW_REPAIRED := preload("res://assets/ui/hollow_creek/hotspot_repaired.png")
-const NORTHGATE_ICON_ROOT := "res://assets/ui/repair_hotspots/northgate/runtime/"
+const FINAL_ICON_FOLDERS := {
+	"hollow_creek_farmhouse": "hollow_creek",
+	"northgate_prison": "northgate",
+}
 
 const HOLLOW_ITEM_LEVELS := {
 	"front_door": 2,
@@ -48,17 +51,17 @@ func _ready() -> void:
 			_refresh_illustrated_visual()
 			queue_redraw()
 	)
-	set_process(residence_id in ["hollow_creek_farmhouse", "northgate_prison"])
-	if residence_id == "hollow_creek_farmhouse":
-		_build_hollow_visual()
-		_refresh_hollow_visual()
-	elif residence_id == "northgate_prison":
+	set_process(residence_id == "hollow_creek_farmhouse" or FINAL_ICON_FOLDERS.has(residence_id))
+	if ResourceLoader.exists(_final_icon_path()):
 		_build_illustrated_visual()
 		_was_locked = _is_locked()
 		_refresh_illustrated_visual()
+	elif residence_id == "hollow_creek_farmhouse":
+		_build_hollow_visual()
+		_refresh_hollow_visual()
 
 func _build_illustrated_visual() -> void:
-	var icon_path := NORTHGATE_ICON_ROOT + hotspot_id + ".png"
+	var icon_path := _final_icon_path()
 	if not ResourceLoader.exists(icon_path):
 		return
 	_illustrated_item = TextureRect.new()
@@ -83,6 +86,11 @@ func _build_illustrated_visual() -> void:
 	_count_badge.add_theme_color_override("font_color", Color("f3e7cc"))
 	_count_badge.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(_count_badge)
+
+func _final_icon_path() -> String:
+	if not FINAL_ICON_FOLDERS.has(residence_id):
+		return ""
+	return "res://assets/ui/repair_hotspots/%s/runtime/%s.png" % [FINAL_ICON_FOLDERS[residence_id], hotspot_id]
 
 func set_selected(value: bool) -> void:
 	if _selected == value:
@@ -198,10 +206,10 @@ func _gui_input(event: InputEvent) -> void:
 func _draw() -> void:
 	var s: Vector2 = size
 	var fixed := is_completed()
-	if residence_id == "hollow_creek_farmhouse":
+	if _illustrated_item != null:
+		_draw_illustrated_marker(s, fixed)
 		return
-	if residence_id == "northgate_prison" and _illustrated_item != null:
-		_draw_northgate_marker(s, fixed)
+	if residence_id == "hollow_creek_farmhouse":
 		return
 	var base := FIXED_COLOR if fixed else DAMAGED_COLOR
 	var accent := FIXED_ACCENT if fixed else DAMAGED_ACCENT
@@ -427,7 +435,7 @@ func _draw() -> void:
 		draw_line(badge_center + Vector2(-4, 0), badge_center + Vector2(-1, 3), Color("e8dcc5"), 2.0)
 		draw_line(badge_center + Vector2(-1, 3), badge_center + Vector2(5, -4), Color("e8dcc5"), 2.0)
 
-func _draw_northgate_marker(s: Vector2, completed: bool) -> void:
+func _draw_illustrated_marker(s: Vector2, completed: bool) -> void:
 	var center := s * 0.5
 	var radius := minf(s.x, s.y) * 0.43
 	var locked := _is_locked()
