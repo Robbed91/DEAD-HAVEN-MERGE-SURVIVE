@@ -10,8 +10,19 @@ role = "Radio Technician"
 biography = "A radio technician who kept broadcasting long after most stations went dark. Not yet found."
 personality_traits = PackedStringArray("curious", "methodical")
 skills = PackedStringArray("electronics", "communications", "map_discovery")
-portraits = {}
-expressions = {}
+portraits = {
+"neutral": "res://assets/art/characters/riley_chen/portraits/neutral.png"
+}
+expressions = {
+"neutral": "res://assets/art/characters/riley_chen/portraits/neutral.png",
+"concerned": "res://assets/art/characters/riley_chen/portraits/concerned.png",
+"angry": "res://assets/art/characters/riley_chen/portraits/angry.png",
+"afraid": "res://assets/art/characters/riley_chen/portraits/afraid.png",
+"relieved": "res://assets/art/characters/riley_chen/portraits/relieved.png",
+"injured": "res://assets/art/characters/riley_chen/portraits/injured.png",
+"exhausted": "res://assets/art/characters/riley_chen/portraits/exhausted.png",
+"determined": "res://assets/art/characters/riley_chen/portraits/determined.png"
+}
 personal_quest_id = ""
 relationship_links = PackedStringArray()
 trust = 0

@@ -10,8 +10,19 @@ role = "Physician"
 biography = "A former emergency doctor. Not yet found."
 personality_traits = PackedStringArray("calm_under_pressure", "guarded")
 skills = PackedStringArray("medical", "injury_treatment", "medical_crafting")
-portraits = {}
-expressions = {}
+portraits = {
+"neutral": "res://assets/art/characters/imogen_shaw/portraits/neutral.png"
+}
+expressions = {
+"neutral": "res://assets/art/characters/imogen_shaw/portraits/neutral.png",
+"concerned": "res://assets/art/characters/imogen_shaw/portraits/concerned.png",
+"angry": "res://assets/art/characters/imogen_shaw/portraits/angry.png",
+"afraid": "res://assets/art/characters/imogen_shaw/portraits/afraid.png",
+"relieved": "res://assets/art/characters/imogen_shaw/portraits/relieved.png",
+"injured": "res://assets/art/characters/imogen_shaw/portraits/injured.png",
+"exhausted": "res://assets/art/characters/imogen_shaw/portraits/exhausted.png",
+"determined": "res://assets/art/characters/imogen_shaw/portraits/determined.png"
+}
 personal_quest_id = ""
 relationship_links = PackedStringArray()
 trust = 0
