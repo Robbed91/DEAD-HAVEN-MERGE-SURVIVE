@@ -1,5 +1,13 @@
 # Dead Haven: Merge & Survive - Illustration Checklist
 
+> Production update — 31 July 2026: this file began as the pre-production
+> hand-off list and retains that history. The current integrated status is
+> authoritative in `docs/FINAL_ASSET_MANIFEST.csv`. Mara's runtime portrait
+> set is complete, her neutral/concerned/injured paths are now registered in
+> `data/characters/mara_vale.tres`, all 101 merge icons are integrated, and the
+> board is a deterministic code-built 7×9 grid. Procedural drawing is retained
+> only as a missing-asset fallback where documented.
+
 A flat, hand-off-ready list of every illustration this project needs,
 for whoever/whatever actually generates the art (this environment has no
 image-generation tool - see `ART_ASSET_GUIDE.md`). Cross-referenced to
@@ -39,9 +47,10 @@ concerned, afraid, angry, suspicious, sad, injured, exhausted, determined,
 shocked), separated layers for rigging, and 3 equipment-progression notes
 (early/mid/late game).
 
-- [ ] **Mara Vale** (protagonist) - approved flattened concept:
+- [x] **Mara Vale** (protagonist) - final runtime portraits and character art:
   `assets/concepts/vertical_slice/characters/mara_vale_character_sheet_concept.png`;
-  transparent crops and separated rig layers still pending
+  production files under `assets/art/characters/mara_vale/`, with data-driven
+  neutral/concerned/injured portrait selection verified headlessly
 - [ ] **Noah Vance** (carpenter, rescued Ch.2) - approved flattened concept:
   `assets/concepts/vertical_slice/characters/noah_vance_character_sheet_concept.png`;
   transparent crops and separated rig layers still pending
@@ -116,28 +125,28 @@ backlog item.
 
 ## 7. Merge board & UI
 
-- [ ] **Merge board frame/background + 12 cell-state overlays** (empty, occupied, selected, valid-target, invalid-target, locked, cobweb, reward, bubble, task-required, rare, max-level) - two concept attempts rejected (7x10, then 6x9); exact 7x9 board and separated overlays still pending, `ART_GENERATION_PROMPTS.md` #6
-- [ ] **Full UI component sheet** - not yet prompted as image assets (the component *behavior* already exists in code via `scripts/ui/theme_factory.gd`): primary/secondary/destructive/disabled/icon buttons in all states (normal/pressed/focused/disabled/loading), task card, dialogue panel, item info panel, resource bar, nav bar, quest panel, reward panel, character card, vehicle card, residence progress card, scavenging mission card, confirmation modal, tooltip, notification badge, progress/energy/health bars, morale indicator, locked-content overlay, tutorial highlight
-- [ ] **Bottom navigation icons** (Haven, Merge, Map, Survivors, Inventory) - normal/selected/notification/locked states each
-- [ ] **Full resource/status icon set** (~34 icons per brief section 27: energy, coins, Haven Tokens, food, medicine, fuel, morale, health, defence, noise, storage, survivor, vehicle, map, quest, story, repair, construction, locked, completed, warning, injury, radio, horde, Ashborn faction, settings, audio, vibration, accessibility, save, delete, undo, information, timer)
+- [x] **Merge board frame/background + cell states** - final workbench treatment integrated; exact runtime 7x9/63-cell geometry is code-built and smoke-tested
+- [x] **Full UI component skin** - final state styles integrated through `scripts/ui/theme_factory.gd`; see `docs/FINAL_UI_SKIN.md`
+- [x] **Bottom navigation icons** (Haven, Merge, Map, Survivors, Inventory) - integrated original icon set
+- [x] **Resource/status icon set** - integrated original runtime iconography
 
 ## 8. Merge item chains (101 items across 13 chains)
 
-- [ ] **Construction (8 levels)** - approved flattened eight-level concept:
+- [x] **Construction (8 levels)** - final transparent runtime icons integrated:
   `assets/concepts/vertical_slice/items/construction_chain_concept.png`;
-  individual transparent runtime icons still pending
-- [ ] Tool (7 levels)
-- [ ] Food (7 levels)
-- [ ] Medical (7 levels)
-- [ ] Trap (7 levels)
-- [ ] Fuel (7 levels)
-- [ ] Vehicle Parts (7 levels)
-- [ ] Electronics (7 levels)
-- [ ] Clothing (7 levels)
-- [ ] Energy reward chain (7 levels)
-- [ ] Coins reward chain (7 levels)
-- [ ] XP reward chain (7 levels)
-- [ ] Haven Tokens reward chain (7 levels)
+  individual files are registered by the existing item definitions
+- [x] Tool (7 levels)
+- [x] Food (7 levels)
+- [x] Medical (7 levels)
+- [x] Trap (7 levels)
+- [x] Fuel (7 levels)
+- [x] Vehicle Parts (7 levels)
+- [x] Electronics (7 levels)
+- [x] Clothing (7 levels)
+- [x] Energy reward chain (7 levels)
+- [x] Coins reward chain (7 levels)
+- [x] XP reward chain (7 levels)
+- [x] Haven Tokens reward chain (7 levels)
 
 Exact level names/descriptions for all 101 items already exist as data in
 `data/items/*.tres` - pull display names/descriptions straight from there
@@ -150,9 +159,9 @@ Each needs: normal/selected/activated/low-charge/empty/recharge states
 + a short looping animation note (per `ART_GENERATION_PROMPTS.md` #8's
 Tool Crate as the template).
 
-- [ ] **Salvaged Tool Crate** - approved flattened six-state concept:
+- [x] **Salvaged Tool Crate** - final runtime producer states integrated:
   `assets/concepts/vertical_slice/items/salvaged_tool_crate_states_concept.png`;
-  separated transparent runtime states/layers still pending
+  visual states and feedback are described in `docs/MERGE_BOARD_FINAL_TREATMENT.md`
 - [ ] Damaged Workshop Bench (construction producer)
 - [ ] Abandoned Pantry (food producer)
 - [ ] Field Medical Bag (medical producer)

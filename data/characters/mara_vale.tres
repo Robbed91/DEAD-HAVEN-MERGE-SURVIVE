@@ -10,8 +10,14 @@ role = "Player protagonist"
 biography = "A capable but inexperienced survivor searching for her missing brother Eli, following a repeating radio message to Haven Seven."
 personality_traits = PackedStringArray("resourceful", "determined")
 skills = PackedStringArray("leadership", "improvisation", "negotiation")
-portraits = {}
-expressions = {}
+portraits = {
+"neutral": "res://assets/art/characters/mara_vale/portraits/neutral.png"
+}
+expressions = {
+"concerned": "res://assets/art/characters/mara_vale/portraits/concerned.png",
+"injured": "res://assets/art/characters/mara_vale/portraits/injured.png",
+"neutral": "res://assets/art/characters/mara_vale/portraits/neutral.png"
+}
 personal_quest_id = ""
 relationship_links = PackedStringArray()
 trust = 0

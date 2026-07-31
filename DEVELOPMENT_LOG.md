@@ -104,6 +104,59 @@ godot4 --headless --path /path/to/dead-haven-merge-survive \
   --export-debug "Android" build/android/dead_haven.apk
 ```
 
+---
+
+## Steering reconciliation — data-driven Mara portraits (31 July 2026)
+
+### Files modified
+
+- `data/characters/mara_vale.tres`
+- `scripts/ui/survivor_silhouette.gd`
+- `tests/smoke_test_character_portraits.gd` / `.tscn`
+- `tests/README.md`
+- `README.md`
+- `ART_ILLUSTRATION_CHECKLIST.md`
+- `assets/manifests/asset_manifest.json`
+
+### Features completed
+
+- Registered Mara Vale's neutral, concerned and injured 512×512 transparent
+  production portraits in the existing `SurvivorDefinition` dictionaries.
+- Changed the existing portrait presenter to prefer registered character data,
+  while preserving convention-based paths for already-integrated survivors.
+- Restored a clean procedural survivor drawing solely as a defensive fallback
+  when neither registered nor convention-based final art exists.
+- Added test-visible state queries without changing character data, dialogue,
+  recruitment, progression, navigation or save behaviour.
+- Confirmed the merge board remains generated from the existing source-of-truth
+  dimensions: 7 columns × 9 rows, with 63 runtime cells.
+
+### Tests performed
+
+- `tests/smoke_test_character_portraits.tscn` verifies all three registered Mara
+  paths, final-art selection, the missing-asset fallback and the instantiated
+  7×9 merge grid.
+- Godot 4.3 headless editor/import startup completed with no script or parse
+  errors.
+- Full headless regression passed: all 20 `tests/smoke_test*.tscn` scenes
+  emitted their expected success markers, including animation, audio, UI,
+  merge, all residence/progression, save/reload and main-story coverage.
+
+### Known issues
+
+- Other survivors still resolve their integrated portraits through the existing
+  filename convention rather than explicit `.tres` dictionaries. This is safe
+  and tested indirectly by existing screen smoke tests, but explicit registration
+  would make all character data equally self-describing.
+- A physical Android device pass remains required for final GPU, touch, safe-area
+  and audio-balance verification.
+
+### Exact next phase
+
+Register the remaining survivor portrait dictionaries without changing their
+IDs or runtime presentation, then perform the physical-device Android QA pass
+documented in the visual and audio production guides.
+
 ## Art Phase 2 (part 1): Vertical-slice concept batch - complete
 
 ### Files created

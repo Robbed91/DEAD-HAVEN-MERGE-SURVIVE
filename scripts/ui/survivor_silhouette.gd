@@ -20,6 +20,7 @@ class_name SurvivorSilhouette
 var _portrait_view: TextureRect
 var _lock_view: TextureRect
 var _animation_player: AnimationPlayer
+var _using_procedural_fallback := false
 
 func _ready() -> void:
 	_build_presentation()
@@ -76,12 +77,53 @@ func _refresh_final_portrait() -> void:
 	if not is_inside_tree():
 		return
 	_build_presentation()
-	var path := "res://assets/art/characters/%s/portraits/%s.png" % [survivor_id, expression]
-	if not ResourceLoader.exists(path):
-		path = "res://assets/art/characters/%s/portraits/neutral.png" % survivor_id
-	_portrait_view.texture = load(path) if ResourceLoader.exists(path) else null
+	var path := _resolve_portrait_path()
+	_portrait_view.texture = load(path) if not path.is_empty() else null
+	_using_procedural_fallback = _portrait_view.texture == null
+	_portrait_view.visible = not _using_procedural_fallback
 	_portrait_view.modulate = Color(0.28, 0.31, 0.33, 0.82) if locked else Color.WHITE
 	_lock_view.visible = locked
+	queue_redraw()
+
+func _resolve_portrait_path() -> String:
+	var definition: SurvivorDefinition = CharacterDatabase.get_survivor(survivor_id)
+	if definition != null:
+		var registered_path := str(definition.expressions.get(expression, ""))
+		if registered_path.is_empty():
+			registered_path = str(definition.portraits.get(expression, ""))
+		if registered_path.is_empty():
+			registered_path = str(definition.expressions.get("neutral", ""))
+		if registered_path.is_empty():
+			registered_path = str(definition.portraits.get("neutral", ""))
+		if ResourceLoader.exists(registered_path):
+			return registered_path
+	# Preserve compatibility for survivors whose final art predates data registration.
+	var conventional_path := "res://assets/art/characters/%s/portraits/%s.png" % [survivor_id, expression]
+	if ResourceLoader.exists(conventional_path):
+		return conventional_path
+	conventional_path = "res://assets/art/characters/%s/portraits/neutral.png" % survivor_id
+	return conventional_path if ResourceLoader.exists(conventional_path) else ""
+
+func is_using_texture_portrait() -> bool:
+	return _portrait_view != null and _portrait_view.texture != null
+
+func is_using_procedural_fallback() -> bool:
+	return _using_procedural_fallback
+
+func _draw() -> void:
+	if not _using_procedural_fallback:
+		return
+	var tint := Color(0.30, 0.32, 0.32, 0.86) if locked else silhouette_color
+	var centre_x := size.x * 0.5
+	var head_radius := minf(size.x, size.y) * 0.17
+	var head_centre := Vector2(centre_x, size.y * 0.32)
+	draw_circle(head_centre, head_radius, tint)
+	var shoulders := PackedVector2Array([
+		Vector2(centre_x, size.y * 0.49),
+		Vector2(size.x * 0.16, size.y * 0.94),
+		Vector2(size.x * 0.84, size.y * 0.94),
+	])
+	draw_colored_polygon(shoulders, tint)
 
 func play_state(state_name: String) -> void:
 	if _animation_player == null:

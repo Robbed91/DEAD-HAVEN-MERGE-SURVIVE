@@ -35,33 +35,22 @@ cool blue-grey exteriors. See `scripts/ui/theme_factory.gd` for the exact
 palette values and `ART_ASSET_GUIDE.md` for how it's applied to
 environments and characters.
 
-## Current status: Art Phase 2 (part 1) - vertical-slice concepts
+## Current status: integrated visual-production vertical slice and audio
 
-Phases 1-8 (foundation, merge board, residence system, story, scavenging,
-vehicles/survivors, defence, a second residence), Phase 9 part 1
-(accessibility/performance settings), Phase 10 (a third residence,
-Greybridge School), Phase 11 (a fourth residence, Saint Mercy Hospital),
-and Phase 12 (the fifth and final residence in the current roster,
-Northgate Prison) are done. Art Phase 1 added a real logo/splash/brand
-identity and a full art-production spec (see "Documentation" below for
-`ART_STYLE_GUIDE.md`, `ART_GENERATION_PROMPTS.md` and
-`ART_ILLUSTRATION_CHECKLIST.md`). Phase 13 finishes the original
-10-location scavenging spec (5 more locations) and gives the 5-residence
-roster a connecting narrative thread - a main-story capstone ("The
-Signal Keeper") that triggers once every residence's defence event is
-survived, instead of each residence only knowing about unlocking its
-immediate neighbour. Art Phase 2 part 1 adds nine reviewed vertical-slice
-concept images under `assets/concepts/vertical_slice/`: Mara and Noah
-character sheets, a Drifter concept, matched Hollow Creek Stage 1/2
-exteriors, the eight-level construction chain, six Tool Crate states, a
-ten-panel window-boarding storyboard, and the intro dialogue composition.
-The attempted merge-board concept was rejected because image generation
-did not preserve the exact 7x9 grid, so it is not included. **It is not
-yet the full game** - these are flattened approved concepts, not layered
-or transparent runtime assets; the procedural placeholders remain live.
-Real audio and further main-story content also remain (see
-`DEVELOPMENT_LOG.md` for the authoritative phase-by-phase plan and
-status).
+The complete functional campaign remains intact across all five residences,
+101 merge items, survivor/vehicle systems, defence events, scavenging and the
+Signal Keeper story capstone. The visual-production branch now includes the
+final Hollow Creek presentation, final merge-board and UI skins, illustrated
+runtime merge icons, the implemented survivor/Drifter character set, reusable
+animation/VFX systems, and a complete original audio catalog routed through
+seven buses. Mara's neutral, concerned and injured portraits are registered
+directly in character data; the presenter retains a deliberate procedural
+fallback only for a missing or invalid portrait. The playable board continues
+to be generated deterministically as an exact 7-column by 9-row grid.
+
+The authoritative production documents are under `docs/`, including the art
+bible, visual audit, replacement plan, final-asset/animation/audio manifests,
+vertical-slice notes and captured verification evidence.
 
 What already works, end to end, in this build:
 - Everything from Phase 1 (main menu, save/load, settings, navigation, dev diagnostics), Phase 2 (the full 7x9 merge board, 101 items across 9 gameplay + 4 reward chains, producers, energy, storage), Phase 3 (9 real repair hotspots on Hollow Creek Farmhouse, task panels, "Find on Board" task highlighting), Phase 4 (a real dialogue engine, an intro scene, and Noah Vance's rescue scene with a genuine choice), Phase 5 (5 real scavenging locations with choice-based encounters and real loot), Phase 6 (a real survivor roster, Noah's personal quest, a 9-stage upgradeable delivery van, skill-based scavenging odds) and Phase 7 (Hollow Creek Farmhouse's tenth milestone: survive the first night attack)
@@ -81,56 +70,21 @@ What already works, end to end, in this build:
 
 ### Honest limitation
 
-Art Phase 2's nine images have been visually reviewed as direction-setting
-concepts only. They are flattened PNGs: character rig layers, transparent
-portrait/item cut-outs, separately compositable environment layers, and
-runtime wiring have not been produced. The merge-board concept was
-deliberately excluded after two generated variants failed its exact 7x9
-acceptance requirement.
+The runtime visual and audio layers are integrated and headless-tested, but a
+final physical-device pass is still required for representative low/mid-range
+Android GPU profiling, touch ergonomics, speaker/headphone balance and OEM
+gesture-safe-area behaviour. Historical flattened concepts remain in
+`assets/concepts/` as direction references; gameplay screens use runtime
+assets and controls rather than those compositions as static replacements.
 
-This container has no display server and no Android SDK/export templates,
-so the assistant could not open the graphical editor or export a real
-APK. It did download a Godot 4.3.stable Linux binary and run the project
-headlessly, which confirmed: the project imports with no script/parse
-errors; every screen instantiates without a runtime error; new game /
-save / reload / corrupted-save-falls-back-to-backup all behave as
-designed; settings changes actually reach the audio bus and rebuilt
-theme; merging, producers, energy, storage, delete/undo and reward
-collection (Phase 2) all behave as designed against the real data; task
-requirement checks, item consumption, reward delivery, hotspot state
-changes and the Noah unlock (Phase 3) all behave as designed; dialogue
-chain/branch resolution, choice rewards and story flags, and chapter
-advancement (Phase 4) all behave as designed; scavenging's energy cost,
-forced success/failure encounter resolution, loot delivery and
-non-blocking-failure guarantee (Phase 5) all behave as designed; vehicle
-discovery, stage-upgrade gating/consumption, personal quest completion,
-and the skill-based scavenging bonus (Phase 6) all behave as designed; the
-defence event's completion gate, energy cost, forced success/failure
-resolution, non-blocking hotspot damage, and retry path (Phase 7) all
-behave as designed; Redwater Service Station's own hotspots/task panels resolve against the
-correct residence, Lena Ortiz's rescue unlocks her and advances the
-chapter, and its own `redwater_defence` event resolves completely
-independently of Hollow Creek's (Phase 8); Greybridge School's own
-hotspots/rescue behave the same way, and its `greybridge_defence` event's
-skill requirements are directly verified to match Riley Chen's own real
-skills, not just asserted in a comment (Phase 10); Saint Mercy Hospital's
-own hotspots/rescue behave the same way too, with its
-`saint_mercy_defence` event's skill requirements directly verified to be
-the standard set and to NOT match Dr Imogen Shaw's own medical skills
-(Phase 11); Northgate Prison's own hotspots/rescue behave the same way,
-with Caleb Rusk's real skills directly verified to overlap all four
-standard-tag defence events' requirements at once, not just his own
-(Phase 12); and (new in Phase 13) the 5 new scavenging locations load
-correctly, `story_condition` genuinely gates `radio_relay_station`'s
-availability, `DefenceManager.all_events_survived()` only goes true once
-every one of the 5 defence events is survived (checked incrementally,
-not just at the end), and the Signal Keeper capstone dialogue is a
-complete, correctly-linked 5-entry chain with a real branching choice -
-all behave as designed too (see `tests/README.md` for the smoke tests this was checked with). It has
-**not** been visually confirmed on a real screen - touch input, drag
-gesture feel, layout at actual device resolutions, and animation timing
-still need a real run in the editor or on a device. Please report anything
-that doesn't look/feel right.
+Godot 4.3 headless validation currently covers 20 smoke scenes. They exercise
+screen startup, save recovery, settings, all merge mechanics and final item
+icons, residence/task progression, dialogue, scavenging, vehicles/survivors,
+all defence events, the Signal Keeper story, UI skin states, animation/VFX,
+the full audio catalog, data-driven Mara portraits and the exact 7×9 runtime
+grid. See `tests/README.md` for the assertion-level inventory. Desktop captures
+are retained under `docs/*-captures/`; final physical Android touch,
+performance, safe-area and audio-balance checks remain the outstanding QA.
 
 ## Technology
 
