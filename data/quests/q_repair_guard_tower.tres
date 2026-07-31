@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="QuestDefinition" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data_models/quest_definition.gd" id="1_rgt01"]
+
+[resource]
+script = ExtResource("1_rgt01")
+id = "q_repair_guard_tower"
+title = "Repair the Guard Tower"
+description = "The stairwell up is sound, but the platform at the top needs proper tools before it's safe to stand on."
+quest_type = 1
+requirements = {
+"tool_4": 1
+}
+prerequisite_quest_ids = PackedStringArray()
+rewards = {
+"coins": 45,
+"xp": 35
+}
+is_complete = false
+dialogue_trigger_id = ""
+residence_hotspot_id = "guard_tower"
+time_condition = ""

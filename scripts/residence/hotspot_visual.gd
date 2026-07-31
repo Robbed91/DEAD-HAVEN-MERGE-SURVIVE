@@ -209,6 +209,46 @@ func _draw() -> void:
 			draw_circle(Vector2(s.x * 0.5, s.y * 0.42), s.x * 0.1, base if not fixed else accent)
 			if not fixed:
 				draw_line(Vector2(s.x * 0.42, s.y * 0.34), Vector2(s.x * 0.58, s.y * 0.5), Color("1a1917"), 2.0)
+		"sally_port":
+			draw_rect(Rect2(s.x * 0.14, s.y * 0.18, s.x * 0.72, s.y * 0.68), base, false, 3.0)
+			for i in 5:
+				var gx: float = s.x * (0.22 + i * 0.14)
+				draw_line(Vector2(gx, s.y * 0.22), Vector2(gx, s.y * 0.82), base, 3.0)
+		"guard_tower":
+			draw_rect(Rect2(s.x * 0.38, s.y * 0.1, s.x * 0.24, s.y * 0.3), base)
+			draw_line(Vector2(s.x * 0.32, s.y * 0.9), Vector2(s.x * 0.4, s.y * 0.4), base, 3.0)
+			draw_line(Vector2(s.x * 0.68, s.y * 0.9), Vector2(s.x * 0.6, s.y * 0.4), base, 3.0)
+			if fixed:
+				draw_rect(Rect2(s.x * 0.44, s.y * 0.18, s.x * 0.12, s.y * 0.1), accent)
+		"armory":
+			draw_rect(Rect2(s.x * 0.2, s.y * 0.22, s.x * 0.6, s.y * 0.56), base, false, 3.0)
+			for i in 3:
+				draw_line(Vector2(s.x * 0.28, s.y * (0.36 + i * 0.14)), Vector2(s.x * 0.72, s.y * (0.36 + i * 0.14)), base, 2.0)
+		"mess_hall":
+			draw_rect(Rect2(s.x * 0.16, s.y * 0.46, s.x * 0.68, s.y * 0.1), base)
+			draw_rect(Rect2(s.x * 0.2, s.y * 0.6, s.x * 0.6, s.y * 0.06), base)
+		"cell_block_a":
+			draw_rect(Rect2(s.x * 0.2, s.y * 0.2, s.x * 0.6, s.y * 0.62), base, false, 3.0)
+			for i in 5:
+				var cx: float = s.x * (0.28 + i * 0.1)
+				draw_line(Vector2(cx, s.y * 0.24), Vector2(cx, s.y * 0.78), base, 2.0)
+		"control_room":
+			draw_rect(Rect2(s.x * 0.24, s.y * 0.3, s.x * 0.52, s.y * 0.4), base, false, 3.0)
+			for i in 3:
+				for j in 2:
+					draw_rect(Rect2(s.x * (0.3 + i * 0.16), s.y * (0.38 + j * 0.16), s.x * 0.08, s.y * 0.08), accent if fixed else base)
+		"transport_bay":
+			draw_rect(Rect2(s.x * 0.14, s.y * 0.42, s.x * 0.72, s.y * 0.3), base)
+			draw_rect(Rect2(s.x * 0.6, s.y * 0.3, s.x * 0.24, s.y * 0.18), base)
+			if fixed:
+				draw_circle(Vector2(s.x * 0.28, s.y * 0.76), s.x * 0.05, accent)
+				draw_circle(Vector2(s.x * 0.72, s.y * 0.76), s.x * 0.05, accent)
+		"warden_office":
+			draw_rect(Rect2(s.x * 0.22, s.y * 0.52, s.x * 0.56, s.y * 0.14), base)
+			draw_rect(Rect2(s.x * 0.32, s.y * 0.18, s.x * 0.36, s.y * 0.3), base, false, 3.0)
+			for i in 4:
+				var bx: float = s.x * (0.38 + i * 0.08)
+				draw_line(Vector2(bx, s.y * 0.2), Vector2(bx, s.y * 0.46), base, 2.0)
 		_:
 			draw_circle(s * 0.5, s.x * 0.3, base)
 

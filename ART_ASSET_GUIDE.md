@@ -54,23 +54,30 @@ Current placeholder scripts:
   Mercy Hospital's exterior, a fourth distinct palette/time-of-day: full
   night lit by a sickly green-white emergency glow from a handful of
   still-working windows, rather than any warm light source at all.
+- `scenes/northgate/northgate_background.gd` (Phase 12) - Northgate
+  Prison's exterior, a fifth and final distinct palette/time-of-day:
+  early dawn, cold grey-blue breaking to pale rose at the horizon -
+  completing the "every residence has its own time of day" set across
+  the current 5-residence roster (day, dusk, flat overcast, night, dawn).
 - `scenes/world_map/world_map_background.gd`
 - `scripts/ui/survivor_silhouette.gd`
-- `scripts/residence/hotspot_visual.gd` (Phase 3, extended Phase 8/10/11)
-  - one reusable before/after patch renderer shared by every residence's
-  hotspots: a distinct simple shape per repair area (Hollow Creek: door,
-  window, couch, hearth, shelving, bed, barn, fence, spikes; Redwater:
-  pumps, garage bay, store shelves, office window, generator vents, fence
-  posts, drainage arc, workbench; Greybridge: double doors, basketball
-  hoop, book spines, cafeteria table, boiler tank, desk, chain-link
-  fencing, radio mast; Saint Mercy: cross-marked ER doors, pharmacy
-  shelving, a hospital bed, an operating table, a power room with a
-  lightning-bolt accent, an ambulance silhouette, file drawers, a sealed
-  observation window), damaged colouring before its quest completes and
-  clean colouring plus a checkmark badge after, with a brief dust-burst
-  animation on completion. Same swap-over story as the item icon renderer
-  below: point a hotspot at real layered art later and this stops being
-  called for that hotspot.
+- `scripts/residence/hotspot_visual.gd` (Phase 3, extended Phase
+  8/10/11/12) - one reusable before/after patch renderer shared by every
+  residence's hotspots: a distinct simple shape per repair area (Hollow
+  Creek: door, window, couch, hearth, shelving, bed, barn, fence, spikes;
+  Redwater: pumps, garage bay, store shelves, office window, generator
+  vents, fence posts, drainage arc, workbench; Greybridge: double doors,
+  basketball hoop, book spines, cafeteria table, boiler tank, desk,
+  chain-link fencing, radio mast; Saint Mercy: cross-marked ER doors,
+  pharmacy shelving, a hospital bed, an operating table, a power room
+  with a lightning-bolt accent, an ambulance silhouette, file drawers, a
+  sealed observation window; Northgate: a barred gate, a stilted
+  watchtower, a weapons rack, a mess table, cell bars, a control panel
+  grid, a transport truck, a barred office/desk), damaged colouring
+  before its quest completes and clean colouring plus a checkmark badge
+  after, with a brief dust-burst animation on completion. Same swap-over
+  story as the item icon renderer below: point a hotspot at real layered
+  art later and this stops being called for that hotspot.
 - `scripts/merge/item_icon_renderer.gd` (Phase 2) - one reusable renderer for
   all 101 merge items instead of 101 bespoke drawings: a rarity-tinted
   background, a category-specific silhouette (distinct shape per chain -
@@ -100,11 +107,11 @@ individual pieces can animate/update independently:
 10. Particle effects
 
 `haven_background.gd`, `redwater_background.gd`,
-`greybridge_background.gd` and `saint_mercy_background.gd` each
-currently draw layers 1-4 procedurally in a single script, one per
-residence; splitting these into separate nodes/textures is expected once
-real art replaces the placeholders (tracked as high priority in the
-asset manifest).
+`greybridge_background.gd`, `saint_mercy_background.gd` and
+`northgate_background.gd` each currently draw layers 1-4 procedurally in
+a single script, one per residence; splitting these into separate nodes/
+textures is expected once real art replaces the placeholders (tracked as
+high priority in the asset manifest).
 
 ## Dialogue portraits (Phase 4)
 

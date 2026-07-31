@@ -85,15 +85,22 @@ func _ready() -> void:
 		return
 	print("SMOKE_GREYBRIDGE: greybridge_defence skill_tags match Riley's own skills (bonus is live, not inert) OK")
 
+	# Launched/resolved with "mara_vale", NOT "riley_chen", below: her
+	# skills don't match greybridge_defence's tags, so forcing
+	# success_chance to 1.0 stays exactly 1.0. Using Riley here would
+	# trigger the real +0.15-capped-at-0.95 skill bonus math
+	# (minf(1.0 + 0.15, 0.95) == 0.95), silently turning a "forced"
+	# certainty into a 95% chance and making this section flaky - the
+	# skill-match itself is already proven deterministically above.
 	var energy_cost: int = int(event.energy_cost)
 	var energy_before: int = GameManager.resources.energy
-	var launch_result := DefenceManager.launch(DEFENCE_EVENT_ID, "riley_chen")
+	var launch_result := DefenceManager.launch(DEFENCE_EVENT_ID, "mara_vale")
 	if not launch_result.success or GameManager.resources.energy != energy_before - energy_cost:
 		_fail("launch() should spend greybridge_defence's own energy_cost (%d), got %s" % [energy_cost, str(launch_result)])
 		return
 
 	DefenceManager.event_choices[DEFENCE_EVENT_ID][0].success_chance = 1.0
-	var success_result := DefenceManager.resolve_choice(DEFENCE_EVENT_ID, 0, "riley_chen")
+	var success_result := DefenceManager.resolve_choice(DEFENCE_EVENT_ID, 0, "mara_vale")
 	if not success_result.success or not success_result.outcome_success:
 		_fail("forced-success resolve_choice on greybridge_defence should report outcome_success=true, got %s" % str(success_result))
 		return

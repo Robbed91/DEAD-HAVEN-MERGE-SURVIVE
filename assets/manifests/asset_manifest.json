@@ -165,6 +165,23 @@
       "optimisation_status": "n/a - procedural draw calls, not a texture"
     },
     {
+      "asset_id": "northgate_exterior",
+      "name": "Northgate Prison exterior",
+      "category": "environment",
+      "file_path": "scenes/northgate/northgate_background.gd",
+      "source_file_path": "scenes/northgate/northgate_background.gd",
+      "dimensions": "720x1280 (viewport-relative, procedural)",
+      "format": "Control._draw() procedural script",
+      "transparency": false,
+      "animation_type": "none",
+      "frame_count": 0,
+      "status": "procedural_placeholder",
+      "scenes_using_it": ["scenes/northgate/northgate.tscn"],
+      "replacement_priority": "high - fifth and final primary gameplay backdrop in the current roster; deliberately an early-dawn palette distinct from all four other residences",
+      "licence_or_generation_source": "n/a - procedural, no external source",
+      "optimisation_status": "n/a - procedural draw calls, not a texture"
+    },
+    {
       "asset_id": "world_map_background",
       "name": "World map",
       "category": "environment",

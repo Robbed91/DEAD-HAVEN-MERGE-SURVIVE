@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="DialogueEntry" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data_models/dialogue_entry.gd" id="1_clb02"]
+
+[resource]
+script = ExtResource("1_clb02")
+id = "caleb_02"
+speaker_id = "caleb_rusk"
+portrait_key = "caleb_rusk"
+expression_key = "suspicious"
+text = "\"That's far enough. I've held worse than you off with less than this.\" A jacket lining shifts as he steadies his stance - just long enough to catch a scrap of stitched fabric underneath that doesn't match any patrol uniform you've ever seen."
+background_scene_path = ""
+animation = ""
+sound_cue = ""
+branching_options = Array[Dictionary]([])
+next_id = "caleb_03"

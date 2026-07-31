@@ -16,6 +16,7 @@ const CHAPTER_TITLES := {
 	"chapter_5_the_station": "Chapter 5: The Station",
 	"chapter_6_the_signal": "Chapter 6: The Signal",
 	"chapter_7_do_no_harm": "Chapter 7: Do No Harm",
+	"chapter_8_old_debts": "Chapter 8: Old Debts",
 }
 
 @onready var _hotspots_layer: Control = %Hotspots

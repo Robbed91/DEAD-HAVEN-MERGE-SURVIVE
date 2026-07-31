@@ -4,9 +4,10 @@ extends Node
 ## A residence's climactic "survive the attack" milestone (spec section
 ## 15) - generalized in Phase 8 to support more than one residence's
 ## event (Hollow Creek's "first wave", Redwater's "defend the station",
-## Phase 10's Greybridge "greybridge_defence") through one shared
-## autoload rather than a duplicate manager per residence. Event
-## definitions and their choice data are deliberately
+## Greybridge's "greybridge_defence", Saint Mercy's "saint_mercy_defence",
+## Northgate's "northgate_defence") through one shared autoload rather
+## than a duplicate manager per residence. Event definitions and their
+## choice data are deliberately
 ## kept as inline data here rather than a data/ file - these are a
 ## handful of unique, story-critical events, not a repeatable content
 ## category like items/quests/missions (see DEVELOPMENT_LOG.md Phase 7).
@@ -58,6 +59,15 @@ var events := {
 		"success_xp": 160,
 		"success_chapter": "",
 		"success_flag": "northgate_unlocked",
+	},
+	"northgate_defence": {
+		"residence_id": "northgate_prison",
+		"energy_cost": 30,
+		"skill_tags": ["trap", "defence"],
+		"success_coins": 220,
+		"success_xp": 180,
+		"success_chapter": "",
+		"success_flag": "",
 	},
 }
 
@@ -133,6 +143,23 @@ var event_choices := {
 			"text": "Use the isolation ward's sealed doors as a last line.", "success_chance": 0.55,
 			"success_text": "The seals do exactly what they were built for. Nothing gets through.",
 			"failure_text": "A seal fails under the weight. You reset it in the dark, hands shaking, but it holds the second time.",
+		},
+	],
+	"northgate_defence": [
+		{
+			"text": "Hold the sally port and let the gate do its job.", "success_chance": 0.55,
+			"success_text": "It's a prison gate for a reason. Nothing gets through it tonight.",
+			"failure_text": "The gate mechanism jams half-shut. You force it the rest of the way, but it's not pretty.",
+		},
+		{
+			"text": "Fall back through the cell blocks and lock down section by section.", "success_chance": 0.65,
+			"success_text": "One locked door at a time, exactly like the place was built to do. Quiet by morning.",
+			"failure_text": "One block's locks don't catch properly. You wedge it shut by hand and hold your breath.",
+		},
+		{
+			"text": "Use the guard tower to pick off stragglers before they reach the wall.", "success_chance": 0.5,
+			"success_text": "The height does the work for you. Whatever made it this far doesn't make it any further.",
+			"failure_text": "You run low before they thin out. The wall holds, but it's closer than you'd like.",
 		},
 	],
 }

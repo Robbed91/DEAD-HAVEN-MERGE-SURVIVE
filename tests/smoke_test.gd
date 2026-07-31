@@ -16,6 +16,7 @@ const SCENES := [
 	"res://scenes/redwater/redwater.tscn",
 	"res://scenes/greybridge/greybridge.tscn",
 	"res://scenes/saint_mercy/saint_mercy.tscn",
+	"res://scenes/northgate/northgate.tscn",
 	"res://scenes/merge_board/merge_board.tscn",
 	"res://scenes/world_map/world_map.tscn",
 	"res://scenes/survivors/survivors.tscn",

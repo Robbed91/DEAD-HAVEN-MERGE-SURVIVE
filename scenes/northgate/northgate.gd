@@ -1,17 +1,16 @@
 extends Control
-## SaintMercy
+## Northgate
 ##
-## Saint Mercy Hospital residence screen - Phase 11's fourth residence,
-## reachable from the World Map once greybridge_defence's success sets
-## saint_mercy_unlocked. Same data-driven hotspot/task-panel pattern as
+## Northgate Prison residence screen - Phase 12's fifth residence,
+## reachable from the World Map once saint_mercy_defence's success sets
+## northgate_unlocked. Same data-driven hotspot/task-panel pattern as
 ## every other residence screen.
 
-const RESIDENCE_ID := "saint_mercy_hospital"
-const DEFENCE_EVENT_ID := "saint_mercy_defence"
+const RESIDENCE_ID := "northgate_prison"
+const DEFENCE_EVENT_ID := "northgate_defence"
 const HOTSPOT_SIZE := Vector2(64, 64)
 
 const CHAPTER_TITLES := {
-	"chapter_6_the_signal": "Chapter 6: The Signal",
 	"chapter_7_do_no_harm": "Chapter 7: Do No Harm",
 	"chapter_8_old_debts": "Chapter 8: Old Debts",
 }
@@ -26,14 +25,14 @@ var _hotspot_visuals: Dictionary = {} # hotspot_id -> HotspotVisual
 
 func _ready() -> void:
 	var residence := ResidenceManager.get_residence(RESIDENCE_ID)
-	%ResidenceNameLabel.text = residence.display_name if residence else "Saint Mercy Hospital"
+	%ResidenceNameLabel.text = residence.display_name if residence else "Northgate Prison"
 
 	if residence != null:
 		for hotspot in residence.hotspots:
 			_build_hotspot(hotspot)
 
 	_task_panel.completed.connect(_on_task_completed)
-	_defence_button.pressed.connect(func(): SceneRouter.go_to("defence", {"event_id": DEFENCE_EVENT_ID, "return_scene_key": "saint_mercy"}))
+	_defence_button.pressed.connect(func(): SceneRouter.go_to("defence", {"event_id": DEFENCE_EVENT_ID, "return_scene_key": "northgate"}))
 	EventBus.chapter_changed.connect(func(_id): _refresh_chapter_label())
 	EventBus.defence_resolved.connect(func(_outcome): _refresh_progress())
 	_refresh_progress()

@@ -127,7 +127,8 @@ func try_complete_quest(quest_id: String) -> Dictionary:
 	# Wave") is set by DefenceManager on a successful Hollow Creek defence.
 	# Chapter 5 ("The Station") opens once Lena is found at Redwater;
 	# Chapter 6 ("The Signal") opens once Riley is found at Greybridge;
-	# Chapter 7 ("Do No Harm") opens once Imogen is found at Saint Mercy.
+	# Chapter 7 ("Do No Harm") opens once Imogen is found at Saint Mercy;
+	# Chapter 8 ("Old Debts") opens once Caleb is found at Northgate.
 	# There is no chapter_3 beat yet - see DEVELOPMENT_LOG.md Known issues.
 	if quest_id == "q_secure_front_door":
 		GameManager.advance_chapter("chapter_2_someone_upstairs")
@@ -137,6 +138,8 @@ func try_complete_quest(quest_id: String) -> Dictionary:
 		GameManager.advance_chapter("chapter_6_the_signal")
 	if quest_id == "q_rescue_imogen":
 		GameManager.advance_chapter("chapter_7_do_no_harm")
+	if quest_id == "q_rescue_caleb":
+		GameManager.advance_chapter("chapter_8_old_debts")
 
 	_maybe_discover_vehicle()
 

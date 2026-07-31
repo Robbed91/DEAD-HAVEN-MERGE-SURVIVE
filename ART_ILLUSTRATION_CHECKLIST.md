@@ -37,7 +37,7 @@ shocked), separated layers for rigging, and 3 equipment-progression notes
 - [ ] **Lena Ortiz** (mechanic, rescued Ch.5) - not yet prompted; source: `data/characters/lena_ortiz.tres`, `data/dialogue/lena_01-03.tres` (defensive/guarded intro, grease-marked clothing, rolled sleeves, tool pouch, protective eyewear, rust-orange accent, confident posture)
 - [ ] **Dr Imogen Shaw** (former ER doctor, rescued Ch.7, Phase 11) - not yet prompted; source: `data/characters/imogen_shaw.tres`, `data/dialogue/imogen_01-03.tres` (guarded, demands proof of health before opening the isolation ward's sealed doors); brief section 17: practical field-medical clothing, medical bag, clean but worn coat, calm expression, green/teal accent
 - [ ] **Riley Chen** (radio technician, rescued Ch.6, Phase 10) - not yet prompted; source: `data/characters/riley_chen.tres`, `data/dialogue/riley_01-03.tres` (defensive about the signal at first, found behind a wedged-shut stairwell); brief section 17: electronics pack, headset, layered clothing, improvised antenna tools, blue accent, alert/analytical posture
-- [ ] **Caleb Rusk** (former security officer, not yet recruitable in-game, has a hidden Ashborn tie) - not yet prompted; brief section 17: heavy jacket, protective vest, restrained tactical gear, hidden Ashborn visual clue, suspicious expression
+- [ ] **Caleb Rusk** (former security officer, rescued Ch.8, Phase 12, has a hidden Ashborn tie) - not yet prompted; source: `data/characters/caleb_rusk.tres`, `data/dialogue/caleb_01-03.tres` (openly hostile at first - the first rescue who's actually dangerous to approach - with a seeded, unexplained scrap of unfamiliar insignia under his jacket); brief section 17: heavy jacket, protective vest, restrained tactical gear, hidden Ashborn visual clue, suspicious expression
 
 ## 2. The Hollow - 6 enemy concept sheets + production sprites
 
@@ -85,13 +85,17 @@ background/structure/damage/foreground approach as the exterior prompts.
 
 - [ ] **Current state** - not yet prompted; source: `scenes/saint_mercy/saint_mercy_background.gd` (current procedural version - full night, sickly green-white emergency-lit windows, main hospital block, ambulance bay wing, a parked ambulance). No "upgraded" state designed yet in-game, same as Greybridge - add one if/when that's built.
 
-## 6. Remaining residences (not yet built in-game at all)
+## 5d. Northgate Prison - exterior states (Phase 12)
 
-Data/quests/scenes don't exist yet for these - illustration work should
-wait until each is actually built (so hotspot positions etc. are known),
-tracked here so the eventual need isn't a surprise:
+- [ ] **Current state** - not yet prompted; source: `scenes/northgate/northgate_background.gd` (current procedural version - early dawn, concrete perimeter wall, stilted guard tower, barred cell block windows, sally port gate, razor wire fence). No "upgraded" state designed yet in-game, same as Greybridge/Saint Mercy - add one if/when that's built.
 
-- [ ] Northgate Prison (Caleb Rusk's expected rescue location)
+## 6. Remaining residences
+
+None - all 5 residences in the current design roster (Hollow Creek
+Farmhouse, Redwater Service Station, Greybridge School, Saint Mercy
+Hospital, Northgate Prison) are built as of Phase 12. Any further
+residences would be new scope beyond the original spec's list, not a
+backlog item.
 
 ## 7. Merge board & UI
 
@@ -185,7 +189,7 @@ Each needs arrival/exploration/threat/loot/escape illustrated states.
 ## Priority order if generating in batches
 
 1. Vertical slice (the 10 "prompt ready" items above) - proves the art direction works before mass production
-2. Remaining 4 survivor sheets (Lena, Riley, Imogen, Caleb) + remaining 5 Hollow types - characters are seen constantly and currently have zero unique art
+2. Remaining 4 survivor sheets (Lena, Riley, Imogen, Caleb - all recruitable in-game as of Phase 12, none prompted yet) + remaining 5 Hollow types - characters are seen constantly and currently have zero unique art
 3. Construction chain's 7 sibling chains (item art is the single most-seen asset category)
 4. Farmhouse stages 3-5 + 6 interiors, Redwater's 2 states
 5. Producers, vehicle stages, UI component sheet, icon set

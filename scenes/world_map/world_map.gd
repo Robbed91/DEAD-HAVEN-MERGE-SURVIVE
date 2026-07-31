@@ -26,8 +26,7 @@ func _ready() -> void:
 	_setup_redwater_marker()
 	_setup_greybridge_marker()
 	_setup_saint_mercy_marker()
-	var locked_marker: Button = %NorthgateMarker
-	locked_marker.pressed.connect(func(): EventBus.show_toast.emit("Locked - reach this residence by progressing the campaign."))
+	_setup_northgate_marker()
 	_pulse_marker(%HollowCreekMarker)
 	_build_scavenging_markers()
 	_build_vehicle_marker()
@@ -69,6 +68,19 @@ func _setup_saint_mercy_marker() -> void:
 		marker.text = "🏥"
 		marker.tooltip_text = "Saint Mercy Hospital"
 		marker.pressed.connect(func(): SceneRouter.go_to("saint_mercy"))
+	else:
+		marker.pressed.connect(func(): EventBus.show_toast.emit("Locked - reach this residence by progressing the campaign."))
+
+## Same pattern a fourth time: opens once story_flags["northgate_unlocked"]
+## is set by a successful saint_mercy_defence (Phase 12) - the last
+## residence in the current roster.
+func _setup_northgate_marker() -> void:
+	var marker: Button = %NorthgateMarker
+	if GameManager.get_story_flag("northgate_unlocked", false):
+		marker.modulate.a = 1.0
+		marker.text = "🏛"
+		marker.tooltip_text = "Northgate Prison"
+		marker.pressed.connect(func(): SceneRouter.go_to("northgate"))
 	else:
 		marker.pressed.connect(func(): EventBus.show_toast.emit("Locked - reach this residence by progressing the campaign."))
 

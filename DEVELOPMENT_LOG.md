@@ -1759,6 +1759,146 @@ look at whether the story-flag/chapter chain needs a proper main-story
 arc connecting all five residences rather than each one only advancing
 its own next-door neighbour (a Known Issue carried since Phase 8).
 
+## Phase 12: Northgate Prison - complete
+
+Fifth and final residence in the current roster, closing the loop the
+previous three phases were building toward: Caleb Rusk's real skills
+(`trap`/`defence`/`combat`) match the *standard* `["trap", "defence"]`
+tags used by every defence event except Greybridge's - so recruiting him
+doesn't just make `northgate_defence`'s bonus live, it retroactively
+makes `hollow_creek_first_wave`'s, `redwater_defence`'s, and
+`saint_mercy_defence`'s bonuses live too, all at once. Same
+`ResidenceDefinition`/quests/dialogue/screen/DefenceManager-event pattern
+as Phases 8/10/11.
+
+### Files created
+
+- `data/residences/northgate_prison.tres` - 8 hotspots (sally port,
+  guard tower, armory, mess hall, cell block A, control room, transport
+  bay, warden's office), covering construction/tool/trap/food/clothing/
+  electronics/fuel chains (trap used twice, at different tiers, same as
+  Saint Mercy reused medical).
+- `data/quests/q_reinforce_sally_port.tres`, `q_repair_guard_tower.tres`,
+  `q_secure_armory.tres`, `q_clear_mess_hall.tres`,
+  `q_salvage_cell_block.tres`, `q_restore_control_room.tres`,
+  `q_clear_transport_bay.tres`, and the rescue quest
+  `q_rescue_caleb.tres` (`trap_4` - deliberately his own skill area,
+  bringing him security/defence gear as proof rather than medical
+  supplies; `unlock_survivor: caleb_rusk`, `dialogue_trigger_id:
+  caleb_01`).
+- `data/dialogue/caleb_01.tres`/`caleb_02.tres`/`caleb_03.tres` - Caleb
+  found holed up in a bunkered warden's office, openly hostile at first
+  (matching his `trap`/`defence`/`combat` skillset - he's the first
+  rescue who is actually dangerous to approach), with a single seeded
+  narrative detail (a scrap of unfamiliar stitched insignia under his
+  jacket) per the spec's "hidden Ashborn visual clue" - not explained,
+  not pressed by Mara, just noticed. The branching choice lets the player
+  ask about it directly or let it go.
+- `scenes/northgate/northgate.gd`/`.tscn` and
+  `scenes/northgate/northgate_background.gd` - a fifth distinct
+  palette/time-of-day: early dawn, cold grey-blue breaking to pale rose,
+  completing the "every residence has its own time of day" set (Hollow
+  Creek day, Redwater dusk, Greybridge flat overcast, Saint Mercy night,
+  Northgate dawn).
+- Tests: `tests/smoke_test_northgate.gd`/`.tscn`.
+
+### Files modified
+
+- `autoload/defence_manager.gd` - new `northgate_defence` event
+  (`residence_id: northgate_prison`, `skill_tags: ["trap", "defence"]` -
+  the standard set, same as Hollow Creek/Redwater/Saint Mercy;
+  `success_flag: ""` since there's no sixth residence yet to unlock).
+- `autoload/residence_manager.gd` - `q_rescue_caleb` advances the
+  chapter to `chapter_8_old_debts`.
+- `scripts/residence/hotspot_visual.gd` - a distinct placeholder shape
+  per Northgate hotspot id (a barred gate, a stilted watchtower, a
+  weapons rack, a mess table, cell bars, a control panel grid, a
+  transport truck, and a barred office/desk).
+- `scenes/world_map/world_map.gd`/`.tscn` - `_setup_northgate_marker()`
+  (identical shape to the other three setup functions) replaces the
+  flat "locked" toast Northgate had since Phase 1.
+- `scenes/haven/haven.gd`, `scenes/redwater/redwater.gd`,
+  `scenes/greybridge/greybridge.gd`, `scenes/saint_mercy/saint_mercy.gd`,
+  `scenes/defence/defence.gd` - added Chapter 8's title and
+  `northgate_defence`'s/`caleb_rusk`'s labels.
+- `autoload/scene_router.gd` - added `"northgate"`.
+- `tests/smoke_test.gd` - added `northgate.tscn` to the coverage list.
+- `tests/smoke_test_greybridge.gd` - **bug fix, found while writing this
+  phase's test**: the forced-success section launched/resolved with
+  `"riley_chen"`, whose skills match `greybridge_defence`'s own tags.
+  Forcing `success_chance = 1.0` while a matching-skill survivor is
+  active triggers the real `minf(chance + 0.15, 0.95)` bonus math, which
+  silently *reduces* an intentionally-forced 1.0 down to 0.95 - a 5%
+  chance of spurious failure on every run, previously undetected because
+  it happened not to trigger across this project's testing so far.
+  Switched to `"mara_vale"` (no matching skill) for that section; the
+  skill-match itself is proven separately via a direct, non-random
+  `CharacterDatabase` assertion that doesn't go through `resolve_choice()`
+  at all.
+
+### Features completed
+
+- **A fifth full residence**, same shape as the other four - the current
+  roster's residence count is now complete (5/5).
+- **The full skill-bonus payoff**: `smoke_test_northgate.gd` directly
+  asserts Caleb's real skills overlap all four `["trap", "defence"]`-
+  tagged events' tags at once, not just his own. Every defence event's
+  skill bonus - documented as "real but currently inert" starting in
+  Phase 6 - is now live for at least one recruitable survivor.
+- **A real test-flakiness bug caught and fixed**, in an *existing* test
+  from two phases ago, by writing this phase's test carefully enough to
+  notice the same pattern about to repeat itself - see Files modified.
+
+### Tests performed
+
+Same headless approach as every phase, `timeout`-wrapped throughout:
+
+- `godot4 --headless --path . --import` - clean, zero script/parse errors.
+- `tests/smoke_test_northgate.tscn` first failed intermittently
+  (`SMOKE_NORTHGATE_FAIL: forced-success resolve_choice ... got
+  outcome_success: false`) - exactly the skill-bonus-cap interaction
+  described above. Re-ran 5 times after the fix with no failures, then
+  applied the same fix to `smoke_test_greybridge.gd` and re-ran that 5
+  times too.
+- Full existing suite (all 12 prior smoke tests) - all still pass, no
+  regressions.
+- `tests/smoke_test_northgate.tscn` (new, now deterministic) - residence
+  data loads with 8 hotspots; completing every hotspot except the rescue
+  leaves `northgate_defence` un-attemptable; completing `q_rescue_caleb`
+  unlocks `caleb_rusk`, advances the chapter to `chapter_8_old_debts`,
+  and its `dialogue_trigger_id` is `caleb_01`; Caleb's real skills are
+  directly asserted to overlap all four standard-tag events' `skill_tags`;
+  a forced success (launched with a non-matching survivor to stay
+  deterministic) spends the event's own energy cost and marks only
+  itself survived; a full save/reload round trip preserves all of it.
+
+### Known issues
+
+- **Not visually confirmed**, same caveat as every phase.
+- **8 hotspots, not spec's fuller count** - same trade-off every
+  residence's content generation has made.
+- **`northgate_defence` unlocks nothing** - there's no sixth residence in
+  the current roster for its `success_flag` to point at. A genuine stub
+  for whatever comes next (the spec's wider story - Eli, the Ashborn,
+  the Signal Keeper - none of which exist in this build yet).
+- **The Ashborn tease in Caleb's dialogue goes nowhere yet** - it's
+  seeded, deliberately not explained, and there is currently no later
+  content that pays it off. Honest placeholder for future story work,
+  not a bug.
+- **No route/travel scene between residences**, same gap every phase
+  since 8 has flagged.
+- **Godot binary still not persisted** in this environment.
+
+### Exact next phase
+
+With all 5 currently-planned residences built, the largest remaining
+gaps are: the 5 unbuilt scavenging locations from the original 10-location
+spec; a real main-story arc connecting all five residences (today each
+one only advances the very next residence's own unlock flag, with no
+overarching thread); and illustrated art, still gated on an
+image-generation tool becoming available (`ART_ILLUSTRATION_CHECKLIST.md`
+is ready whenever that happens).
+
 ### Commands required to run or export the project
 
 ```bash
@@ -1770,7 +1910,7 @@ godot4 --path /path/to/dead-haven-merge-survive
 godot4 --headless --path /path/to/dead-haven-merge-survive --import
 
 # Run the full smoke test suite (always with a timeout wrapper)
-for f in smoke_test smoke_test_save smoke_test_settings smoke_test_merge smoke_test_residence smoke_test_dialogue smoke_test_scavenging smoke_test_vehicle_survivors smoke_test_defence smoke_test_redwater smoke_test_greybridge smoke_test_saint_mercy; do
+for f in smoke_test smoke_test_save smoke_test_settings smoke_test_merge smoke_test_residence smoke_test_dialogue smoke_test_scavenging smoke_test_vehicle_survivors smoke_test_defence smoke_test_redwater smoke_test_greybridge smoke_test_saint_mercy smoke_test_northgate; do
   timeout 30 godot4 --headless --path /path/to/dead-haven-merge-survive "tests/$f.tscn"
 done
 

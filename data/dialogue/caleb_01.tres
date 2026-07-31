@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="DialogueEntry" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data_models/dialogue_entry.gd" id="1_clb01"]
+
+[resource]
+script = ExtResource("1_clb01")
+id = "caleb_01"
+speaker_id = ""
+portrait_key = ""
+expression_key = "neutral"
+text = "The warden's office has been turned into something closer to a bunker - furniture stacked against the door, a trip-wire strung low across the threshold. Whoever's inside knew exactly what they were doing."
+background_scene_path = ""
+animation = ""
+sound_cue = ""
+branching_options = Array[Dictionary]([])
+next_id = "caleb_02"

@@ -21,6 +21,7 @@ godot4 --headless --path . tests/smoke_test_defence.tscn
 godot4 --headless --path . tests/smoke_test_redwater.tscn
 godot4 --headless --path . tests/smoke_test_greybridge.tscn
 godot4 --headless --path . tests/smoke_test_saint_mercy.tscn
+godot4 --headless --path . tests/smoke_test_northgate.tscn
 ```
 
 All of the above are cheap to run with a `timeout` wrapper (e.g.
@@ -35,7 +36,7 @@ opt-in, point Godot at them directly as shown above.
 
 ## What each one covers
 
-- **smoke_test** - instantiates every screen (Splash, Haven, Redwater, Greybridge, Saint Mercy, Merge Board, World Map, Survivors, Settings, Dev Diagnostics, Dialogue, Scavenging, Vehicle, Defence) in turn and fails loudly if any of them throws a script error on `_ready()`. This is also what caught Phase 8's `world_map.gd` `%MapArea` bug (see DEVELOPMENT_LOG.md Phase 8) - a script error on instantiation doesn't fail this test's own pass/fail check by itself, but it's visible in the output, which is why every phase's regression run always reads the full output, not just the final `_OK` line.
+- **smoke_test** - instantiates every screen (Splash, Haven, Redwater, Greybridge, Saint Mercy, Northgate, Merge Board, World Map, Survivors, Settings, Dev Diagnostics, Dialogue, Scavenging, Vehicle, Defence) in turn and fails loudly if any of them throws a script error on `_ready()`. This is also what caught Phase 8's `world_map.gd` `%MapArea` bug (see DEVELOPMENT_LOG.md Phase 8) - a script error on instantiation doesn't fail this test's own pass/fail check by itself, but it's visible in the output, which is why every phase's regression run always reads the full output, not just the final `_OK` line.
 - **smoke_test_save** - new game -> mutate resources -> save -> reload -> asserts the values round-tripped (as deltas from a post-`new_game()` baseline, not hardcoded absolutes, since Phase 2's starting board grants its own discovery-reward coins); then corrupts the primary save file on disk and asserts `SaveManager` recovers from the `.bak` copy instead of crashing.
 - **smoke_test_settings** - changes audio/accessibility settings through `GameManager.update_setting()` and asserts the audio bus volume and the *live* `get_window().theme` (not a freshly-built one) actually reflect text_scale/high_contrast/colorblind_mode changes - this test caught a real Phase 9 bug where `EventBus.settings_changed` had zero listeners, so those three settings were stored and toggleable but had no visible effect until an app restart; also asserts `GameManager.effects_enabled()` correctly folds together `reduced_motion` and the `graphics_quality` tier (Phase 9's new Low/Standard/High setting).
 - **smoke_test_merge** (Phase 2) - starting board layout; a valid merge and its discovery reward; invalid merges (producers, mismatched chains) and max-level merges are correctly rejected; producer tap spends energy and enforces cooldown, and the debug reset-cooldowns tool clears it; debug infinite-energy mode spends without deducting; storage transfer both directions; soft-delete + undo; reward-chain item collection grants the right amount; a full save/reload round trip preserves item count, storage contents and discovery state.
@@ -47,6 +48,7 @@ opt-in, point Godot at them directly as shown above.
 - **smoke_test_redwater** (Phase 8) - Redwater Service Station's residence data loads with 8 hotspots; `get_active_quest_for_hotspot("fuel_pumps", "hollow_creek_farmhouse")` correctly resolves to nothing while the same lookup against `"redwater_service_station"` resolves to the right quest, guarding a real bug `task_panel.gd` had (see DEVELOPMENT_LOG.md Phase 8); completing every hotspot except the rescue leaves `redwater_defence` un-attemptable; completing the Lena-rescue quest unlocks `lena_ortiz`, advances the chapter to `chapter_5_the_station`, and its `dialogue_trigger_id` is wired correctly; once every hotspot is done, `redwater_defence` becomes attemptable, spends its own energy cost, and a forced success marks it (and only it, not Hollow Creek's event) survived; a save/reload round trip preserves all of it.
 - **smoke_test_greybridge** (Phase 10) - same shape as smoke_test_redwater for Greybridge School's 8 hotspots and the Riley-rescue quest (unlocks `riley_chen`, advances to `chapter_6_the_signal`, `dialogue_trigger_id` is `riley_01`); additionally asserts `greybridge_defence`'s `skill_tags` actually overlap `riley_chen`'s real `CharacterDatabase` skills (not a re-implementation or a comment claiming it) - the first defence event whose skill bonus is verified live for its own rescue rather than documented as inert; a forced success spends the event's own energy cost, marks only itself survived, and sets `saint_mercy_unlocked`; a save/reload round trip preserves all of it.
 - **smoke_test_saint_mercy** (Phase 11) - same shape again for Saint Mercy Hospital's 8 hotspots and the Imogen-rescue quest (unlocks `imogen_shaw`, advances to `chapter_7_do_no_harm`, `dialogue_trigger_id` is `imogen_01`); the deliberate mirror-image assertion to smoke_test_greybridge's - checks `saint_mercy_defence`'s `skill_tags` are the standard `["trap", "defence"]` set AND that they do NOT overlap Imogen's real medical skills, making that design choice (a doctor's skills don't help hold a barricade) a checked fact instead of an assumption; a forced success spends the event's own energy cost, marks only itself survived, and sets `northgate_unlocked`; a save/reload round trip preserves all of it.
+- **smoke_test_northgate** (Phase 12) - same shape again for Northgate Prison's 8 hotspots and the Caleb-rescue quest (unlocks `caleb_rusk`, advances to `chapter_8_old_debts`, `dialogue_trigger_id` is `caleb_01`); the payoff test - directly asserts Caleb's real skills (`trap`/`defence`/`combat`) overlap the `skill_tags` of all four standard-tag defence events (`hollow_creek_first_wave`, `redwater_defence`, `saint_mercy_defence`, `northgate_defence`) at once, not just his own, closing the "skill bonus mechanism real but nobody currently unlocked matches it" situation every phase since 6 has carried. Writing this test caught a real flakiness bug (see DEVELOPMENT_LOG.md Phase 12): forcing `success_chance = 1.0` while resolving with a matching-skill survivor triggers the actual skill-bonus math (`minf(1.0 + 0.15, 0.95)`), which *reduces* an intended certainty to 95% - a ~1-in-20 chance of spurious failure. Fixed here (and retroactively in `smoke_test_greybridge.gd`, which had the same latent issue) by resolving with a non-matching survivor for the deterministic forced-outcome checks, while the skill-match itself is proven separately via a direct assertion that never touches `randf()`.
 
 ## What these do NOT cover
 
@@ -58,9 +60,11 @@ or in the editor's running game view; an equivalent Phase 2 checklist for
 drag/merge/producer gestures hasn't been written yet (see DEVELOPMENT_LOG.md
 Known issues).
 
-Results as of Phase 11 (Godot 4.3.stable, downloaded fresh into this
+Results as of Phase 12 (Godot 4.3.stable, downloaded fresh into this
 development container - see DEVELOPMENT_LOG.md Known issues about it not
-persisting between sessions): all twelve pass. Run each with a `timeout`
+persisting between sessions): all thirteen pass, deterministically (see
+`smoke_test_northgate`'s entry above for a flakiness bug two tests had
+until this phase). Run each with a `timeout`
 wrapper if you're scripting this - both `smoke_test.tscn` (Phase 4) and
 the one-off `generate_scavenging.gd` content script (Phase 5) genuinely
 hung from real bugs during development (see DEVELOPMENT_LOG.md for both),
