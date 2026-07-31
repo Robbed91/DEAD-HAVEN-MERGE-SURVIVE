@@ -22,6 +22,15 @@ var _instance_id: String = ""
 func _ready() -> void:
 	layer = 92
 	visible = false
+	$CenterContainer.theme = get_window().theme
+	$CenterContainer/Panel.theme_type_variation = "CreamPanel"
+	_name_label.add_theme_font_override("font", ThemeFactory.display_font())
+	for label in [_name_label, _desc_label, _meta_label]:
+		label.add_theme_color_override("font_color", ThemeFactory.CHARCOAL_LIGHT)
+	_collect_button.theme_type_variation = "OliveButton"
+	_storage_button.theme_type_variation = "RustButton"
+	_delete_button.theme_type_variation = "DangerButton"
+	_close_button.theme_type_variation = "NavButton"
 	_scrim.gui_input.connect(func(e):
 		if e is InputEventMouseButton and e.pressed:
 			hide_panel()

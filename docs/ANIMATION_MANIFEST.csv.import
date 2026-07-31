@@ -1,0 +1,17 @@
+[remap]
+
+importer="csv_translation"
+type="Translation"
+uid="uid://b0c8e4xg2gsrm"
+
+[deps]
+
+files=["res://docs/ANIMATION_MANIFEST.Object/Scene.translation", "res://docs/ANIMATION_MANIFEST.Existing file path.translation", "res://docs/ANIMATION_MANIFEST.Current placeholder type.translation", "res://docs/ANIMATION_MANIFEST.Required final animation.translation", "res://docs/ANIMATION_MANIFEST.Required dimensions or format.translation", "res://docs/ANIMATION_MANIFEST.Visual states.translation", "res://docs/ANIMATION_MANIFEST.Required separated layers.translation", "res://docs/ANIMATION_MANIFEST.Audio requirements.translation", "res://docs/ANIMATION_MANIFEST.Existing trigger.translation", "res://docs/ANIMATION_MANIFEST.Replacement priority.translation", "res://docs/ANIMATION_MANIFEST.Whether replacement can occur without altering gameplay logic.translation", "res://docs/ANIMATION_MANIFEST.Classification.translation"]
+
+source_file="res://docs/ANIMATION_MANIFEST.csv"
+dest_files=["res://docs/ANIMATION_MANIFEST.Object/Scene.translation", "res://docs/ANIMATION_MANIFEST.Existing file path.translation", "res://docs/ANIMATION_MANIFEST.Current placeholder type.translation", "res://docs/ANIMATION_MANIFEST.Required final animation.translation", "res://docs/ANIMATION_MANIFEST.Required dimensions or format.translation", "res://docs/ANIMATION_MANIFEST.Visual states.translation", "res://docs/ANIMATION_MANIFEST.Required separated layers.translation", "res://docs/ANIMATION_MANIFEST.Audio requirements.translation", "res://docs/ANIMATION_MANIFEST.Existing trigger.translation", "res://docs/ANIMATION_MANIFEST.Replacement priority.translation", "res://docs/ANIMATION_MANIFEST.Whether replacement can occur without altering gameplay logic.translation", "res://docs/ANIMATION_MANIFEST.Classification.translation"]
+
+[params]
+
+compress=true
+delimiter=0

@@ -41,6 +41,7 @@ layout_mode = 2
 size_flags_horizontal = 4
 script = ExtResource("2")
 interactive = false
+show_level_badge = false
 
 [node name="NameLabel" type="Label" parent="CenterContainer/Panel/Margin/Content"]
 unique_name_in_owner = true

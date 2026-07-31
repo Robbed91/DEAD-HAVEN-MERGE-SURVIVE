@@ -22,7 +22,17 @@ static func draw(control: Control, def: ItemDefinition, board_item: BoardItem = 
 	var rarity_color: Color = RARITY_COLORS.get(def.rarity, RARITY_COLORS[ItemDefinition.Rarity.COMMON])
 
 	_draw_background(control, s, rarity_color, def.is_producer)
-	_draw_silhouette(control, s, def.chain_id)
+	var texture_path: String = def.icon_path
+	if def.is_producer and board_item != null:
+		if board_item.charge_count == 0:
+			texture_path = "res://assets/items/construction/producer_exhausted.png" if def.chain_id == "construction" else texture_path
+		elif board_item.is_on_cooldown():
+			texture_path = "res://assets/items/construction/producer_cooldown.png" if def.chain_id == "construction" else texture_path
+	if not texture_path.is_empty() and ResourceLoader.exists(texture_path):
+		var texture: Texture2D = load(texture_path)
+		control.draw_texture_rect(texture, Rect2(Vector2(3, 3), s - Vector2(6, 6)), false)
+	else:
+		_draw_silhouette(control, s, def.chain_id)
 
 	if def.is_producer:
 		_draw_producer_ring(control, s, rarity_color)
@@ -35,10 +45,6 @@ static func draw(control: Control, def: ItemDefinition, board_item: BoardItem = 
 		_draw_level_badge(control, s, def.level)
 
 	if board_item != null:
-		if board_item.is_locked:
-			_draw_lock_overlay(control, s)
-		if board_item.has_cobweb:
-			_draw_cobweb_overlay(control, s)
 		if board_item.is_in_bubble:
 			_draw_bubble_overlay(control, s)
 
@@ -81,20 +87,6 @@ static func _draw_exhausted_overlay(control: Control, s: Vector2) -> void:
 	control.draw_rect(Rect2(Vector2.ZERO, s), Color(0, 0, 0, 0.55), true)
 	control.draw_line(Vector2(4, 4), s - Vector2(4, 4), Color("b23a2e"), 3.0)
 	control.draw_line(Vector2(4, s.y - 4), Vector2(s.x - 4, 4), Color("b23a2e"), 3.0)
-
-static func _draw_lock_overlay(control: Control, s: Vector2) -> void:
-	var c := Vector2(s.x - 14, 14)
-	control.draw_rect(Rect2(c + Vector2(-8, -2), Vector2(16, 13)), Color("e8dcc5"))
-	control.draw_arc(c + Vector2(0, -4), 7.0, PI, TAU, 12, Color("e8dcc5"), 2.5)
-
-static func _draw_cobweb_overlay(control: Control, s: Vector2) -> void:
-	var c := Vector2.ZERO
-	var col := Color(0.85, 0.85, 0.85, 0.7)
-	for i in 4:
-		var t: float = (PI * 0.5) * (float(i) / 3.0)
-		control.draw_line(c, c + Vector2(cos(t), sin(t)) * s.x * 0.35, col, 1.5)
-	control.draw_arc(c, s.x * 0.18, 0, PI * 0.5, 8, col, 1.5)
-	control.draw_arc(c, s.x * 0.3, 0, PI * 0.5, 8, col, 1.5)
 
 static func _draw_bubble_overlay(control: Control, s: Vector2) -> void:
 	control.draw_arc(s * 0.5, minf(s.x, s.y) * 0.54, 0, TAU, 24, Color(0.6, 0.8, 1.0, 0.5), 2.0)

@@ -1,0 +1,82 @@
+Audio ID,Type,Existing file path,Scene or trigger,Current placeholder type,Required final asset,Required format or looping,Variation count,Animation sync,Replacement priority,Whether replacement can occur without altering gameplay logic,Classification
+MUS_MENU,Music,not created,main menu,Silence,Original restrained post-collapse menu theme,Ogg Vorbis seamless loop; 60-120s,1,Menu ambience/light pulse,High,Yes; register and call on scene entry,High
+MUS_HAVEN_SAFE,Music,not created,residence calm screens,Silence,Original warm but fragile safe-haven theme,Ogg Vorbis seamless loop; 90-180s,1,Ambient environment loops,High,Yes; visual/audio scene hook only,High
+MUS_MERGE_BOARD,Music,not created,merge board,Silence,Original low-fatigue merge-loop music,Ogg Vorbis seamless loop; 120-240s,1,None,Critical,Yes; scene entry/exit only,Critical
+SFX_ITEM_LIFT,SFX,assets/audio/sfx/item_lift.wav,merge item drag,Final original cue,Short tactile lift,PCM WAV 22.05kHz stereo,1,Drag lift,High,Yes,Already acceptable
+SFX_MERGE_PULL,SFX,assets/audio/sfx/merge_pull_wood.wav,successful construction merge,Final original cue,Wooden draw-in/compression cue,PCM WAV 22.05kHz stereo,1,Merge pull,High,Yes,Already acceptable
+SFX_MERGE_HIGH,SFX,assets/audio/sfx/merge_wood_high.wav,construction merge level 5+,Final original cue,Layered high-level wood construction reward,PCM WAV 22.05kHz stereo,1,High-level glow/particles,High,Yes,Already acceptable
+SFX_PRODUCER_EMPTY,SFX,assets/audio/sfx/producer_empty.wav,tool crate exhausted response,Final original cue,Dry empty knock,PCM WAV 22.05kHz stereo,1,Empty feedback,Medium,Yes,Already acceptable
+SFX_PRODUCER_RECHARGE,SFX,assets/audio/sfx/producer_recharge.wav,tool crate cooldown response,Final original cue,Mechanical recharge shimmer,PCM WAV 22.05kHz stereo,1,Recharge feedback,Medium,Yes,Already acceptable
+MUS_WORLD_MAP,Music,not created,world map,Silence,Original exploratory map underscore,Ogg Vorbis seamless loop; 90-180s,1,Route reveal optional,High,Yes; scene entry/exit only,High
+MUS_SCAVENGING,Music,not created,scavenging preparation/encounter,Silence,Original cautious scavenging pulse,Ogg Vorbis seamless loop; 90-180s,1,Encounter state transitions,Critical,Yes; scene/state hook only,Critical
+MUS_TENSION,Music,not created,threat approach/story tension,Silence,Original rising tension bed,Ogg Vorbis loop with clean exit; 45-90s,1,Threat/choice transition,High,Yes; story/visual state hook only,High
+MUS_DEFENCE,Music,not created,defence encounter,Silence,Original percussive defence loop,Ogg Vorbis seamless loop; 60-120s,1,Hollow attacks/traps/outcome,Critical,Yes; defence visual state hook only,Critical
+MUS_STORY_EMOTIONAL,Music,not created,key dialogue,Silence,Original restrained emotional underscore,Ogg Vorbis seamless or stemmed; 90-180s,1,Dialogue beat transitions,High,Yes; dialogue ID mapping only,High
+MUS_SIGNAL_KEEPER,Music,not created,Signal Keeper dialogue,Silence,Original mysterious radio/signal motif,Ogg Vorbis seamless loop; 60-120s,1,Radio pulse/static,High,Yes; dialogue ID mapping only,High
+MUS_VICTORY,Music,not created,milestone/defence success,Silence,Original short hopeful victory cue,Ogg Vorbis one-shot; 5-12s,1,Success reveal,High,Yes; existing result/event hook,High
+MUS_FAILURE,Music,not created,scavenging/defence failure,Silence,Original non-terminal setback cue,Ogg Vorbis one-shot; 3-8s,1,Failure reveal,Medium,Yes; existing result/event hook,Medium
+SFX_UI_BUTTON,SFX,not created,all Button.pressed,Silence,Muted metal/wood UI press,Ogg or WAV one-shot,4,Button depress,High,Yes; UI signal only,High
+SFX_UI_BACK,SFX,not created,back/close actions,Silence,Soft reverse click/slide,Ogg or WAV one-shot,2,Panel/scene close,Medium,Yes; UI signal only,Medium
+SFX_UI_PANEL_OPEN,SFX,not created,task/storage/item/settings/dialogue panels,Silence,Parchment/metal panel open,Ogg or WAV one-shot,3,Panel opening,Medium,Yes; visual hook only,Medium
+SFX_UI_PANEL_CLOSE,SFX,not created,task/storage/item/settings/dialogue panels,Silence,Parchment/metal panel close,Ogg or WAV one-shot,3,Panel closing,Medium,Yes; visual hook only,Medium
+SFX_UI_TOGGLE,SFX,not created,settings toggles,Silence,Mechanical toggle click,Ogg or WAV one-shot,2,Toggle state change,Medium,Yes; existing setting callback,Medium
+SFX_UI_SLIDER,SFX,not created,settings sliders,Silence,Subtle stepped slider tick,Ogg or WAV one-shot,3,Value change throttled,Minor,Yes; UI-only throttled hook,Minor
+SFX_UI_ERROR,SFX,not created,disabled/invalid UI action,Silence,Short muted error knock,Ogg or WAV one-shot,2,Invalid feedback,High,Yes; existing failure paths,High
+SFX_NOTIFICATION,SFX,not created,notification badge/toast,Silence,Short restrained alert chime,Ogg or WAV one-shot,2,Notification pulse,Medium,Yes; EventBus hook only,Medium
+SFX_MERGE,SFX,not created; key called in scenes/merge_board/merge_board.gd,successful merge,Unsourced cue warning,Layered merge impact with chain variants,Ogg or WAV one-shot,5 per material,Merge contact/result burst,Critical,Yes; existing call,Critical
+SFX_MERGE_INVALID,SFX,not created; key called in scenes/merge_board/merge_board.gd,invalid merge,Unsourced cue warning,Dry blocked clack,Ogg or WAV one-shot,3,Invalid shake,Critical,Yes; existing call,Critical
+SFX_ITEM_PICKUP,SFX,not created,item drag/select,Silence,Light item lift sound by material,Ogg or WAV one-shot,4 per material,Pickup lift,High,Yes; input visual hook only,High
+SFX_ITEM_DROP,SFX,not created,item drop,Silence,Soft board placement by material,Ogg or WAV one-shot,4 per material,Drop settle,High,Yes; input visual hook only,High
+SFX_PRODUCER_ACTIVATE,SFX,not created; key called in scenes/merge_board/merge_board.gd,producer tap,Unsourced cue warning,Container open/mechanism cue by producer family,Ogg or WAV one-shot,3 per family,Producer opening,Critical,Yes; existing call,Critical
+SFX_ITEM_SPAWN,SFX,not created,producer output,Silence,Short material spawn/settle cue,Ogg or WAV one-shot,4,Spawn bounce,High,Yes; observe existing spawn result,High
+SFX_DISCOVERY,SFX,not created; key called in scenes/merge_board/merge_board.gd,first discovery,Unsourced cue warning,Distinct hopeful discovery flourish,Ogg or WAV one-shot,2,Discovery banner reveal,Critical,Yes; existing call,Critical
+SFX_REWARD_REVEAL,SFX,not created,reward/discovery panels,Silence,Reward rise shimmer without casino excess,Ogg or WAV one-shot,3,Reward reveal,High,Yes; existing reward event hook,High
+SFX_COIN_COLLECT,SFX,not created,coin reward collection,Silence,Small coin cluster,Ogg or WAV one-shot,4,Coin flight/counter pulse,High,Yes; resource event hook,High
+SFX_ENERGY_COLLECT,SFX,not created,energy reward collection,Silence,Contained electrical charge,Ogg or WAV one-shot,3,Energy flight/meter pulse,High,Yes; resource event hook,High
+SFX_TOKEN_COLLECT,SFX,not created,Haven Token reward collection,Silence,Distinct branded token chime,Ogg or WAV one-shot,3,Token flight/counter pulse,High,Yes; resource event hook,High
+SFX_XP_COLLECT,SFX,not created,XP reward collection,Silence,Rising XP ticks,Ogg or WAV one-shot,3,XP flight/bar pulse,High,Yes; resource event hook,High
+SFX_LEVEL_UP,SFX,not created,EventBus level_up,Silence,Short hopeful level-up sting,Ogg or WAV one-shot,1,Level badge/reward reveal,High,Yes; existing signal,High
+SFX_BUBBLE_POP,SFX,not created,bubble state clear,Silence,Soft bubble pop,Ogg or WAV one-shot,3,Bubble pop,Medium,Yes; visual-state hook only,Medium
+SFX_COBWEB_CLEAR,SFX,not created,cobweb state clear,Silence,Dry thread tear/dust,Ogg or WAV one-shot,3,Cobweb dissolve,Medium,Yes; visual-state hook only,Medium
+SFX_TASK_COMPLETE,SFX,not created; key called by five residence scripts,quest completion,Unsourced cue warning,Short repair-complete confirmation,Ogg or WAV one-shot,2,Completion badge/burst,Critical,Yes; existing call,Critical
+SFX_CONSTRUCTION_HAMMER,SFX,not created,residence repair animation,Silence,Wood hammer strike set,Ogg or WAV one-shot,8,Contact frames,High,Yes; animation event only,High
+SFX_CONSTRUCTION_SAW,SFX,not created,residence repair animation,Silence,Hand saw loop and stop,Ogg loop plus stop tail,2 loops,Saweing action,High,Yes; animation event only,High
+SFX_BOARD_ATTACH,SFX,not created,boarding repair animation,Silence,Board place/creak set,Ogg or WAV one-shot,6,Board attachment frames,High,Yes; animation event only,High
+SFX_DEBRIS_CLEAR,SFX,not created,clear-room repairs,Silence,Rubble/wood/glass clearing variations,Ogg or WAV one-shot,8,Debris movement,High,Yes; animation event only,High
+SFX_GENERATOR_START,SFX,not created,generator/power repairs,Silence,Failed crank/start/catch/idle tail sequence,Ogg one-shots plus loop,3 starts,Generator animation,High,Yes; completion visual event,High
+SFX_FUEL_PUMP,SFX,not created,Redwater pump repair/use,Silence,Metal latch/pump/hose foley,Ogg or WAV one-shot,4,Pump interaction,Medium,Yes; animation event only,Medium
+SFX_ELECTRICAL_REPAIR,SFX,not created,electronics/power repairs,Silence,Switch/spark/hum-start set,Ogg or WAV one-shot,5,Spark/light-on frames,High,Yes; animation event only,High
+SFX_MEDICAL_FOLEY,SFX,not created,medical item/repair/treatment,Silence,Bandage/zipper/kit handling,Ogg or WAV one-shot,6,Treatment/item frames,Medium,Yes; animation event only,Medium
+SFX_TRAP_TRIGGER,SFX,not created,defence trap reaction,Silence,Mechanical snap/impact by trap type,Ogg or WAV one-shot,5,Trap contact frame,High,Yes; defence visual hook only,High
+SFX_DIALOGUE_ADVANCE,SFX,not created,dialogue continue,Silence,Subtle page/radio/text advance,Ogg or WAV one-shot,3,Entry transition,High,Yes; existing button callback,High
+SFX_DIALOGUE_CHOICE,SFX,not created,dialogue branch choice,Silence,Distinct choice confirmation,Ogg or WAV one-shot,2,Choice feedback,High,Yes; existing choice callback,High
+SFX_RADIO_STATIC,SFX,not created,radio dialogue/Signal Keeper,Silence,Loopable radio static with short tuning bursts,Ogg loop plus one-shots,4,Tuning/pulse,High,Yes; dialogue sound_cue mapping,High
+SFX_FOOTSTEPS_DIRT,SFX,not created,residence/scavenging survivor movement,Silence,Dirt/mud footsteps,Ogg or WAV one-shot,10,Foot contact frames,High,Yes; animation events only,High
+SFX_FOOTSTEPS_INTERIOR,SFX,not created,interior/dialogue/repair movement,Silence,Wood/concrete interior footsteps,Ogg or WAV one-shot,10,Foot contact frames,Medium,Yes; animation events only,Medium
+AMB_WIND,Ambience,not created,main menu/Hollow Creek/Greybridge/Northgate,Silence,Layered rural/cold wind beds,Ogg seamless loops,3,None,High,Yes; scene audio layer,High
+AMB_RAIN,Ambience,not created,Hollow Creek/Saint Mercy/weather variants,Silence,Light/medium/heavy rain loops,Ogg seamless loops,3,Rain layer,High,Yes; scene audio layer,High
+AMB_HAVEN_INTERIOR,Ambience,not created,safe residence/dialogue,Silence,Quiet wood creaks/fire/room tone,Ogg seamless loop,3,Light/fire ambience,Medium,Yes; scene audio layer,Medium
+AMB_REDWATER,Ambience,not created,Redwater,Silence,Forecourt wind/metal/sign creak distant road tone,Ogg seamless loop,2,Environment loops,High,Yes; scene audio layer,High
+AMB_GREYBRIDGE,Ambience,not created,Greybridge,Silence,Empty school wind/rattle/distant radio tone,Ogg seamless loop,2,Environment loops,High,Yes; scene audio layer,High
+AMB_SAINT_MERCY,Ambience,not created,Saint Mercy,Silence,Rain/electrical hum/distant building creak,Ogg seamless loop,2,Emergency-light/electric loops,High,Yes; scene audio layer,High
+AMB_NORTHGATE,Ambience,not created,Northgate,Silence,Wind/metal fence/tower creak,Ogg seamless loop,2,Wire/searchlight loops,High,Yes; scene audio layer,High
+AMB_HOLLOW_GENERAL,Ambience,not created,defence/threat scenes,Silence,Distant wandering Hollow vocal bed,Ogg seamless loop,3,Threat approach,Critical,Yes; defence visual layer,Critical
+SFX_HOLLOW_DRIFTER,SFX,not created,Drifter animation,Silence,Idle/move/notice/attack/hit/collapse family,Ogg or WAV one-shots,4 per action,Animation event frames,High,Yes; animation events only,High
+SFX_HOLLOW_SCREECHER,SFX,not created,Screecher animation,Silence,Idle/screech/attack/hit/collapse family,Ogg or WAV one-shots,4 per action,Animation event frames,High,Yes; animation events only,High
+SFX_HOLLOW_BREAKER,SFX,not created,Breaker animation,Silence,Heavy move/growl/attack/hit/collapse family,Ogg or WAV one-shots,4 per action,Animation event frames,High,Yes; animation events only,High
+SFX_HOLLOW_LURKER,SFX,not created,Lurker animation,Silence,Crawl/breath/lunge/hit/collapse family,Ogg or WAV one-shots,4 per action,Animation event frames,High,Yes; animation events only,High
+SFX_HOLLOW_RUNNER,SFX,not created,Runner animation,Silence,Run/snarl/attack/hit/collapse family,Ogg or WAV one-shots,4 per action,Animation event frames,High,Yes; animation events only,High
+SFX_HOLLOW_BLOATER,SFX,not created,Bloater animation,Silence,Breath/move/gas/hit/collapse family,Ogg or WAV one-shots,4 per action,Animation event frames,High,Yes; animation events only,High
+SFX_DEFENCE_WARNING,SFX,not created,defence start,Silence,Distinct threat warning horn/radio call,Ogg one-shot; 2-5s,2,Threat reveal,Critical,Yes; defence start hook,Critical
+SFX_BARRICADE_IMPACT,SFX,not created,defence attack,Silence,Wood/metal barricade hit and strain set,Ogg or WAV one-shot,10,Impact frames,Critical,Yes; animation events only,Critical
+SFX_DEFENCE_SUCCESS,SFX,not created,defence successful result,Silence,Short relief/secure cue,Ogg one-shot; 3-8s,1,Success reveal,High,Yes; existing result,High
+SFX_DEFENCE_FAILURE,SFX,not created,defence failed result,Silence,Short damage/setback cue without game-over tone,Ogg one-shot; 3-8s,1,Failure/damage reveal,High,Yes; existing result,High
+SFX_SCAVENGE_LAUNCH,SFX,not created,scavenging launch,Silence,Gear-up/door/footstep departure cue,Ogg one-shot,3,Launch transition,High,Yes; existing launch result,High
+SFX_SCAVENGE_SUCCESS,SFX,not created,scavenging success,Silence,Contained loot-success cue,Ogg one-shot,2,Loot reveal,High,Yes; existing result,High
+SFX_SCAVENGE_FAILURE,SFX,not created,scavenging failure,Silence,Non-terminal setback cue,Ogg one-shot,2,Failure reveal,High,Yes; existing result,High
+SFX_LOOT_PICKUP,SFX,not created,scavenging rewards,Silence,Backpack/container loot handling,Ogg or WAV one-shot,6,Loot icon reveal,High,Yes; reward visual hook,High
+SFX_VEHICLE_ENGINE_START,SFX,not created,vehicle test/escape,Silence,Old van crank/catch/start sequence,Ogg one-shots plus idle tail,4,Engine-start animation,High,Yes; animation event only,High
+SFX_VEHICLE_ENGINE_LOOP,SFX,not created,vehicle driving/idle,Silence,Old van idle and driving loops,Ogg seamless loops,2,Engine/wheel state,High,Yes; visual state only,High
+SFX_VEHICLE_DOOR,SFX,not created,vehicle entry/exit,Silence,Van door open/close set,Ogg or WAV one-shot,4,Door contact frames,Medium,Yes; animation event only,Medium
+SFX_VEHICLE_UPGRADE,SFX,not created,successful vehicle upgrade,Silence,Ratchet/metal install/success set,Ogg or WAV one-shot,6,Upgrade assembly,High,Yes; existing upgrade result,High
+SFX_VEHICLE_BRAKE,SFX,not created,vehicle driving sequence,Silence,Brake/suspension stop,Ogg or WAV one-shot,3,Brake frame,Medium,Yes; animation event only,Medium

@@ -1,7 +1,8 @@
-[gd_scene load_steps=3 format=3 uid="uid://task_panel"]
+[gd_scene load_steps=4 format=3 uid="uid://task_panel"]
 
 [ext_resource type="Script" path="res://scenes/ui/task_panel.gd" id="1"]
 [ext_resource type="Script" path="res://scripts/merge/item_view.gd" id="2"]
+[ext_resource type="Texture2D" path="res://assets/ui/icons/final/icon_task.png" id="3"]
 
 [node name="TaskPanel" type="CanvasLayer"]
 script = ExtResource("1")
@@ -20,8 +21,9 @@ anchor_bottom = 1.0
 mouse_filter = 2
 
 [node name="Panel" type="PanelContainer" parent="CenterContainer"]
-custom_minimum_size = Vector2(320, 0)
+custom_minimum_size = Vector2(520, 0)
 layout_mode = 2
+theme_type_variation = "CreamPanel"
 
 [node name="Margin" type="MarginContainer" parent="CenterContainer/Panel"]
 layout_mode = 2
@@ -33,6 +35,14 @@ theme_override_constants/margin_bottom = 20
 [node name="Content" type="VBoxContainer" parent="CenterContainer/Panel/Margin"]
 layout_mode = 2
 theme_override_constants/separation = 10
+
+[node name="TaskBadge" type="TextureRect" parent="CenterContainer/Panel/Margin/Content"]
+custom_minimum_size = Vector2(54, 54)
+layout_mode = 2
+size_flags_horizontal = 4
+texture = ExtResource("3")
+expand_mode = 1
+stretch_mode = 5
 
 [node name="TitleLabel" type="Label" parent="CenterContainer/Panel/Margin/Content"]
 unique_name_in_owner = true
@@ -58,6 +68,7 @@ layout_mode = 2
 size_flags_horizontal = 4
 script = ExtResource("2")
 interactive = false
+show_level_badge = false
 
 [node name="RequirementLabel" type="Label" parent="CenterContainer/Panel/Margin/Content"]
 unique_name_in_owner = true
@@ -70,7 +81,7 @@ unique_name_in_owner = true
 layout_mode = 2
 horizontal_alignment = 1
 autowrap_mode = 3
-modulate = Color(1, 1, 1, 0.7)
+modulate = Color(0.72, 0.42, 0.13, 1)
 theme_override_font_sizes/font_size = 14
 text = "Reward: +30 coins"
 
@@ -78,13 +89,16 @@ text = "Reward: +30 coins"
 unique_name_in_owner = true
 layout_mode = 2
 text = "Find on Board"
+theme_type_variation = "RustButton"
 
 [node name="CompleteButton" type="Button" parent="CenterContainer/Panel/Margin/Content"]
 unique_name_in_owner = true
 layout_mode = 2
 text = "Complete"
+theme_type_variation = "OliveButton"
 
 [node name="CloseButton" type="Button" parent="CenterContainer/Panel/Margin/Content"]
 unique_name_in_owner = true
 layout_mode = 2
 text = "Close"
+theme_type_variation = "NavButton"

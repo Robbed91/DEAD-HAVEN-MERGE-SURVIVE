@@ -1,5 +1,6 @@
 extends CanvasLayer
 class_name TaskPanel
+const MotionFXScript = preload("res://scripts/vfx/motion_fx.gd")
 ## Task popup: name, description, required item (with an owned/needed
 ## count), a button that routes to the Merge Board with the right chain
 ## highlighted ("Find on Board" - spec section 19), and Complete once the
@@ -24,6 +25,11 @@ var _quest_id: String = ""
 func _ready() -> void:
 	layer = 92
 	visible = false
+	$CenterContainer.theme = get_window().theme
+	$CenterContainer/Panel.theme_type_variation = "CreamPanel"
+	_title_label.add_theme_font_override("font", ThemeFactory.display_font())
+	for label in [_title_label, _desc_label, _requirement_label, _reward_label]:
+		label.add_theme_color_override("font_color", Color("2a2825"))
 	_scrim.gui_input.connect(func(e):
 		if e is InputEventMouseButton and e.pressed:
 			hide_panel()
@@ -75,6 +81,8 @@ func _show_quest(quest: QuestDefinition) -> void:
 
 	_complete_button.disabled = owned < needed
 	visible = true
+	MotionFXScript.reveal($CenterContainer, Vector2(0, 22), 0.24)
+	MotionFXScript.pulse(_icon, Color("e8b93d"), 1)
 
 func hide_panel() -> void:
 	visible = false

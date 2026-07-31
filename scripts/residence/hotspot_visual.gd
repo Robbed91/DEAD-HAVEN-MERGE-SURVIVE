@@ -13,16 +13,79 @@ const DAMAGED_COLOR := Color("6b4a35")
 const DAMAGED_ACCENT := Color("2a2825")
 const FIXED_COLOR := Color("6b7a56")
 const FIXED_ACCENT := Color("e8dcc5")
+const HOLLOW_RING := preload("res://assets/ui/hollow_creek/hotspot_ring.png")
+const HOLLOW_REPAIRED := preload("res://assets/ui/hollow_creek/hotspot_repaired.png")
+
+const HOLLOW_ITEM_LEVELS := {
+	"front_door": 2,
+	"kitchen_window": 3,
+	"living_room": 3,
+	"fireplace": 2,
+	"pantry": 2,
+	"upstairs_bedroom": 4,
+	"barn": 5,
+	"rear_escape": 4,
+	"perimeter_traps": 6,
+}
 
 @export var hotspot_id: String = ""
 @export var residence_id: String = "hollow_creek_farmhouse"
+
+var _pulse_time := 0.0
+var _hollow_back: TextureRect
+var _hollow_item: TextureRect
 
 func _ready() -> void:
 	mouse_filter = Control.MOUSE_FILTER_STOP
 	EventBus.hotspot_state_changed.connect(func(id, _state):
 		if id == hotspot_id:
+			_refresh_hollow_visual()
 			queue_redraw()
 	)
+	set_process(residence_id == "hollow_creek_farmhouse")
+	if residence_id == "hollow_creek_farmhouse":
+		_build_hollow_visual()
+		_refresh_hollow_visual()
+
+func _build_hollow_visual() -> void:
+	_hollow_back = TextureRect.new()
+	_hollow_back.set_anchors_preset(Control.PRESET_FULL_RECT)
+	_hollow_back.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	_hollow_back.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	_hollow_back.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	add_child(_hollow_back)
+	_hollow_item = TextureRect.new()
+	_hollow_item.set_anchors_preset(Control.PRESET_FULL_RECT)
+	_hollow_item.offset_left = 10.0
+	_hollow_item.offset_top = 10.0
+	_hollow_item.offset_right = -10.0
+	_hollow_item.offset_bottom = -10.0
+	_hollow_item.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	_hollow_item.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	_hollow_item.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	add_child(_hollow_item)
+
+func _refresh_hollow_visual() -> void:
+	if _hollow_back == null:
+		return
+	var fixed := is_completed()
+	_hollow_back.texture = HOLLOW_REPAIRED if fixed else HOLLOW_RING
+	_hollow_back.modulate = Color(1, 1, 1, 0.82 if fixed else 0.78)
+	_hollow_back.pivot_offset = size * 0.5
+	_hollow_back.scale = Vector2.ONE * (0.64 if fixed else 1.0)
+	_hollow_item.visible = fixed
+	if fixed:
+		var level: int = int(HOLLOW_ITEM_LEVELS.get(hotspot_id, 2))
+		_hollow_item.texture = load("res://assets/items/construction/level_%d.png" % level)
+		_hollow_item.pivot_offset = (size - Vector2(20, 20)) * 0.5
+		_hollow_item.scale = Vector2.ONE * 0.64
+
+func _process(delta: float) -> void:
+	_pulse_time += delta
+	if _hollow_back != null and not is_completed():
+		var pulse := 1.0 + sin(_pulse_time * 2.4) * 0.055
+		_hollow_back.pivot_offset = size * 0.5
+		_hollow_back.scale = Vector2.ONE * pulse
 
 func is_completed() -> bool:
 	return ResidenceManager.get_hotspot_state(hotspot_id) == ResidenceHotspot.State.COMPLETED
@@ -34,6 +97,8 @@ func _gui_input(event: InputEvent) -> void:
 func _draw() -> void:
 	var s: Vector2 = size
 	var fixed := is_completed()
+	if residence_id == "hollow_creek_farmhouse":
+		return
 	var base := FIXED_COLOR if fixed else DAMAGED_COLOR
 	var accent := FIXED_ACCENT if fixed else DAMAGED_ACCENT
 
@@ -264,19 +329,29 @@ func _draw() -> void:
 func play_repair_burst() -> void:
 	if not GameManager.effects_enabled():
 		return
-	var burst := Control.new()
+	# Focus -> materials arrive -> work pulse -> installed overlay -> inspect.
+	# The gameplay state has already completed before this presentation starts.
+	pivot_offset = size * 0.5
+	var base_scale := scale
+	var focus := create_tween().set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+	focus.tween_property(self, "scale", base_scale * 1.14, 0.16)
+	focus.tween_property(self, "rotation", -0.035, 0.08)
+	focus.tween_property(self, "rotation", 0.045, 0.10)
+	focus.tween_property(self, "rotation", 0.0, 0.08)
+	focus.tween_property(self, "scale", base_scale, 0.18).set_trans(Tween.TRANS_BACK)
+	var burst := TextureRect.new()
 	burst.size = size
 	burst.global_position = global_position
 	burst.pivot_offset = size * 0.5
 	burst.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	burst.draw.connect(func():
-		for i in 6:
-			var angle: float = TAU * i / 6.0
-			var p := size * 0.5 + Vector2(cos(angle), sin(angle)) * size.x * 0.15
-			burst.draw_circle(p, 3.0, Color("cfcac0"))
-	)
+	burst.texture = HOLLOW_RING
+	burst.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	burst.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 	get_parent().add_child(burst)
 	var tween := burst.create_tween()
+	burst.scale = Vector2(0.25, 0.25)
+	tween.tween_property(burst, "scale", Vector2(0.72, 0.72), 0.12).set_trans(Tween.TRANS_BACK)
+	tween.tween_interval(0.10)
 	tween.tween_property(burst, "scale", Vector2(2.2, 2.2), 0.45).set_trans(Tween.TRANS_CUBIC)
 	tween.parallel().tween_property(burst, "modulate:a", 0.0, 0.45)
 	tween.tween_callback(burst.queue_free)

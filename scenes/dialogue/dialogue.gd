@@ -47,6 +47,11 @@ var _current_id: String = ""
 var _return_scene_key: String = "haven"
 
 func _ready() -> void:
+	$Layout/Row/TextPanel.theme_type_variation = "DialoguePanel"
+	_speaker_label.add_theme_font_override("font", ThemeFactory.display_font())
+	_speaker_label.add_theme_color_override("font_color", ThemeFactory.RUST_DARK)
+	_text_label.add_theme_color_override("font_color", ThemeFactory.CHARCOAL_LIGHT)
+	_continue_button.theme_type_variation = "OliveButton"
 	var params := SceneRouter.take_pending_params()
 	_return_scene_key = String(params.get("return_scene_key", "haven"))
 	var start_id := String(params.get("start_id", ""))
@@ -75,7 +80,12 @@ func _show_entry(id: String) -> void:
 	_speaker_label.text = SPEAKER_NAMES.get(entry.speaker_id, entry.speaker_id)
 	_portrait.visible = has_speaker
 	_portrait.silhouette_color = SPEAKER_COLORS.get(entry.speaker_id, Color("8a8f8a"))
+	_portrait.survivor_id = entry.speaker_id
+	_portrait.expression = _expression_for_text(entry.text)
+	_portrait.play_state("fear" if _portrait.expression == "afraid" else ("injured" if _portrait.expression == "injured" else "speaking"))
 	_text_label.text = entry.text
+	if entry.speaker_id == "mara_vale" or entry.speaker_id == "noah_vance":
+		AudioManager.play_sfx("dialogue_radio" if entry.speaker_id == "mara_vale" and _current_id.begins_with("intro") else "ui_tap")
 
 	if not entry.sound_cue.is_empty():
 		AudioManager.play_sfx(entry.sound_cue)
@@ -90,12 +100,33 @@ func _show_entry(id: String) -> void:
 			var btn := Button.new()
 			btn.text = String(option.get("text", "..."))
 			btn.custom_minimum_size = Vector2(0, 56)
+			btn.theme_type_variation = "RustButton"
 			btn.pressed.connect(_on_choice_selected.bind(option))
 			_choices_box.add_child(btn)
 	else:
 		_choices_box.visible = false
 		_continue_button.visible = true
 		_continue_button.text = "Continue" if not entry.next_id.is_empty() else "Done"
+
+func _expression_for_text(line: String) -> String:
+	# Dialogue data remains untouched; presentation infers a matching authored
+	# portrait only from the current line.
+	var lower := line.to_lower()
+	if "hurt" in lower or "blood" in lower or "injur" in lower:
+		return "injured"
+	if "afraid" in lower or "scared" in lower or "hollow" in lower or "run" in lower:
+		return "afraid"
+	if "damn" in lower or "angry" in lower or "enough" in lower:
+		return "angry"
+	if "safe" in lower or "thank" in lower or "made it" in lower:
+		return "relieved"
+	if "tired" in lower or "exhaust" in lower:
+		return "exhausted"
+	if "will" in lower or "have to" in lower or "ready" in lower:
+		return "determined"
+	if "but" in lower or "maybe" in lower or "think" in lower:
+		return "concerned"
+	return "neutral"
 
 func _on_continue_pressed() -> void:
 	var entry := DialogueManager.get_entry(_current_id)

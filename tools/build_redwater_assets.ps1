@@ -1,0 +1,127 @@
+Add-Type -AssemblyName System.Drawing
+
+$repoRoot = Split-Path -Parent $PSScriptRoot
+$assetRoot = Join-Path $repoRoot 'assets/art/redwater'
+$sourceRoot = Join-Path $assetRoot 'source'
+$runtimeRoot = Join-Path $assetRoot 'runtime'
+$layerRoot = Join-Path $assetRoot 'layers'
+$overlayRoot = Join-Path $assetRoot 'repair_overlays'
+$width = 720
+$height = 1080
+
+function Resize-Bitmap([string]$path) {
+    $source = [System.Drawing.Bitmap]::FromFile($path)
+    try {
+        $output = [System.Drawing.Bitmap]::new($width, $height, [System.Drawing.Imaging.PixelFormat]::Format32bppArgb)
+        $graphics = [System.Drawing.Graphics]::FromImage($output)
+        try {
+            $graphics.InterpolationMode = [System.Drawing.Drawing2D.InterpolationMode]::HighQualityBicubic
+            $graphics.DrawImage($source, 0, 0, $width, $height)
+        } finally { $graphics.Dispose() }
+        return $output
+    } finally { $source.Dispose() }
+}
+
+function Save-Jpeg([System.Drawing.Bitmap]$image, [string]$path, [long]$quality = 91) {
+    $codec = [System.Drawing.Imaging.ImageCodecInfo]::GetImageEncoders() | Where-Object MimeType -eq 'image/jpeg'
+    $parameters = [System.Drawing.Imaging.EncoderParameters]::new(1)
+    $parameters.Param[0] = [System.Drawing.Imaging.EncoderParameter]::new([System.Drawing.Imaging.Encoder]::Quality, $quality)
+    $image.Save($path, $codec, $parameters)
+    $parameters.Dispose()
+}
+
+function Feather-Alpha([int]$x, [int]$y, [int[]]$rect, [int]$feather) {
+    if ($x -lt $rect[0] -or $x -ge $rect[2] -or $y -lt $rect[1] -or $y -ge $rect[3]) { return 0 }
+    $distance = [Math]::Min([Math]::Min($x - $rect[0], $rect[2] - 1 - $x), [Math]::Min($y - $rect[1], $rect[3] - 1 - $y))
+    return [Math]::Min(255, [int](255.0 * $distance / [Math]::Max(1, $feather)))
+}
+
+function Export-Band-Layer([System.Drawing.Bitmap]$source, [string]$name, [int]$top, [int]$bottom, [int]$fade) {
+    $output = [System.Drawing.Bitmap]::new($width, $height, [System.Drawing.Imaging.PixelFormat]::Format32bppArgb)
+    for ($y = [Math]::Max(0, $top); $y -lt [Math]::Min($height, $bottom); $y++) {
+        $edge = [Math]::Min($y - $top, $bottom - 1 - $y)
+        $alpha = [Math]::Min(255, [int](255.0 * $edge / [Math]::Max(1, $fade)))
+        for ($x = 0; $x -lt $width; $x++) {
+            $c = $source.GetPixel($x, $y)
+            $output.SetPixel($x, $y, [System.Drawing.Color]::FromArgb($alpha, $c.R, $c.G, $c.B))
+        }
+    }
+    $output.Save((Join-Path $layerRoot "$name.png"), [System.Drawing.Imaging.ImageFormat]::Png)
+    $output.Dispose()
+}
+
+$destroyed = Resize-Bitmap (Join-Path $sourceRoot 'redwater_master_destroyed.png')
+$upgraded = Resize-Bitmap (Join-Path $sourceRoot 'redwater_master_upgraded.png')
+
+try {
+    Save-Jpeg $destroyed (Join-Path $runtimeRoot 'redwater_state_01_destroyed.jpg')
+
+    $hotspots = [ordered]@{
+        fuel_pumps = @(45, 420, 420, 780)
+        service_bay = @(430, 250, 720, 555)
+        convenience_store = @(155, 260, 430, 520)
+        cashier_office = @(205, 245, 475, 430)
+        generator_room = @(475, 465, 720, 735)
+        perimeter_fence = @(0, 245, 330, 1080)
+        drainage_tunnel = @(420, 715, 720, 1080)
+        garage_workshop = @(430, 280, 720, 665)
+    }
+
+    $overlays = @{}
+    foreach ($entry in $hotspots.GetEnumerator()) {
+        $overlay = [System.Drawing.Bitmap]::new($width, $height, [System.Drawing.Imaging.PixelFormat]::Format32bppArgb)
+        $rect = [int[]]$entry.Value
+        for ($y = $rect[1]; $y -lt $rect[3]; $y++) {
+            for ($x = $rect[0]; $x -lt $rect[2]; $x++) {
+                $baseColor = $destroyed.GetPixel($x, $y)
+                $finalColor = $upgraded.GetPixel($x, $y)
+                $difference = [Math]::Abs($baseColor.R - $finalColor.R) + [Math]::Abs($baseColor.G - $finalColor.G) + [Math]::Abs($baseColor.B - $finalColor.B)
+                if ($difference -lt 18) { continue }
+                $edgeAlpha = Feather-Alpha $x $y $rect 28
+                $differenceAlpha = [Math]::Min(255, $difference * 2)
+                $alpha = [Math]::Min($edgeAlpha, $differenceAlpha)
+                $overlay.SetPixel($x, $y, [System.Drawing.Color]::FromArgb($alpha, $finalColor.R, $finalColor.G, $finalColor.B))
+            }
+        }
+        $overlay.Save((Join-Path $overlayRoot "$($entry.Key).png"), [System.Drawing.Imaging.ImageFormat]::Png)
+        $overlays[$entry.Key] = $overlay
+    }
+
+    $stateGroups = @(
+        @('fuel_pumps', 'drainage_tunnel'),
+        @('fuel_pumps', 'drainage_tunnel', 'cashier_office', 'perimeter_fence'),
+        @('fuel_pumps', 'drainage_tunnel', 'cashier_office', 'perimeter_fence', 'convenience_store', 'service_bay'),
+        @('fuel_pumps', 'drainage_tunnel', 'cashier_office', 'perimeter_fence', 'convenience_store', 'service_bay', 'generator_room', 'garage_workshop')
+    )
+    $stateNames = @('02_cleared', '03_temporary', '04_habitable', '05_defended')
+    for ($index = 0; $index -lt $stateGroups.Count; $index++) {
+        $state = $destroyed.Clone()
+        $graphics = [System.Drawing.Graphics]::FromImage($state)
+        try {
+            foreach ($id in $stateGroups[$index]) { $graphics.DrawImageUnscaled($overlays[$id], 0, 0) }
+        } finally { $graphics.Dispose() }
+        Save-Jpeg $state (Join-Path $runtimeRoot "redwater_state_$($stateNames[$index]).jpg")
+        $state.Dispose()
+    }
+    Save-Jpeg $upgraded (Join-Path $runtimeRoot 'redwater_state_06_upgraded.jpg')
+
+    Export-Band-Layer $destroyed 'sky' 0 255 24
+    Export-Band-Layer $destroyed 'distant_landscape' 135 360 28
+    Export-Band-Layer $destroyed 'background_structures' 225 525 30
+    Export-Band-Layer $destroyed 'main_building' 235 615 30
+    Export-Band-Layer $destroyed 'damage' 300 820 26
+    Export-Band-Layer $destroyed 'debris' 475 900 28
+    Export-Band-Layer $destroyed 'furniture' 300 650 24
+    Export-Band-Layer $destroyed 'vegetation' 320 1045 36
+    Export-Band-Layer $destroyed 'foreground' 760 1080 30
+    Export-Band-Layer $upgraded 'lighting' 210 900 34
+    Export-Band-Layer $destroyed 'weather' 0 1080 38
+    Export-Band-Layer $destroyed 'particles' 250 980 42
+
+    foreach ($overlay in $overlays.Values) { $overlay.Dispose() }
+} finally {
+    $destroyed.Dispose()
+    $upgraded.Dispose()
+}
+
+Write-Output 'Built Redwater locked states, aligned hotspot overlays, and production layers.'

@@ -12,6 +12,8 @@ var _tween: Tween
 
 func _ready() -> void:
 	layer = 90
+	_panel.theme = get_window().theme
+	_panel.theme_type_variation = "CharcoalPanel"
 	_panel.modulate.a = 0.0
 	EventBus.show_toast.connect(_on_show_toast)
 

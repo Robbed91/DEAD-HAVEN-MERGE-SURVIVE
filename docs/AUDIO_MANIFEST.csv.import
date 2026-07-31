@@ -1,0 +1,17 @@
+[remap]
+
+importer="csv_translation"
+type="Translation"
+uid="uid://ds2twwtmug4gm"
+
+[deps]
+
+files=["res://docs/AUDIO_MANIFEST.Type.translation", "res://docs/AUDIO_MANIFEST.Existing file path.translation", "res://docs/AUDIO_MANIFEST.Scene or trigger.translation", "res://docs/AUDIO_MANIFEST.Current placeholder type.translation", "res://docs/AUDIO_MANIFEST.Required final asset.translation", "res://docs/AUDIO_MANIFEST.Required format or looping.translation", "res://docs/AUDIO_MANIFEST.Variation count.translation", "res://docs/AUDIO_MANIFEST.Animation sync.translation", "res://docs/AUDIO_MANIFEST.Replacement priority.translation", "res://docs/AUDIO_MANIFEST.Whether replacement can occur without altering gameplay logic.translation", "res://docs/AUDIO_MANIFEST.Classification.translation"]
+
+source_file="res://docs/AUDIO_MANIFEST.csv"
+dest_files=["res://docs/AUDIO_MANIFEST.Type.translation", "res://docs/AUDIO_MANIFEST.Existing file path.translation", "res://docs/AUDIO_MANIFEST.Scene or trigger.translation", "res://docs/AUDIO_MANIFEST.Current placeholder type.translation", "res://docs/AUDIO_MANIFEST.Required final asset.translation", "res://docs/AUDIO_MANIFEST.Required format or looping.translation", "res://docs/AUDIO_MANIFEST.Variation count.translation", "res://docs/AUDIO_MANIFEST.Animation sync.translation", "res://docs/AUDIO_MANIFEST.Replacement priority.translation", "res://docs/AUDIO_MANIFEST.Whether replacement can occur without altering gameplay logic.translation", "res://docs/AUDIO_MANIFEST.Classification.translation"]
+
+[params]
+
+compress=true
+delimiter=0

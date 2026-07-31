@@ -36,6 +36,20 @@ anchor_bottom = 1.0
 mouse_filter = 2
 script = ExtResource("2")
 
+[node name="HeaderPlate" type="PanelContainer" parent="Layout/Scene"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -220.0
+offset_top = 8.0
+offset_right = 220.0
+offset_bottom = 108.0
+grow_horizontal = 2
+mouse_filter = 2
+modulate = Color(1, 1, 1, 0.84)
+theme_type_variation = "CharcoalPanel"
+
 [node name="ResidenceNameLabel" type="Label" parent="Layout/Scene"]
 unique_name_in_owner = true
 layout_mode = 1
@@ -102,6 +116,7 @@ offset_right = 140.0
 offset_bottom = -16.0
 grow_horizontal = 2
 grow_vertical = 0
+theme_type_variation = "DangerButton"
 text = "Defend the Prison"
 
 [node name="BottomNav" parent="Layout" instance=ExtResource("4")]

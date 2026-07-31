@@ -12,7 +12,12 @@ var _tween: Tween
 
 func _ready() -> void:
 	layer = 93
+	_panel.theme = get_window().theme
 	_panel.modulate.a = 0.0
+	_panel.add_theme_stylebox_override("panel", ThemeFactory.parchment_style())
+	_label.add_theme_font_override("font", ThemeFactory.display_font())
+	_label.add_theme_font_size_override("font_size", 16)
+	_label.add_theme_color_override("font_color", Color("241f1a"))
 
 func show_item(item_id: String) -> void:
 	var def := ItemDatabase.get_item(item_id)

@@ -3,8 +3,8 @@ extends Control
 ##
 ## Phase 6: a real, SurvivorDefinition-backed roster. Unlocked survivors
 ## show their real biography/role/skills from data/characters/; locked
-## ones stay a silhouette with "???" per the Phase 1 placeholder pattern
-## (real portraits are still Phase-later art work - see ART_ASSET_GUIDE.md).
+## ones retain concealed identity text while showing the final portrait under
+## a dark lock treatment. Character definitions and unlock rules are unchanged.
 ## A card with an incomplete personal quest is tappable and opens the same
 ## TaskPanel Haven's hotspots use.
 
@@ -42,6 +42,8 @@ func _build_card(id: String) -> Control:
 
 	var card := PanelContainer.new()
 	card.custom_minimum_size = Vector2(150, 210)
+	card.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	card.theme_type_variation = "LockedCard" if locked else "SurvivorCard"
 
 	var vbox := VBoxContainer.new()
 	vbox.alignment = BoxContainer.ALIGNMENT_CENTER
@@ -49,6 +51,7 @@ func _build_card(id: String) -> Control:
 
 	var portrait := SurvivorSilhouette.new()
 	portrait.custom_minimum_size = Vector2(88, 88)
+	portrait.survivor_id = id
 	portrait.silhouette_color = SILHOUETTE_COLORS.get(id, Color("8a8f8a"))
 	portrait.locked = locked
 	vbox.add_child(portrait)
@@ -56,11 +59,14 @@ func _build_card(id: String) -> Control:
 	var name_label := Label.new()
 	name_label.text = (def.display_name if def else id) if not locked else "???"
 	name_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	name_label.add_theme_font_override("font", ThemeFactory.display_font())
+	name_label.add_theme_color_override("font_color", ThemeFactory.CREAM if locked else ThemeFactory.CHARCOAL_LIGHT)
 	vbox.add_child(name_label)
 
 	var role_label := Label.new()
 	role_label.text = (def.role if def else "") if not locked else "Not yet found"
 	role_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	role_label.add_theme_color_override("font_color", ThemeFactory.CREAM if locked else ThemeFactory.CHARCOAL_LIGHT)
 	role_label.modulate.a = 0.65
 	role_label.add_theme_font_size_override("font_size", 14)
 	vbox.add_child(role_label)
@@ -69,6 +75,7 @@ func _build_card(id: String) -> Control:
 		var skills_label := Label.new()
 		skills_label.text = ", ".join(def.skills)
 		skills_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		skills_label.add_theme_color_override("font_color", ThemeFactory.CHARCOAL_LIGHT)
 		skills_label.autowrap_mode = TextServer.AUTOWRAP_WORD
 		skills_label.modulate.a = 0.6
 		skills_label.add_theme_font_size_override("font_size", 12)
@@ -79,6 +86,7 @@ func _build_card(id: String) -> Control:
 			var quest_button := Button.new()
 			quest_button.text = "Personal Task"
 			quest_button.custom_minimum_size = Vector2(0, 40)
+			quest_button.theme_type_variation = "RustButton"
 			quest_button.pressed.connect(func(): _task_panel.show_for_quest(quest_id))
 			vbox.add_child(quest_button)
 

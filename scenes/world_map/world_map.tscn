@@ -1,10 +1,11 @@
-[gd_scene load_steps=6 format=3 uid="uid://world_map_scene"]
+[gd_scene load_steps=7 format=3 uid="uid://world_map_scene"]
 
 [ext_resource type="Script" path="res://scenes/world_map/world_map.gd" id="1"]
 [ext_resource type="Script" path="res://scenes/world_map/world_map_background.gd" id="2"]
 [ext_resource type="PackedScene" path="res://scenes/ui/top_resource_bar.tscn" id="3"]
 [ext_resource type="PackedScene" path="res://scenes/ui/bottom_nav.tscn" id="4"]
 [ext_resource type="PackedScene" path="res://scenes/ui/toast.tscn" id="5"]
+[ext_resource type="Texture2D" path="res://assets/ui/world_map/world_map_region.png" id="6"]
 
 [node name="WorldMap" type="Control"]
 layout_mode = 3
@@ -28,6 +29,19 @@ unique_name_in_owner = true
 layout_mode = 2
 size_flags_vertical = 3
 
+[node name="MapIllustration" type="TextureRect" parent="Layout/MapArea"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("6")
+expand_mode = 1
+stretch_mode = 6
+modulate = Color(0.86, 0.9, 0.94, 1)
+
 [node name="Background" type="Control" parent="Layout/MapArea"]
 layout_mode = 1
 anchors_preset = 15
@@ -48,7 +62,7 @@ offset_left = -28.0
 offset_top = -28.0
 offset_right = 28.0
 offset_bottom = 28.0
-text = "🏚"
+text = ""
 tooltip_text = "Hollow Creek Farmhouse - active"
 
 [node name="RedwaterMarker" type="Button" parent="Layout/MapArea"]
@@ -64,7 +78,7 @@ offset_top = -28.0
 offset_right = 28.0
 offset_bottom = 28.0
 modulate = Color(1, 1, 1, 0.5)
-text = "🔒"
+text = ""
 tooltip_text = "Redwater Service Station - locked"
 
 [node name="GreybridgeMarker" type="Button" parent="Layout/MapArea"]
@@ -80,7 +94,7 @@ offset_top = -28.0
 offset_right = 28.0
 offset_bottom = 28.0
 modulate = Color(1, 1, 1, 0.5)
-text = "🔒"
+text = ""
 tooltip_text = "Greybridge School - locked"
 
 [node name="SaintMercyMarker" type="Button" parent="Layout/MapArea"]
@@ -96,7 +110,7 @@ offset_top = -28.0
 offset_right = 28.0
 offset_bottom = 28.0
 modulate = Color(1, 1, 1, 0.5)
-text = "🔒"
+text = ""
 tooltip_text = "Saint Mercy Hospital - locked"
 
 [node name="NorthgateMarker" type="Button" parent="Layout/MapArea"]
@@ -112,7 +126,7 @@ offset_top = -28.0
 offset_right = 28.0
 offset_bottom = 28.0
 modulate = Color(1, 1, 1, 0.5)
-text = "🔒"
+text = ""
 tooltip_text = "Northgate Prison - locked"
 
 [node name="BottomNav" parent="Layout" instance=ExtResource("4")]

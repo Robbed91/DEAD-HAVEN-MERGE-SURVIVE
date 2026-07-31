@@ -1,58 +1,78 @@
-[gd_scene load_steps=2 format=3 uid="uid://bottom_nav"]
+[gd_scene load_steps=7 format=3 uid="uid://bottom_nav"]
 
 [ext_resource type="Script" path="res://scenes/ui/bottom_nav.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/ui/icons/final/icon_haven.png" id="2"]
+[ext_resource type="Texture2D" path="res://assets/ui/icons/final/icon_merge.png" id="3"]
+[ext_resource type="Texture2D" path="res://assets/ui/icons/final/icon_map.png" id="4"]
+[ext_resource type="Texture2D" path="res://assets/ui/icons/final/icon_survivors.png" id="5"]
+[ext_resource type="Texture2D" path="res://assets/ui/icons/final/icon_inventory.png" id="6"]
 
 [node name="BottomNav" type="PanelContainer"]
 custom_minimum_size = Vector2(0, 88)
 layout_mode = 2
 script = ExtResource("1")
 
-[node name="Row" type="HBoxContainer" parent="."]
+[node name="SafeMargin" type="MarginContainer" parent="."]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="Row" type="HBoxContainer" parent="SafeMargin"]
+unique_name_in_owner = true
 layout_mode = 2
 alignment = 1
 theme_override_constants/separation = 4
 
-[node name="HavenButton" type="Button" parent="Row"]
+[node name="HavenButton" type="Button" parent="SafeMargin/Row"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(64, 64)
+custom_minimum_size = Vector2(64, 72)
 layout_mode = 2
 size_flags_horizontal = 3
 toggle_mode = true
-text = "🏚
-Haven"
+icon = ExtResource("2")
+icon_max_width = 34
+expand_icon = true
+text = "Haven"
 
-[node name="MergeButton" type="Button" parent="Row"]
+[node name="MergeButton" type="Button" parent="SafeMargin/Row"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(64, 64)
+custom_minimum_size = Vector2(64, 72)
 layout_mode = 2
 size_flags_horizontal = 3
 toggle_mode = true
-text = "🧩
-Merge"
+icon = ExtResource("3")
+icon_max_width = 34
+expand_icon = true
+text = "Merge"
 
-[node name="MapButton" type="Button" parent="Row"]
+[node name="MapButton" type="Button" parent="SafeMargin/Row"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(64, 64)
+custom_minimum_size = Vector2(64, 72)
 layout_mode = 2
 size_flags_horizontal = 3
 toggle_mode = true
-text = "🗺
-Map"
+icon = ExtResource("4")
+icon_max_width = 34
+expand_icon = true
+text = "Map"
 
-[node name="SurvivorsButton" type="Button" parent="Row"]
+[node name="SurvivorsButton" type="Button" parent="SafeMargin/Row"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(64, 64)
+custom_minimum_size = Vector2(64, 72)
 layout_mode = 2
 size_flags_horizontal = 3
 toggle_mode = true
-text = "🧑‍🤝‍🧑
-Survivors"
+icon = ExtResource("5")
+icon_max_width = 34
+expand_icon = true
+text = "Survivors"
 
-[node name="InventoryButton" type="Button" parent="Row"]
+[node name="InventoryButton" type="Button" parent="SafeMargin/Row"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(64, 64)
+custom_minimum_size = Vector2(64, 72)
 layout_mode = 2
 size_flags_horizontal = 3
 toggle_mode = true
-text = "🎒
-Inventory"
+icon = ExtResource("6")
+icon_max_width = 34
+expand_icon = true
+text = "Inventory"

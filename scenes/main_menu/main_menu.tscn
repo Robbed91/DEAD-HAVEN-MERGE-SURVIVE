@@ -59,24 +59,28 @@ unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 72)
 layout_mode = 2
 text = "New Game"
+theme_type_variation = "OliveButton"
 
 [node name="ContinueButton" type="Button" parent="Content"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 72)
 layout_mode = 2
 text = "Continue"
+theme_type_variation = "RustButton"
 
 [node name="SettingsButton" type="Button" parent="Content"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 72)
 layout_mode = 2
 text = "Settings"
+theme_type_variation = "NavButton"
 
 [node name="QuitButton" type="Button" parent="Content"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 72)
 layout_mode = 2
 text = "Quit"
+theme_type_variation = "DangerButton"
 
 [node name="VersionLabel" type="Label" parent="."]
 layout_mode = 1

@@ -1,4 +1,5 @@
 extends Control
+const MotionFXScript = preload("res://scripts/vfx/motion_fx.gd")
 ## Vehicle
 ##
 ## Single-screen view of the delivery van: current stage, an evolving
@@ -26,7 +27,11 @@ func _ready() -> void:
 
 	_upgrade_button.pressed.connect(_on_upgrade_pressed)
 	%BackButton.pressed.connect(func(): SceneRouter.go_to("world_map", {}, false))
-	EventBus.vehicle_stage_changed.connect(func(id, _stage): if id == VEHICLE_ID: _refresh())
+	EventBus.vehicle_stage_changed.connect(func(id, _stage):
+		if id == VEHICLE_ID:
+			_refresh()
+			_visual.play_upgrade_sequence()
+	)
 	_refresh()
 
 func _refresh() -> void:
@@ -65,3 +70,4 @@ func _on_upgrade_pressed() -> void:
 		_refresh()
 	else:
 		EventBus.show_toast.emit("Not enough materials yet.")
+		MotionFXScript.shake(_upgrade_button)

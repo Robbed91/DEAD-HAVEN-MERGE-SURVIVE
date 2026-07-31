@@ -27,6 +27,7 @@ DefenceManager="*res://autoload/defence_manager.gd"
 SaveManager="*res://autoload/save_manager.gd"
 AudioManager="*res://autoload/audio_manager.gd"
 SceneRouter="*res://autoload/scene_router.gd"
+UIAnimationDirector="*res://scripts/ui/ui_animation_director.gd"
 
 [display]
 

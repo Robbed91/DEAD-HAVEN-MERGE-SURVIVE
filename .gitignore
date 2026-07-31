@@ -22,6 +22,8 @@ android/build/
 .DS_Store
 Thumbs.db
 *.tmp
+__pycache__/
+*.pyc
 
 # Local save data (never ship player saves in the repo)
 saves/
