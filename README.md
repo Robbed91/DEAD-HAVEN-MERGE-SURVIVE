@@ -35,7 +35,7 @@ cool blue-grey exteriors. See `scripts/ui/theme_factory.gd` for the exact
 palette values and `ART_ASSET_GUIDE.md` for how it's applied to
 environments and characters.
 
-## Current status: Phase 13 - Scavenging complete + main-story capstone
+## Current status: Art Phase 2 (part 1) - vertical-slice concepts
 
 Phases 1-8 (foundation, merge board, residence system, story, scavenging,
 vehicles/survivors, defence, a second residence), Phase 9 part 1
@@ -50,8 +50,16 @@ identity and a full art-production spec (see "Documentation" below for
 roster a connecting narrative thread - a main-story capstone ("The
 Signal Keeper") that triggers once every residence's defence event is
 survived, instead of each residence only knowing about unlocking its
-immediate neighbour. **It is not yet the full game** - illustrated art,
-real audio, and further main-story content all remain (see
+immediate neighbour. Art Phase 2 part 1 adds nine reviewed vertical-slice
+concept images under `assets/concepts/vertical_slice/`: Mara and Noah
+character sheets, a Drifter concept, matched Hollow Creek Stage 1/2
+exteriors, the eight-level construction chain, six Tool Crate states, a
+ten-panel window-boarding storyboard, and the intro dialogue composition.
+The attempted merge-board concept was rejected because image generation
+did not preserve the exact 7x9 grid, so it is not included. **It is not
+yet the full game** - these are flattened approved concepts, not layered
+or transparent runtime assets; the procedural placeholders remain live.
+Real audio and further main-story content also remain (see
 `DEVELOPMENT_LOG.md` for the authoritative phase-by-phase plan and
 status).
 
@@ -72,6 +80,13 @@ What already works, end to end, in this build:
 - First-time item discovery grants a coin/energy reward exactly once per item, with a discovery banner
 
 ### Honest limitation
+
+Art Phase 2's nine images have been visually reviewed as direction-setting
+concepts only. They are flattened PNGs: character rig layers, transparent
+portrait/item cut-outs, separately compositable environment layers, and
+runtime wiring have not been produced. The merge-board concept was
+deliberately excluded after two generated variants failed its exact 7x9
+acceptance requirement.
 
 This container has no display server and no Android SDK/export templates,
 so the assistant could not open the graphical editor or export a real
@@ -175,7 +190,7 @@ placeholder and what a licence-safe replacement needs to look like.
 - `DEVELOPMENT_LOG.md` - phase-by-phase build log (files touched, features completed, known issues, next phase)
 - `ART_ASSET_GUIDE.md` / `AUDIO_ASSET_GUIDE.md` - asset status and requirements
 - `ART_STYLE_GUIDE.md` - formal colour palette, typography and logo system
-- `ART_GENERATION_PROMPTS.md` - ready-to-use image-generation prompts for assets this environment can't produce directly (no image-generation tool available here)
+- `ART_GENERATION_PROMPTS.md` - production prompts used for the first nine approved concepts, plus the still-open exact-grid merge-board brief
 - `ART_ILLUSTRATION_CHECKLIST.md` - flat, hand-off-ready checklist of every illustration the game needs, kept current as later phases add content
 - `data/README.md` - what content lives in each data folder and when it's populated
 - `tests/PHASE1_MANUAL_CHECKLIST.md` - manual verification steps (no test-runner engine available in this environment)

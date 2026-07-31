@@ -10,11 +10,25 @@ this table.
 **Related documents** (Art Phase 1, added in response to the full
 art/graphics/animation brief): `ART_STYLE_GUIDE.md` is the formal
 palette/typography/logo reference; `ART_GENERATION_PROMPTS.md` has
-ready-to-use image-generation prompts for the vertical-slice assets this
-environment can't produce directly (no image-generation tool exists
-here - see that document's intro for what that means in practice);
+ready-to-use image-generation prompts for the vertical-slice assets;
 `assets/manifests/animation_manifest.json` tracks every animation,
 implemented and planned, alongside the asset manifest below.
+
+## Approved concept art (Art Phase 2 part 1)
+
+Nine reviewed, original flattened concept PNGs now live under
+`assets/concepts/vertical_slice/`: Mara Vale and Noah Vance character
+sheets, a Drifter concept sheet, matched Hollow Creek Stage 1 and Stage 2
+exteriors, the eight-level construction chain, the six-state Salvaged Tool
+Crate, a ten-panel window-boarding storyboard, and the intro farmhouse
+approach composition.
+
+These are direction-setting concepts, not runtime replacements. They have
+no separated source layers or transparent cut-outs and are not wired into
+scenes, so all procedural placeholders described below remain authoritative
+in the running game. A merge-board concept was also attempted but rejected:
+one version had 7x10 cells and its correction had 6x9, rather than the
+required exact 7x9. Neither rejected variant is stored in the project.
 
 ## Finished (non-placeholder) assets
 

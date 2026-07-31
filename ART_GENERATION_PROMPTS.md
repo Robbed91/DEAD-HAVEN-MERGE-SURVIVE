@@ -2,11 +2,13 @@
 
 Production-ready prompts for the vertical-slice assets the art brief's
 Section 48 asks for, written so anyone with an image-generation tool can
-produce consistent, on-model art without further direction. This is the
-Section 45 fallback in practice: this project's environment has no
-image-generation tool, so every asset below is tracked as **concept**
-status in `assets/manifests/asset_manifest.json` rather than skipped or
-faked with a raster placeholder.
+produce consistent, on-model art without further direction. Art Phase 2
+part 1 used these prompts to produce nine reviewed flattened concepts
+under `assets/concepts/vertical_slice/`. Those images are tracked as
+**approved** concept assets in `assets/manifests/asset_manifest.json`;
+they are not layered, transparent, or integrated production art. The
+merge-board prompt remains unresolved because two generated attempts
+failed the exact 7x9 grid requirement.
 
 Every prompt in this document must be prefixed with the shared style
 definition below (Section 46 of the brief) before its own detail, and

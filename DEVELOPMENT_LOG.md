@@ -104,6 +104,102 @@ godot4 --headless --path /path/to/dead-haven-merge-survive \
   --export-debug "Android" build/android/dead_haven.apk
 ```
 
+## Art Phase 2 (part 1): Vertical-slice concept batch - complete
+
+### Files created
+
+- `assets/concepts/vertical_slice/characters/mara_vale_character_sheet_concept.png`
+- `assets/concepts/vertical_slice/characters/noah_vance_character_sheet_concept.png`
+- `assets/concepts/vertical_slice/enemies/drifter_concept_sheet.png`
+- `assets/concepts/vertical_slice/environments/hollow_creek_stage_1_concept.png`
+- `assets/concepts/vertical_slice/environments/hollow_creek_stage_2_concept.png`
+- `assets/concepts/vertical_slice/items/construction_chain_concept.png`
+- `assets/concepts/vertical_slice/items/salvaged_tool_crate_states_concept.png`
+- `assets/concepts/vertical_slice/animation/window_boarding_storyboard_concept.png`
+- `assets/concepts/vertical_slice/dialogue/intro_farmhouse_approach_concept.png`
+- Godot-generated `.png.import` sidecars for each of the nine PNGs above
+
+### Files modified
+
+- `README.md`
+- `ART_ASSET_GUIDE.md`
+- `ART_GENERATION_PROMPTS.md`
+- `ART_ILLUSTRATION_CHECKLIST.md`
+- `assets/manifests/asset_manifest.json`
+- `DEVELOPMENT_LOG.md`
+
+`data/README.md` and `tests/README.md` are unchanged because this art-only
+unit adds no game-data resources and no tests; their existing content
+counts remain accurate.
+
+### Features completed
+
+- Produced and visually reviewed nine original flattened concepts from
+  the vertical-slice prompt set: two survivor sheets, one Hollow sheet,
+  two matched farmhouse states, one eight-level item-chain sheet, one
+  six-state producer sheet, one ten-panel repair storyboard, and one
+  intro dialogue composition.
+- Used the accepted Mara and farmhouse concepts as explicit references
+  for the storyboard and intro composition so character, building, and
+  lighting identity remain coherent across assets.
+- Recorded every accepted concept separately in manifest version 3 with
+  its actual file dimensions, generation source, and `approved` status.
+- Kept all runtime replacement checkboxes open. None of these images is
+  layered, transparent, sliced, optimised, or wired into a Godot scene,
+  so every existing procedural placeholder remains the live visual.
+- Rejected both merge-board generation attempts instead of storing them:
+  the first rendered a 7x10 grid and the correction rendered 6x9, while
+  gameplay requires exactly 7x9.
+
+### Tests performed
+
+- Downloaded the official Godot 4.3 stable Windows build to the local
+  Codex tools directory and verified
+  `4.3.stable.official.77dcf97d8`.
+- Confirmed the repository had no existing `.godot` directory, then ran
+  a clean headless import. It completed with no parse or import errors.
+- Parsed `assets/manifests/asset_manifest.json` successfully after the
+  version-3 update: 25 total entries, including 9 approved concept
+  entries.
+- Read every stored PNG's actual metadata and corrected the manifest to
+  match those dimensions.
+- Ran the full 14-scene smoke suite with an independent 30-second timeout
+  per test. All 14 printed their expected `SMOKE_*_OK` line and exited 0.
+  The save test's deliberate corrupt-primary-file case printed its
+  expected JSON parse and backup-fallback warnings, then passed.
+
+### Known issues
+
+- These are approved direction concepts, not production assets. The
+  character sheets lack separated rig layers and transparent portrait
+  crops; environment/dialogue images lack parallax and hotspot layers;
+  item/producer sheets lack individually sliced transparent icons; and
+  the storyboard is not an implemented animation.
+- The generated environment work leans toward detailed stylised realism
+  at the realistic end of the project's intended 2.5D range. It should be
+  checked on a real phone before mass-producing further environments.
+- The exact 7x9 merge-board concept remains unresolved. Image generation
+  was unreliable for exact grid geometry, so its frame/grid should be
+  built deterministically and any generated texture/state art composited
+  around that structure.
+- No concept in this phase has been visually tested inside the running
+  game. Headless import confirms the PNGs are valid Godot resources, not
+  that they work at phone scale or under live UI.
+- Real audio, an Android export/device pass, the Ashborn/Eli continuation,
+  and the remaining illustration checklist are still open.
+
+### Exact next phase
+
+Art Phase 2 part 2 should turn one accepted concept into a complete
+runtime proof rather than generating more flattened sheets. The best
+first target is Mara: produce transparent neutral/concerned/injured
+portrait crops with consistent identity, register them in
+`data/characters/mara_vale.tres`, teach the survivor roster/dialogue UI
+to prefer real portrait textures with `SurvivorSilhouette` as fallback,
+and add a headless resource/fallback smoke test. In parallel with that
+asset path, build the merge board's 7x9 geometry deterministically rather
+than asking image generation to count cells.
+
 ---
 
 ## Phase 2: Merge board - complete

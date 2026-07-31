@@ -22,6 +22,13 @@ generating, following that document's own pattern.
 Logo (5 variants), app icon, notification icon, splash screen - all real
 original vector art, not placeholders. See `ART_STYLE_GUIDE.md` section 4.
 
+Art Phase 2 part 1 also produced nine approved flattened concepts. The
+checkboxes below remain open wherever transparent cut-outs, separated
+layers, runtime states, or integration are still required. The approved
+window-boarding storyboard is at
+`assets/concepts/vertical_slice/animation/window_boarding_storyboard_concept.png`;
+its ten beats are concept reference, not an implemented animation.
+
 ---
 
 ## 1. Characters - 6 full survivor sheets
@@ -32,8 +39,12 @@ concerned, afraid, angry, suspicious, sad, injured, exhausted, determined,
 shocked), separated layers for rigging, and 3 equipment-progression notes
 (early/mid/late game).
 
-- [ ] **Mara Vale** (protagonist) - *prompt ready*, `ART_GENERATION_PROMPTS.md` #1
-- [ ] **Noah Vance** (carpenter, rescued Ch.2) - *prompt ready*, `ART_GENERATION_PROMPTS.md` #2
+- [ ] **Mara Vale** (protagonist) - approved flattened concept:
+  `assets/concepts/vertical_slice/characters/mara_vale_character_sheet_concept.png`;
+  transparent crops and separated rig layers still pending
+- [ ] **Noah Vance** (carpenter, rescued Ch.2) - approved flattened concept:
+  `assets/concepts/vertical_slice/characters/noah_vance_character_sheet_concept.png`;
+  transparent crops and separated rig layers still pending
 - [ ] **Lena Ortiz** (mechanic, rescued Ch.5) - not yet prompted; source: `data/characters/lena_ortiz.tres`, `data/dialogue/lena_01-03.tres` (defensive/guarded intro, grease-marked clothing, rolled sleeves, tool pouch, protective eyewear, rust-orange accent, confident posture)
 - [ ] **Dr Imogen Shaw** (former ER doctor, rescued Ch.7, Phase 11) - not yet prompted; source: `data/characters/imogen_shaw.tres`, `data/dialogue/imogen_01-03.tres` (guarded, demands proof of health before opening the isolation ward's sealed doors); brief section 17: practical field-medical clothing, medical bag, clean but worn coat, calm expression, green/teal accent
 - [ ] **Riley Chen** (radio technician, rescued Ch.6, Phase 10) - not yet prompted; source: `data/characters/riley_chen.tres`, `data/dialogue/riley_01-03.tres` (defensive about the signal at first, found behind a wedged-shut stairwell); brief section 17: electronics pack, headset, layered clothing, improvised antenna tools, blue accent, alert/analytical posture
@@ -45,7 +56,9 @@ Each needs a concept sheet (front/side/distant-silhouette) then, once
 approved, idle/walk(or crawl)/attack/hit/collapse sprite frames (see
 `assets/manifests/animation_manifest.json`'s `hollow_animation_set`).
 
-- [ ] **Drifter** - *prompt ready* (concept sheet only), `ART_GENERATION_PROMPTS.md` #3
+- [ ] **Drifter** - approved flattened concept:
+  `assets/concepts/vertical_slice/enemies/drifter_concept_sheet.png`;
+  production idle/walk/attack/hit/collapse sprites still pending
 - [ ] **Screecher** - not yet prompted; thin frame, expanded chest posture, distinctive jaw/neck silhouette
 - [ ] **Breaker** - not yet prompted; large body, heavy arms, damaged industrial clothing
 - [ ] **Lurker** - not yet prompted; low crouched silhouette, debris/dirt-covered clothing
@@ -54,8 +67,12 @@ approved, idle/walk(or crawl)/attack/hit/collapse sprite frames (see
 
 ## 3. Hollow Creek Farmhouse - exterior progression (5 stages)
 
-- [ ] **Stage 1 - recently discovered** - *prompt ready*, `ART_GENERATION_PROMPTS.md` #4
-- [ ] **Stage 2 - temporarily secured** - *prompt ready*, `ART_GENERATION_PROMPTS.md` #5
+- [ ] **Stage 1 - recently discovered** - approved flattened concept:
+  `assets/concepts/vertical_slice/environments/hollow_creek_stage_1_concept.png`;
+  separated parallax/hotspot layers still pending
+- [ ] **Stage 2 - temporarily secured** - approved matched flattened concept:
+  `assets/concepts/vertical_slice/environments/hollow_creek_stage_2_concept.png`;
+  separated parallax/hotspot layers still pending
 - [ ] **Stage 3 - habitable** (warm interior lights, fence repaired, smoke from chimney, cleared vegetable beds, survivors visible)
 - [ ] **Stage 4 - defended** (traps installed, gate reinforced, watch position, warning lines, escape route visible) - this is the state during the "First Wave" defence event
 - [ ] **Stage 5 - fully upgraded** (strong perimeter, functional barn, rain collector, generator lighting, vehicle parking, lookout platform, multiple survivors)
@@ -99,14 +116,16 @@ backlog item.
 
 ## 7. Merge board & UI
 
-- [ ] **Merge board frame/background + 12 cell-state overlays** (empty, occupied, selected, valid-target, invalid-target, locked, cobweb, reward, bubble, task-required, rare, max-level) - *prompt ready*, `ART_GENERATION_PROMPTS.md` #6
+- [ ] **Merge board frame/background + 12 cell-state overlays** (empty, occupied, selected, valid-target, invalid-target, locked, cobweb, reward, bubble, task-required, rare, max-level) - two concept attempts rejected (7x10, then 6x9); exact 7x9 board and separated overlays still pending, `ART_GENERATION_PROMPTS.md` #6
 - [ ] **Full UI component sheet** - not yet prompted as image assets (the component *behavior* already exists in code via `scripts/ui/theme_factory.gd`): primary/secondary/destructive/disabled/icon buttons in all states (normal/pressed/focused/disabled/loading), task card, dialogue panel, item info panel, resource bar, nav bar, quest panel, reward panel, character card, vehicle card, residence progress card, scavenging mission card, confirmation modal, tooltip, notification badge, progress/energy/health bars, morale indicator, locked-content overlay, tutorial highlight
 - [ ] **Bottom navigation icons** (Haven, Merge, Map, Survivors, Inventory) - normal/selected/notification/locked states each
 - [ ] **Full resource/status icon set** (~34 icons per brief section 27: energy, coins, Haven Tokens, food, medicine, fuel, morale, health, defence, noise, storage, survivor, vehicle, map, quest, story, repair, construction, locked, completed, warning, injury, radio, horde, Ashborn faction, settings, audio, vibration, accessibility, save, delete, undo, information, timer)
 
 ## 8. Merge item chains (101 items across 13 chains)
 
-- [ ] **Construction (8 levels)** - *prompt ready as the template chain*, `ART_GENERATION_PROMPTS.md` #7 - use its structure for every chain below
+- [ ] **Construction (8 levels)** - approved flattened eight-level concept:
+  `assets/concepts/vertical_slice/items/construction_chain_concept.png`;
+  individual transparent runtime icons still pending
 - [ ] Tool (7 levels)
 - [ ] Food (7 levels)
 - [ ] Medical (7 levels)
@@ -131,7 +150,9 @@ Each needs: normal/selected/activated/low-charge/empty/recharge states
 + a short looping animation note (per `ART_GENERATION_PROMPTS.md` #8's
 Tool Crate as the template).
 
-- [ ] **Salvaged Tool Crate** - *prompt ready*, `ART_GENERATION_PROMPTS.md` #8
+- [ ] **Salvaged Tool Crate** - approved flattened six-state concept:
+  `assets/concepts/vertical_slice/items/salvaged_tool_crate_states_concept.png`;
+  separated transparent runtime states/layers still pending
 - [ ] Damaged Workshop Bench (construction producer)
 - [ ] Abandoned Pantry (food producer)
 - [ ] Field Medical Bag (medical producer)
@@ -177,7 +198,9 @@ exists here" gap left in the project.
 
 ## 12. Dialogue scene backgrounds
 
-- [ ] **Intro scene** (farmhouse approach) - *prompt ready*, `ART_GENERATION_PROMPTS.md` #10
+- [ ] **Intro scene** (farmhouse approach) - approved flattened composition:
+  `assets/concepts/vertical_slice/dialogue/intro_farmhouse_approach_concept.png`;
+  background/foreground/Mara runtime layers still pending
 - [ ] Noah rescue scene (upstairs bedroom interior - see checklist item 4)
 - [ ] Lena rescue scene (garage workshop interior)
 - [ ] Riley rescue scene (Greybridge stairwell/radio tower)
