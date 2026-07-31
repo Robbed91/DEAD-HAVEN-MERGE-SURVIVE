@@ -8,7 +8,7 @@ extends Control
 
 const RESIDENCE_ID := "northgate_prison"
 const DEFENCE_EVENT_ID := "northgate_defence"
-const HOTSPOT_SIZE := Vector2(64, 64)
+const HOTSPOT_SIZE := Vector2(76, 76)
 
 const CHAPTER_TITLES := {
 	"chapter_7_do_no_harm": "Chapter 7: Do No Harm",
@@ -34,6 +34,10 @@ func _ready() -> void:
 			_build_hotspot(hotspot)
 
 	_task_panel.completed.connect(_on_task_completed)
+	_task_panel.visibility_changed.connect(func():
+		if not _task_panel.visible:
+			_set_selected_hotspot("")
+	)
 	_defence_button.pressed.connect(func(): SceneRouter.go_to("defence", {"event_id": DEFENCE_EVENT_ID, "return_scene_key": "northgate"}))
 	EventBus.chapter_changed.connect(func(_id): _refresh_chapter_label())
 	EventBus.defence_resolved.connect(func(_outcome): _refresh_progress())
@@ -61,7 +65,12 @@ func _build_hotspot(hotspot: ResidenceHotspot) -> void:
 	_hotspot_visuals[hotspot.id] = visual
 
 func _on_hotspot_tapped(hotspot_id: String) -> void:
+	_set_selected_hotspot(hotspot_id)
 	_task_panel.show_for_hotspot(hotspot_id, RESIDENCE_ID)
+
+func _set_selected_hotspot(hotspot_id: String) -> void:
+	for id in _hotspot_visuals:
+		_hotspot_visuals[id].set_selected(id == hotspot_id)
 
 func _on_task_completed(hotspot_id: String) -> void:
 	AudioManager.play_sfx("fence_repair" if hotspot_id == "sally_port" else ("trap_deploy" if hotspot_id in ["guard_tower", "armory"] else "metal_fastening"))

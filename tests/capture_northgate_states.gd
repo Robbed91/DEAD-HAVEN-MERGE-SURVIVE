@@ -34,5 +34,3 @@ func _ready() -> void:
 		await get_tree().process_frame
 	print("NORTHGATE_CAPTURE_OK states=6")
 	get_tree().quit()
-
-

@@ -15,6 +15,7 @@ const FIXED_COLOR := Color("6b7a56")
 const FIXED_ACCENT := Color("e8dcc5")
 const HOLLOW_RING := preload("res://assets/ui/hollow_creek/hotspot_ring.png")
 const HOLLOW_REPAIRED := preload("res://assets/ui/hollow_creek/hotspot_repaired.png")
+const NORTHGATE_ICON_ROOT := "res://assets/ui/repair_hotspots/northgate/runtime/"
 
 const HOLLOW_ITEM_LEVELS := {
 	"front_door": 2,
@@ -34,18 +35,112 @@ const HOLLOW_ITEM_LEVELS := {
 var _pulse_time := 0.0
 var _hollow_back: TextureRect
 var _hollow_item: TextureRect
+var _illustrated_item: TextureRect
+var _count_badge: Label
+var _selected := false
+var _was_locked := false
 
 func _ready() -> void:
 	mouse_filter = Control.MOUSE_FILTER_STOP
 	EventBus.hotspot_state_changed.connect(func(id, _state):
 		if id == hotspot_id:
 			_refresh_hollow_visual()
+			_refresh_illustrated_visual()
 			queue_redraw()
 	)
-	set_process(residence_id == "hollow_creek_farmhouse")
+	set_process(residence_id in ["hollow_creek_farmhouse", "northgate_prison"])
 	if residence_id == "hollow_creek_farmhouse":
 		_build_hollow_visual()
 		_refresh_hollow_visual()
+	elif residence_id == "northgate_prison":
+		_build_illustrated_visual()
+		_was_locked = _is_locked()
+		_refresh_illustrated_visual()
+
+func _build_illustrated_visual() -> void:
+	var icon_path := NORTHGATE_ICON_ROOT + hotspot_id + ".png"
+	if not ResourceLoader.exists(icon_path):
+		return
+	_illustrated_item = TextureRect.new()
+	_illustrated_item.set_anchors_preset(Control.PRESET_FULL_RECT)
+	_illustrated_item.offset_left = 3.0
+	_illustrated_item.offset_top = 3.0
+	_illustrated_item.offset_right = -3.0
+	_illustrated_item.offset_bottom = -3.0
+	_illustrated_item.texture = load(icon_path)
+	_illustrated_item.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	_illustrated_item.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	_illustrated_item.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_illustrated_item.pivot_offset = (size - Vector2(6, 6)) * 0.5
+	add_child(_illustrated_item)
+
+	_count_badge = Label.new()
+	_count_badge.position = Vector2(size.x - 35, size.y - 16)
+	_count_badge.size = Vector2(33, 14)
+	_count_badge.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_count_badge.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	_count_badge.add_theme_font_size_override("font_size", 9)
+	_count_badge.add_theme_color_override("font_color", Color("f3e7cc"))
+	_count_badge.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	add_child(_count_badge)
+
+func set_selected(value: bool) -> void:
+	if _selected == value:
+		return
+	_selected = value
+	_refresh_illustrated_visual()
+	queue_redraw()
+
+func has_final_illustration() -> bool:
+	return _illustrated_item != null
+
+func _refresh_illustrated_visual() -> void:
+	if _illustrated_item == null:
+		return
+	var locked := _is_locked()
+	var completed := is_completed()
+	var progress := _requirement_progress()
+	var insufficient: bool = not completed and not locked and progress.x < progress.y
+	var tint := Color.WHITE
+	if locked:
+		tint = Color(0.48, 0.51, 0.52, 0.72)
+	elif completed:
+		tint = Color(0.82, 0.84, 0.78, 0.92)
+	elif insufficient and _selected:
+		tint = Color(1.0, 0.78, 0.62, 1.0)
+	var target_scale := Vector2.ONE * (1.09 if _selected else 1.0)
+	if GameManager.effects_enabled() and is_inside_tree():
+		var tween := create_tween().set_parallel(true).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+		tween.tween_property(_illustrated_item, "modulate", tint, 0.18)
+		tween.tween_property(_illustrated_item, "scale", target_scale, 0.16)
+	else:
+		_illustrated_item.modulate = tint
+		_illustrated_item.scale = target_scale
+	_count_badge.visible = insufficient
+	_count_badge.text = "%d/%d" % [int(progress.x), int(progress.y)] if insufficient else ""
+	if _was_locked and not locked and GameManager.effects_enabled():
+		_play_unlock_sweep()
+	_was_locked = locked
+
+func _is_locked() -> bool:
+	if is_completed():
+		return false
+	return ResidenceManager.get_active_quest_for_hotspot(hotspot_id, residence_id) == null
+
+func _requirement_progress() -> Vector2i:
+	var quest := ResidenceManager.get_active_quest_for_hotspot(hotspot_id, residence_id)
+	if quest == null or quest.requirements.is_empty():
+		return Vector2i.ZERO
+	var item_id: String = quest.requirements.keys()[0]
+	return Vector2i(BoardState.count_item(item_id), int(quest.requirements[item_id]))
+
+func _play_unlock_sweep() -> void:
+	if _illustrated_item == null:
+		return
+	var original := _illustrated_item.modulate
+	_illustrated_item.modulate = Color(1.35, 1.18, 0.78, 1.0)
+	var tween := _illustrated_item.create_tween()
+	tween.tween_property(_illustrated_item, "modulate", original, 0.42).set_trans(Tween.TRANS_SINE)
 
 func _build_hollow_visual() -> void:
 	_hollow_back = TextureRect.new()
@@ -86,6 +181,12 @@ func _process(delta: float) -> void:
 		var pulse := 1.0 + sin(_pulse_time * 2.4) * 0.055
 		_hollow_back.pivot_offset = size * 0.5
 		_hollow_back.scale = Vector2.ONE * pulse
+	if _illustrated_item != null and is_visible_in_tree() and GameManager.effects_enabled():
+		var base := 1.09 if _selected else 1.0
+		var pulse := sin(_pulse_time * 1.75) * (0.018 if not is_completed() else 0.006)
+		_illustrated_item.position.y = sin(_pulse_time * 1.35 + hotspot_id.hash() * 0.001) * 1.25
+		_illustrated_item.scale = Vector2.ONE * (base + pulse)
+		queue_redraw()
 
 func is_completed() -> bool:
 	return ResidenceManager.get_hotspot_state(hotspot_id) == ResidenceHotspot.State.COMPLETED
@@ -98,6 +199,9 @@ func _draw() -> void:
 	var s: Vector2 = size
 	var fixed := is_completed()
 	if residence_id == "hollow_creek_farmhouse":
+		return
+	if residence_id == "northgate_prison" and _illustrated_item != null:
+		_draw_northgate_marker(s, fixed)
 		return
 	var base := FIXED_COLOR if fixed else DAMAGED_COLOR
 	var accent := FIXED_ACCENT if fixed else DAMAGED_ACCENT
@@ -322,6 +426,45 @@ func _draw() -> void:
 		draw_circle(badge_center, s.x * 0.09, Color("6b7a56"))
 		draw_line(badge_center + Vector2(-4, 0), badge_center + Vector2(-1, 3), Color("e8dcc5"), 2.0)
 		draw_line(badge_center + Vector2(-1, 3), badge_center + Vector2(5, -4), Color("e8dcc5"), 2.0)
+
+func _draw_northgate_marker(s: Vector2, completed: bool) -> void:
+	var center := s * 0.5
+	var radius := minf(s.x, s.y) * 0.43
+	var locked := _is_locked()
+	var progress := _requirement_progress()
+	var insufficient: bool = not completed and not locked and progress.x < progress.y
+	var rim := Color("9c6a32")
+	if _selected:
+		rim = Color("f2c36b")
+	elif completed:
+		rim = Color("7f955d")
+	elif locked:
+		rim = Color("667078")
+	elif insufficient:
+		rim = Color("a86745")
+	var pulse_alpha := 0.24
+	if not completed and not locked and GameManager.effects_enabled():
+		pulse_alpha += sin(_pulse_time * 1.75) * 0.07
+	# Restrained radial backing: enough contrast for the object while leaving
+	# the prison environment visible around the marker.
+	draw_circle(center, radius, Color(0.055, 0.06, 0.06, 0.52))
+	draw_arc(center, radius, 0.0, TAU, 48, Color(rim, pulse_alpha + 0.38), 2.0)
+	if _selected:
+		draw_arc(center, radius + 3.0, -0.8, 1.2, 20, Color(1.0, 0.77, 0.4, 0.78), 2.0)
+	if insufficient:
+		var count_rect := Rect2(s.x - 35, s.y - 16, 33, 14)
+		draw_rect(count_rect, Color(0.18, 0.10, 0.07, 0.86), true)
+		draw_rect(count_rect, Color("a86745"), false, 1.0)
+	if completed:
+		var badge := Vector2(s.x - 11, 11)
+		draw_circle(badge, 8.0, Color("657b4c"))
+		draw_line(badge + Vector2(-4, 0), badge + Vector2(-1, 3), Color("f3e7cc"), 2.0)
+		draw_line(badge + Vector2(-1, 3), badge + Vector2(5, -4), Color("f3e7cc"), 2.0)
+	elif locked:
+		var badge := Vector2(s.x - 11, 11)
+		draw_circle(badge, 8.0, Color(0.12, 0.14, 0.15, 0.94))
+		draw_arc(badge + Vector2(0, -2), 3.5, PI, TAU, 12, Color("d8d2c4"), 1.5)
+		draw_rect(Rect2(badge + Vector2(-4, -1), Vector2(8, 6)), Color("d8d2c4"), true)
 
 ## Brief dust/hammer flash played when this hotspot's quest completes -
 ## MergeBoard's burst effect reused here for the "construction happening"
