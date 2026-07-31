@@ -21,6 +21,7 @@ const CHAPTER_TITLES := {
 @onready var _progress_label: Label = %ProgressLabel
 @onready var _chapter_label: Label = %ChapterLabel
 @onready var _defence_button: Button = %DefenceButton
+@onready var _background: Control = $Layout/Scene/Background
 
 var _hotspot_visuals: Dictionary = {} # hotspot_id -> HotspotVisual
 
@@ -63,8 +64,11 @@ func _on_hotspot_tapped(hotspot_id: String) -> void:
 	_task_panel.show_for_hotspot(hotspot_id, RESIDENCE_ID)
 
 func _on_task_completed(hotspot_id: String) -> void:
+	AudioManager.play_sfx("fence_repair" if hotspot_id == "sally_port" else ("trap_deploy" if hotspot_id in ["guard_tower", "armory"] else "metal_fastening"))
+	_background.play_repair(hotspot_id)
 	if _hotspot_visuals.has(hotspot_id):
 		_hotspot_visuals[hotspot_id].play_repair_burst()
+	AudioManager.play_sfx("repair_whoosh")
 	AudioManager.play_sfx("task_complete")
 	_refresh_progress()
 

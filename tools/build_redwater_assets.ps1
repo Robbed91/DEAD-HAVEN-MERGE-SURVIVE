@@ -1,5 +1,5 @@
 param(
-    [ValidateSet('redwater', 'greybridge', 'saint_mercy')]
+    [ValidateSet('redwater', 'greybridge', 'saint_mercy', 'northgate')]
     [string]$Residence = 'redwater'
 )
 
@@ -64,7 +64,24 @@ try {
     }
     Save-Jpeg $destroyed (Join-Path $runtimeRoot "${Residence}_state_01_destroyed.jpg")
 
-    if ($Residence -eq 'saint_mercy') {
+    if ($Residence -eq 'northgate') {
+        $hotspots = [ordered]@{
+            sally_port = @(245, 700, 525, 1080)
+            guard_tower = @(545, 0, 720, 420)
+            armory = @(430, 290, 720, 690)
+            mess_hall = @(0, 240, 385, 680)
+            cell_block_a = @(135, 220, 510, 710)
+            control_room = @(275, 70, 530, 455)
+            transport_bay = @(0, 545, 405, 1000)
+            warden_office = @(410, 90, 720, 520)
+        }
+        $stateGroups = @(
+            @('sally_port'),
+            @('sally_port', 'transport_bay', 'guard_tower'),
+            @('sally_port', 'transport_bay', 'guard_tower', 'mess_hall', 'cell_block_a'),
+            @('sally_port', 'transport_bay', 'guard_tower', 'mess_hall', 'cell_block_a', 'armory', 'control_room', 'warden_office')
+        )
+    } elseif ($Residence -eq 'saint_mercy') {
         $hotspots = [ordered]@{
             reception_er = @(245, 300, 510, 690)
             pharmacy = @(0, 285, 345, 730)
