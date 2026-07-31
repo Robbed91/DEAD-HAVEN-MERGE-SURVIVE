@@ -19,6 +19,7 @@ const VEHICLE_ID := "delivery_van"
 @onready var _complete_label: Label = %CompleteLabel
 
 func _ready() -> void:
+	AudioManager.play_ambience_layer("vehicle_engine", -12.0)
 	if not VehicleManager.is_discovered(VEHICLE_ID):
 		if get_tree().current_scene == self:
 			EventBus.show_toast.emit("No vehicle found yet.")
@@ -29,10 +30,15 @@ func _ready() -> void:
 	%BackButton.pressed.connect(func(): SceneRouter.go_to("world_map", {}, false))
 	EventBus.vehicle_stage_changed.connect(func(id, _stage):
 		if id == VEHICLE_ID:
+			AudioManager.play_sfx("vehicle_door")
+			AudioManager.play_sfx("vehicle_headlights")
 			_refresh()
 			_visual.play_upgrade_sequence()
 	)
 	_refresh()
+
+func _exit_tree() -> void:
+	AudioManager.stop_ambience_layer("vehicle_engine")
 
 func _refresh() -> void:
 	var vehicle := VehicleManager.get_vehicle(VEHICLE_ID)
@@ -66,8 +72,10 @@ func _refresh() -> void:
 func _on_upgrade_pressed() -> void:
 	var result := VehicleManager.upgrade_stage(VEHICLE_ID)
 	if result.success:
+		AudioManager.play_sfx("vehicle_start")
 		EventBus.show_toast.emit("Upgraded: %s" % VehicleManager.get_current_stage_name(VEHICLE_ID))
 		_refresh()
 	else:
+		AudioManager.play_sfx("error")
 		EventBus.show_toast.emit("Not enough materials yet.")
 		MotionFXScript.shake(_upgrade_button)

@@ -152,7 +152,8 @@ func _on_drop_attempted(dragged_id: String, cell: BoardCell) -> void:
 		if BoardState.move_to_cell(dragged_id, target_pos):
 			refresh_board()
 			_play_pop_at_instance(dragged_id)
-		return
+			AudioManager.play_sfx("item_drop")
+			return
 
 	var occupant_id: String = BoardState.grid.get(target_pos, "")
 	var source_view := _find_item_view(dragged_id)
@@ -167,7 +168,7 @@ func _on_drop_attempted(dragged_id: String, cell: BoardCell) -> void:
 		var level := result_def.level if result_def != null else 1
 		_play_merge_reward(target_pos, level)
 		_play_result_expansion(result.resulting_instance_id)
-		AudioManager.play_sfx("merge_high" if level >= 5 else "merge")
+		AudioManager.play_sfx("merge_high" if level >= 5 else _merge_audio_key(result_def.chain_id if result_def != null else ""))
 		if result.is_discovery:
 			_discovery_banner.show_item(result.resulting_item_id)
 			AudioManager.play_sfx("discovery")
@@ -322,6 +323,15 @@ func _toast_for_merge_failure(reason: String) -> void:
 	}
 	if messages.has(reason):
 		EventBus.show_toast.emit(messages[reason])
+
+func _merge_audio_key(chain_id: String) -> String:
+	if chain_id == "construction": return "merge_wood"
+	if chain_id in ["tool", "trap", "vehicle_parts", "clothing"]: return "merge_metal"
+	if chain_id == "medical": return "merge_medical"
+	if chain_id == "food": return "merge_food"
+	if chain_id in ["electronics", "energy_reward"]: return "merge_electronics"
+	if chain_id == "fuel": return "merge_fuel"
+	return "merge_generic"
 
 func _toast_for_producer_failure(reason: String) -> void:
 	var messages := {

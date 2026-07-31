@@ -47,6 +47,7 @@ var _current_id: String = ""
 var _return_scene_key: String = "haven"
 
 func _ready() -> void:
+	AudioManager.set_dialogue_active(true)
 	$Layout/Row/TextPanel.theme_type_variation = "DialoguePanel"
 	_speaker_label.add_theme_font_override("font", ThemeFactory.display_font())
 	_speaker_label.add_theme_color_override("font_color", ThemeFactory.RUST_DARK)
@@ -82,6 +83,8 @@ func _show_entry(id: String) -> void:
 	_portrait.silhouette_color = SPEAKER_COLORS.get(entry.speaker_id, Color("8a8f8a"))
 	_portrait.survivor_id = entry.speaker_id
 	_portrait.expression = _expression_for_text(entry.text)
+	if _portrait.expression in ["injured", "relieved", "exhausted"]:
+		AudioManager.play_music("emotional")
 	_portrait.play_state("fear" if _portrait.expression == "afraid" else ("injured" if _portrait.expression == "injured" else "speaking"))
 	_text_label.text = entry.text
 	if entry.speaker_id == "mara_vale" or entry.speaker_id == "noah_vance":
@@ -129,6 +132,7 @@ func _expression_for_text(line: String) -> String:
 	return "neutral"
 
 func _on_continue_pressed() -> void:
+	AudioManager.play_sfx("dialogue_advance")
 	var entry := DialogueManager.get_entry(_current_id)
 	if entry == null or entry.next_id.is_empty():
 		_finish()
@@ -136,6 +140,7 @@ func _on_continue_pressed() -> void:
 	_show_entry(entry.next_id)
 
 func _on_choice_selected(option: Dictionary) -> void:
+	AudioManager.play_sfx("dialogue_choice")
 	_apply_option_effects(option)
 	var next_id := String(option.get("next_id", ""))
 	if next_id.is_empty() or not DialogueManager.has_entry(next_id):
@@ -157,5 +162,6 @@ func _apply_option_effects(option: Dictionary) -> void:
 		GameManager.set_story_flag(String(key), relationship_changes[key])
 
 func _finish() -> void:
+	AudioManager.set_dialogue_active(false)
 	EventBus.dialogue_finished.emit(_current_id)
 	SceneRouter.go_to(_return_scene_key, {}, false)

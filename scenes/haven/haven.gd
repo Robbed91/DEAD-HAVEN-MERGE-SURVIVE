@@ -90,6 +90,10 @@ func _on_hotspot_tapped(hotspot_id: String) -> void:
 	_task_panel.show_for_hotspot(hotspot_id, RESIDENCE_ID)
 
 func _on_task_completed(hotspot_id: String) -> void:
+	AudioManager.play_sfx(_repair_audio_key(hotspot_id))
+	if hotspot_id == "fireplace": AudioManager.play_ambience_layer("fire", -12.0)
+	_play_repair_camera_sequence(hotspot_id)
+	_background.play_survivor_repair(hotspot_id)
 	if hotspot_id == "kitchen_window":
 		_background.play_window_boarding()
 	if _hotspot_visuals.has(hotspot_id):
@@ -97,6 +101,29 @@ func _on_task_completed(hotspot_id: String) -> void:
 	AudioManager.play_sfx("repair_whoosh")
 	AudioManager.play_sfx("task_complete")
 	_refresh_progress()
+
+func _repair_audio_key(hotspot_id: String) -> String:
+	if hotspot_id == "kitchen_window": return "window_board"
+	if hotspot_id == "front_door": return "door_repair"
+	if hotspot_id in ["rear_escape", "perimeter_traps"]: return "trap_deploy"
+	if hotspot_id in ["barn", "living_room", "upstairs_bedroom"]: return "hammer"
+	if hotspot_id == "fireplace": return "debris_clear"
+	return "tool_handle"
+
+func _play_repair_camera_sequence(hotspot_id: String) -> void:
+	if not GameManager.effects_enabled(): return
+	var scene: Control = $Layout/Scene
+	var residence := ResidenceManager.get_residence(RESIDENCE_ID)
+	var focus := Vector2(0.5, 0.5)
+	for hotspot in residence.hotspots:
+		if hotspot.id == hotspot_id:
+			focus = hotspot.area_position
+			break
+	scene.pivot_offset = scene.size * focus
+	var tween := scene.create_tween().set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+	tween.tween_property(scene, "scale", Vector2(1.045, 1.045), 0.24)
+	tween.tween_interval(0.72)
+	tween.tween_property(scene, "scale", Vector2.ONE, 0.28)
 
 func _refresh_chapter_label() -> void:
 	var chapter_id: String = GameManager.profile.current_chapter_id

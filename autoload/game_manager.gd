@@ -41,7 +41,11 @@ var resources: Dictionary = {
 var settings: Dictionary = {
 	"master_volume": 0.8,
 	"music_volume": 0.8,
+	"ambience_volume": 0.75,
 	"sfx_volume": 0.9,
+	"ui_volume": 0.9,
+	"characters_volume": 0.85,
+	"threats_volume": 0.9,
 	"vibration": true,
 	"reduced_motion": false,
 	"high_contrast": false,
@@ -285,7 +289,7 @@ func update_setting(key: String, value: Variant) -> void:
 		return
 	settings[key] = value
 	EventBus.settings_changed.emit()
-	if key in ["master_volume", "music_volume", "sfx_volume"]:
+	if key in ["master_volume", "music_volume", "ambience_volume", "sfx_volume", "ui_volume", "characters_volume", "threats_volume"]:
 		AudioManager.apply_volume_settings()
 	if key in ["text_scale", "high_contrast", "colorblind_mode"]:
 		# Previously these baked into the Theme once at Boot and never

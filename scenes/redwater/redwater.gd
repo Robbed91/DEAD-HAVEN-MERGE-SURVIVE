@@ -68,6 +68,8 @@ func _on_hotspot_tapped(hotspot_id: String) -> void:
 	_task_panel.show_for_hotspot(hotspot_id, RESIDENCE_ID)
 
 func _on_task_completed(hotspot_id: String) -> void:
+	AudioManager.play_sfx("generator_start" if hotspot_id == "generator_room" else ("fence_repair" if hotspot_id == "perimeter_fence" else "metal_fastening"))
+	if hotspot_id == "generator_room": AudioManager.play_ambience_layer("generator", -13.0)
 	_background.play_repair(hotspot_id)
 	if _hotspot_visuals.has(hotspot_id):
 		_hotspot_visuals[hotspot_id].play_repair_burst()

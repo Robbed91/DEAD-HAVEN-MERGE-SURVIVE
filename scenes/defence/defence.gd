@@ -48,6 +48,8 @@ var _selected_survivor_id: String = ""
 var _shared_group: ButtonGroup
 
 func _ready() -> void:
+	AudioManager.play_music("defence_preparation")
+	AudioManager.play_ambience("distant_hollow")
 	var params := SceneRouter.take_pending_params()
 	_event_id = String(params.get("event_id", "hollow_creek_first_wave"))
 	_return_scene_key = String(params.get("return_scene_key", "haven"))
@@ -84,8 +86,11 @@ func _survivor_group() -> ButtonGroup:
 func _on_send_pressed() -> void:
 	var result := DefenceManager.launch(_event_id, _selected_survivor_id)
 	if not result.success:
+		AudioManager.play_sfx("error")
 		EventBus.show_toast.emit("Not enough energy to prepare.")
 		return
+	AudioManager.play_sfx("defence_warning")
+	AudioManager.play_music("defence")
 	_prep_panel.visible = false
 	_encounter_panel.visible = true
 	_encounter_label.text = ENCOUNTER_INTROS.get(_event_id, "What now?")
@@ -101,6 +106,7 @@ func _on_send_pressed() -> void:
 		_choices_box.add_child(btn)
 
 func _on_choice_pressed(choice_index: int) -> void:
+	AudioManager.play_sfx("barricade_impact")
 	var result := DefenceManager.resolve_choice(_event_id, choice_index, _selected_survivor_id)
 	_encounter_panel.visible = false
 	_outcome_panel.visible = true

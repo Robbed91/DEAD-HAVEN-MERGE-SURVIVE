@@ -73,8 +73,28 @@ func play_state(state_name: String) -> void:
 	if not state_name in available:
 		state_name = "idle_sway" if hollow else "idle_breathing"
 	_current_state = state_name
+	_play_state_audio(state_name)
 	_set_pose(_pose_for_state(state_name))
 	_player.play(state_name)
+
+func _play_state_audio(state_name: String) -> void:
+	if not is_inside_tree() or not is_visible_in_tree(): return
+	if hollow:
+		if state_name in ["idle_sway", "distant_wandering"]: AudioManager.play_sfx("hollow_idle", -5.0)
+		elif state_name == "detect_target": AudioManager.play_sfx("hollow_detect")
+		elif state_name == "attack_barricade": AudioManager.play_sfx("hollow_attack")
+		elif state_name in ["hit_reaction", "trap_reaction"]: AudioManager.play_sfx("hollow_hit")
+		elif state_name == "collapse": AudioManager.play_sfx("hollow_collapse")
+	elif state_name in ["walking", "running"]:
+		AudioManager.play_sfx("footstep_dirt", -3.0)
+	elif state_name in ["hammering", "defensive_action"]:
+		AudioManager.play_sfx("hammer", -2.0)
+	elif state_name == "sawing":
+		AudioManager.play_sfx("saw", -2.0)
+	elif state_name in ["searching", "carrying"]:
+		AudioManager.play_sfx("tool_handle", -3.0)
+	elif state_name == "using_radio":
+		AudioManager.play_sfx("radio_pulse", -2.0)
 
 func _pose_for_state(state_name: String) -> String:
 	if hollow and ResourceLoader.exists("%s/%s.png" % [_base_dir(), state_name]):

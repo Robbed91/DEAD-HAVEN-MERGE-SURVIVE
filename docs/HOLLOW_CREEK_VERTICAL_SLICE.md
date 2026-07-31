@@ -80,7 +80,7 @@ Reduced-motion and low-effects settings continue to use the existing `GameManage
 
 | Cue | File/use |
 |---|---|
-| Hollow Creek residence music | `assets/audio/music/hollow_creek_residence_loop.wav` |
+| Hollow Creek residence music | `assets/audio/music/safe_residence_loop.wav` |
 | Hollow Creek storm ambience | `assets/audio/ambience/hollow_creek_storm_loop.wav` |
 | UI tap | All live buttons via AudioManager presentation hook |
 | Merge / invalid merge | Existing merge events |

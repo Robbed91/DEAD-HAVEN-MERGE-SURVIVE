@@ -38,6 +38,22 @@ static func reveal(node: Control, direction := Vector2(0, 18), duration := 0.22)
 	tween.tween_property(node, "position", destination, duration)
 	tween.tween_property(node, "modulate:a", 1.0, duration * 0.8)
 
+static func dismiss(node: Control, direction := Vector2(0, 14), duration := 0.16, finished := Callable()) -> void:
+	stop(node)
+	if not allowed(node):
+		if finished.is_valid(): finished.call()
+		return
+	var origin := node.position
+	var tween := node.create_tween().set_parallel(true).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
+	node.set_meta("motion_fx_tween", tween)
+	tween.tween_property(node, "position", origin + direction, duration)
+	tween.tween_property(node, "modulate:a", 0.0, duration)
+	tween.chain().tween_callback(func():
+		node.position = origin
+		node.modulate.a = 1.0
+		if finished.is_valid(): finished.call()
+	)
+
 static func bounce(node: Control, strength := 0.12) -> void:
 	stop(node)
 	if not allowed(node): return

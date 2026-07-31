@@ -1,0 +1,685 @@
+{
+  "sfx": {
+    "ui_button": {
+      "paths": [
+        "res://assets/audio/sfx/ui_button/ui_button_01.wav",
+        "res://assets/audio/sfx/ui_button/ui_button_02.wav",
+        "res://assets/audio/sfx/ui_button/ui_button_03.wav",
+        "res://assets/audio/sfx/ui_button/ui_button_04.wav"
+      ],
+      "bus": "UI",
+      "limit": 3,
+      "pitch_semitones": 1.5
+    },
+    "ui_navigation": {
+      "paths": [
+        "res://assets/audio/sfx/ui_navigation/ui_navigation_01.wav",
+        "res://assets/audio/sfx/ui_navigation/ui_navigation_02.wav",
+        "res://assets/audio/sfx/ui_navigation/ui_navigation_03.wav"
+      ],
+      "bus": "UI",
+      "limit": 2,
+      "pitch_semitones": 1.0
+    },
+    "modal_open": {
+      "paths": [
+        "res://assets/audio/sfx/modal_open/modal_open_01.wav",
+        "res://assets/audio/sfx/modal_open/modal_open_02.wav",
+        "res://assets/audio/sfx/modal_open/modal_open_03.wav"
+      ],
+      "bus": "UI",
+      "limit": 2,
+      "pitch_semitones": 0.8
+    },
+    "modal_close": {
+      "paths": [
+        "res://assets/audio/sfx/modal_close/modal_close_01.wav",
+        "res://assets/audio/sfx/modal_close/modal_close_02.wav",
+        "res://assets/audio/sfx/modal_close/modal_close_03.wav"
+      ],
+      "bus": "UI",
+      "limit": 2,
+      "pitch_semitones": 0.8
+    },
+    "confirmation": {
+      "paths": [
+        "res://assets/audio/sfx/confirmation/confirmation_01.wav",
+        "res://assets/audio/sfx/confirmation/confirmation_02.wav"
+      ],
+      "bus": "UI",
+      "limit": 2,
+      "pitch_semitones": 0.5
+    },
+    "error": {
+      "paths": [
+        "res://assets/audio/sfx/error/error_01.wav",
+        "res://assets/audio/sfx/error/error_02.wav",
+        "res://assets/audio/sfx/error/error_03.wav"
+      ],
+      "bus": "UI",
+      "limit": 2,
+      "pitch_semitones": 0.8
+    },
+    "notification": {
+      "paths": [
+        "res://assets/audio/sfx/notification/notification_01.wav",
+        "res://assets/audio/sfx/notification/notification_02.wav"
+      ],
+      "bus": "UI",
+      "limit": 2,
+      "pitch_semitones": 0.5
+    },
+    "reward": {
+      "paths": [
+        "res://assets/audio/sfx/reward/reward_01.wav",
+        "res://assets/audio/sfx/reward/reward_02.wav",
+        "res://assets/audio/sfx/reward/reward_03.wav"
+      ],
+      "bus": "UI",
+      "limit": 3,
+      "pitch_semitones": 0.6
+    },
+    "level_up": {
+      "paths": [
+        "res://assets/audio/sfx/level_up/level_up_01.wav"
+      ],
+      "bus": "UI",
+      "limit": 1,
+      "pitch_semitones": 0
+    },
+    "quest_complete": {
+      "paths": [
+        "res://assets/audio/sfx/quest_complete/quest_complete_01.wav",
+        "res://assets/audio/sfx/quest_complete/quest_complete_02.wav"
+      ],
+      "bus": "UI",
+      "limit": 2,
+      "pitch_semitones": 0.5
+    },
+    "item_discovery": {
+      "paths": [
+        "res://assets/audio/sfx/item_discovery/item_discovery_01.wav",
+        "res://assets/audio/sfx/item_discovery/item_discovery_02.wav"
+      ],
+      "bus": "UI",
+      "limit": 2,
+      "pitch_semitones": 0.4
+    },
+    "item_pickup": {
+      "paths": [
+        "res://assets/audio/sfx/item_pickup/item_pickup_01.wav",
+        "res://assets/audio/sfx/item_pickup/item_pickup_02.wav",
+        "res://assets/audio/sfx/item_pickup/item_pickup_03.wav",
+        "res://assets/audio/sfx/item_pickup/item_pickup_04.wav"
+      ],
+      "bus": "SFX",
+      "limit": 4,
+      "pitch_semitones": 2.2
+    },
+    "item_drop": {
+      "paths": [
+        "res://assets/audio/sfx/item_drop/item_drop_01.wav",
+        "res://assets/audio/sfx/item_drop/item_drop_02.wav",
+        "res://assets/audio/sfx/item_drop/item_drop_03.wav",
+        "res://assets/audio/sfx/item_drop/item_drop_04.wav"
+      ],
+      "bus": "SFX",
+      "limit": 4,
+      "pitch_semitones": 2.0
+    },
+    "merge_invalid": {
+      "paths": [
+        "res://assets/audio/sfx/merge_invalid/merge_invalid_01.wav",
+        "res://assets/audio/sfx/merge_invalid/merge_invalid_02.wav",
+        "res://assets/audio/sfx/merge_invalid/merge_invalid_03.wav"
+      ],
+      "bus": "SFX",
+      "limit": 2,
+      "pitch_semitones": 1.2
+    },
+    "merge_generic": {
+      "paths": [
+        "res://assets/audio/sfx/merge_generic/merge_generic_01.wav",
+        "res://assets/audio/sfx/merge_generic/merge_generic_02.wav",
+        "res://assets/audio/sfx/merge_generic/merge_generic_03.wav",
+        "res://assets/audio/sfx/merge_generic/merge_generic_04.wav"
+      ],
+      "bus": "SFX",
+      "limit": 4,
+      "pitch_semitones": 1.5
+    },
+    "merge_wood": {
+      "paths": [
+        "res://assets/audio/sfx/merge_wood/merge_wood_01.wav",
+        "res://assets/audio/sfx/merge_wood/merge_wood_02.wav",
+        "res://assets/audio/sfx/merge_wood/merge_wood_03.wav",
+        "res://assets/audio/sfx/merge_wood/merge_wood_04.wav"
+      ],
+      "bus": "SFX",
+      "limit": 4,
+      "pitch_semitones": 1.8
+    },
+    "merge_metal": {
+      "paths": [
+        "res://assets/audio/sfx/merge_metal/merge_metal_01.wav",
+        "res://assets/audio/sfx/merge_metal/merge_metal_02.wav",
+        "res://assets/audio/sfx/merge_metal/merge_metal_03.wav",
+        "res://assets/audio/sfx/merge_metal/merge_metal_04.wav"
+      ],
+      "bus": "SFX",
+      "limit": 4,
+      "pitch_semitones": 1.5
+    },
+    "merge_medical": {
+      "paths": [
+        "res://assets/audio/sfx/merge_medical/merge_medical_01.wav",
+        "res://assets/audio/sfx/merge_medical/merge_medical_02.wav",
+        "res://assets/audio/sfx/merge_medical/merge_medical_03.wav"
+      ],
+      "bus": "SFX",
+      "limit": 3,
+      "pitch_semitones": 1.2
+    },
+    "merge_food": {
+      "paths": [
+        "res://assets/audio/sfx/merge_food/merge_food_01.wav",
+        "res://assets/audio/sfx/merge_food/merge_food_02.wav",
+        "res://assets/audio/sfx/merge_food/merge_food_03.wav"
+      ],
+      "bus": "SFX",
+      "limit": 3,
+      "pitch_semitones": 1.4
+    },
+    "merge_electronics": {
+      "paths": [
+        "res://assets/audio/sfx/merge_electronics/merge_electronics_01.wav",
+        "res://assets/audio/sfx/merge_electronics/merge_electronics_02.wav",
+        "res://assets/audio/sfx/merge_electronics/merge_electronics_03.wav",
+        "res://assets/audio/sfx/merge_electronics/merge_electronics_04.wav"
+      ],
+      "bus": "SFX",
+      "limit": 4,
+      "pitch_semitones": 1.5
+    },
+    "merge_fuel": {
+      "paths": [
+        "res://assets/audio/sfx/merge_fuel/merge_fuel_01.wav",
+        "res://assets/audio/sfx/merge_fuel/merge_fuel_02.wav",
+        "res://assets/audio/sfx/merge_fuel/merge_fuel_03.wav"
+      ],
+      "bus": "SFX",
+      "limit": 3,
+      "pitch_semitones": 1.2
+    },
+    "merge_high": {
+      "paths": [
+        "res://assets/audio/sfx/merge_high/merge_high_01.wav",
+        "res://assets/audio/sfx/merge_high/merge_high_02.wav"
+      ],
+      "bus": "SFX",
+      "limit": 2,
+      "pitch_semitones": 0.4
+    },
+    "producer_activate": {
+      "paths": [
+        "res://assets/audio/sfx/producer_activate/producer_activate_01.wav",
+        "res://assets/audio/sfx/producer_activate/producer_activate_02.wav",
+        "res://assets/audio/sfx/producer_activate/producer_activate_03.wav",
+        "res://assets/audio/sfx/producer_activate/producer_activate_04.wav"
+      ],
+      "bus": "SFX",
+      "limit": 3,
+      "pitch_semitones": 1.8
+    },
+    "producer_empty": {
+      "paths": [
+        "res://assets/audio/sfx/producer_empty/producer_empty_01.wav",
+        "res://assets/audio/sfx/producer_empty/producer_empty_02.wav",
+        "res://assets/audio/sfx/producer_empty/producer_empty_03.wav"
+      ],
+      "bus": "SFX",
+      "limit": 2,
+      "pitch_semitones": 1.2
+    },
+    "producer_recharge": {
+      "paths": [
+        "res://assets/audio/sfx/producer_recharge/producer_recharge_01.wav",
+        "res://assets/audio/sfx/producer_recharge/producer_recharge_02.wav",
+        "res://assets/audio/sfx/producer_recharge/producer_recharge_03.wav"
+      ],
+      "bus": "SFX",
+      "limit": 2,
+      "pitch_semitones": 1.0
+    },
+    "coin_collect": {
+      "paths": [
+        "res://assets/audio/sfx/coin_collect/coin_collect_01.wav",
+        "res://assets/audio/sfx/coin_collect/coin_collect_02.wav",
+        "res://assets/audio/sfx/coin_collect/coin_collect_03.wav",
+        "res://assets/audio/sfx/coin_collect/coin_collect_04.wav"
+      ],
+      "bus": "UI",
+      "limit": 4,
+      "pitch_semitones": 2.0
+    },
+    "energy_collect": {
+      "paths": [
+        "res://assets/audio/sfx/energy_collect/energy_collect_01.wav",
+        "res://assets/audio/sfx/energy_collect/energy_collect_02.wav",
+        "res://assets/audio/sfx/energy_collect/energy_collect_03.wav"
+      ],
+      "bus": "UI",
+      "limit": 3,
+      "pitch_semitones": 1.4
+    },
+    "chest_open": {
+      "paths": [
+        "res://assets/audio/sfx/chest_open/chest_open_01.wav",
+        "res://assets/audio/sfx/chest_open/chest_open_02.wav",
+        "res://assets/audio/sfx/chest_open/chest_open_03.wav"
+      ],
+      "bus": "SFX",
+      "limit": 2,
+      "pitch_semitones": 1.0
+    },
+    "hammer": {
+      "paths": [
+        "res://assets/audio/sfx/hammer/hammer_01.wav",
+        "res://assets/audio/sfx/hammer/hammer_02.wav",
+        "res://assets/audio/sfx/hammer/hammer_03.wav",
+        "res://assets/audio/sfx/hammer/hammer_04.wav",
+        "res://assets/audio/sfx/hammer/hammer_05.wav",
+        "res://assets/audio/sfx/hammer/hammer_06.wav",
+        "res://assets/audio/sfx/hammer/hammer_07.wav",
+        "res://assets/audio/sfx/hammer/hammer_08.wav"
+      ],
+      "bus": "Characters",
+      "limit": 3,
+      "pitch_semitones": 2.5
+    },
+    "saw": {
+      "paths": [
+        "res://assets/audio/sfx/saw/saw_01.wav",
+        "res://assets/audio/sfx/saw/saw_02.wav",
+        "res://assets/audio/sfx/saw/saw_03.wav"
+      ],
+      "bus": "Characters",
+      "limit": 1,
+      "pitch_semitones": 1.2
+    },
+    "wood_place": {
+      "paths": [
+        "res://assets/audio/sfx/wood_place/wood_place_01.wav",
+        "res://assets/audio/sfx/wood_place/wood_place_02.wav",
+        "res://assets/audio/sfx/wood_place/wood_place_03.wav",
+        "res://assets/audio/sfx/wood_place/wood_place_04.wav",
+        "res://assets/audio/sfx/wood_place/wood_place_05.wav",
+        "res://assets/audio/sfx/wood_place/wood_place_06.wav"
+      ],
+      "bus": "Characters",
+      "limit": 3,
+      "pitch_semitones": 2.0
+    },
+    "metal_fastening": {
+      "paths": [
+        "res://assets/audio/sfx/metal_fastening/metal_fastening_01.wav",
+        "res://assets/audio/sfx/metal_fastening/metal_fastening_02.wav",
+        "res://assets/audio/sfx/metal_fastening/metal_fastening_03.wav",
+        "res://assets/audio/sfx/metal_fastening/metal_fastening_04.wav",
+        "res://assets/audio/sfx/metal_fastening/metal_fastening_05.wav"
+      ],
+      "bus": "Characters",
+      "limit": 3,
+      "pitch_semitones": 1.7
+    },
+    "debris_clear": {
+      "paths": [
+        "res://assets/audio/sfx/debris_clear/debris_clear_01.wav",
+        "res://assets/audio/sfx/debris_clear/debris_clear_02.wav",
+        "res://assets/audio/sfx/debris_clear/debris_clear_03.wav",
+        "res://assets/audio/sfx/debris_clear/debris_clear_04.wav",
+        "res://assets/audio/sfx/debris_clear/debris_clear_05.wav"
+      ],
+      "bus": "Characters",
+      "limit": 2,
+      "pitch_semitones": 2.0
+    },
+    "door_repair": {
+      "paths": [
+        "res://assets/audio/sfx/door_repair/door_repair_01.wav",
+        "res://assets/audio/sfx/door_repair/door_repair_02.wav",
+        "res://assets/audio/sfx/door_repair/door_repair_03.wav",
+        "res://assets/audio/sfx/door_repair/door_repair_04.wav"
+      ],
+      "bus": "Characters",
+      "limit": 2,
+      "pitch_semitones": 1.5
+    },
+    "window_board": {
+      "paths": [
+        "res://assets/audio/sfx/window_board/window_board_01.wav",
+        "res://assets/audio/sfx/window_board/window_board_02.wav",
+        "res://assets/audio/sfx/window_board/window_board_03.wav",
+        "res://assets/audio/sfx/window_board/window_board_04.wav",
+        "res://assets/audio/sfx/window_board/window_board_05.wav",
+        "res://assets/audio/sfx/window_board/window_board_06.wav"
+      ],
+      "bus": "Characters",
+      "limit": 2,
+      "pitch_semitones": 2.0
+    },
+    "generator_start": {
+      "paths": [
+        "res://assets/audio/sfx/generator_start/generator_start_01.wav",
+        "res://assets/audio/sfx/generator_start/generator_start_02.wav",
+        "res://assets/audio/sfx/generator_start/generator_start_03.wav"
+      ],
+      "bus": "Characters",
+      "limit": 1,
+      "pitch_semitones": 1.0
+    },
+    "trap_deploy": {
+      "paths": [
+        "res://assets/audio/sfx/trap_deploy/trap_deploy_01.wav",
+        "res://assets/audio/sfx/trap_deploy/trap_deploy_02.wav",
+        "res://assets/audio/sfx/trap_deploy/trap_deploy_03.wav",
+        "res://assets/audio/sfx/trap_deploy/trap_deploy_04.wav"
+      ],
+      "bus": "Characters",
+      "limit": 2,
+      "pitch_semitones": 1.4
+    },
+    "fence_repair": {
+      "paths": [
+        "res://assets/audio/sfx/fence_repair/fence_repair_01.wav",
+        "res://assets/audio/sfx/fence_repair/fence_repair_02.wav",
+        "res://assets/audio/sfx/fence_repair/fence_repair_03.wav",
+        "res://assets/audio/sfx/fence_repair/fence_repair_04.wav"
+      ],
+      "bus": "Characters",
+      "limit": 2,
+      "pitch_semitones": 1.5
+    },
+    "footstep_dirt": {
+      "paths": [
+        "res://assets/audio/sfx/footstep_dirt/footstep_dirt_01.wav",
+        "res://assets/audio/sfx/footstep_dirt/footstep_dirt_02.wav",
+        "res://assets/audio/sfx/footstep_dirt/footstep_dirt_03.wav",
+        "res://assets/audio/sfx/footstep_dirt/footstep_dirt_04.wav",
+        "res://assets/audio/sfx/footstep_dirt/footstep_dirt_05.wav",
+        "res://assets/audio/sfx/footstep_dirt/footstep_dirt_06.wav",
+        "res://assets/audio/sfx/footstep_dirt/footstep_dirt_07.wav",
+        "res://assets/audio/sfx/footstep_dirt/footstep_dirt_08.wav"
+      ],
+      "bus": "Characters",
+      "limit": 4,
+      "pitch_semitones": 2.8
+    },
+    "footstep_interior": {
+      "paths": [
+        "res://assets/audio/sfx/footstep_interior/footstep_interior_01.wav",
+        "res://assets/audio/sfx/footstep_interior/footstep_interior_02.wav",
+        "res://assets/audio/sfx/footstep_interior/footstep_interior_03.wav",
+        "res://assets/audio/sfx/footstep_interior/footstep_interior_04.wav",
+        "res://assets/audio/sfx/footstep_interior/footstep_interior_05.wav",
+        "res://assets/audio/sfx/footstep_interior/footstep_interior_06.wav",
+        "res://assets/audio/sfx/footstep_interior/footstep_interior_07.wav",
+        "res://assets/audio/sfx/footstep_interior/footstep_interior_08.wav"
+      ],
+      "bus": "Characters",
+      "limit": 4,
+      "pitch_semitones": 2.4
+    },
+    "tool_handle": {
+      "paths": [
+        "res://assets/audio/sfx/tool_handle/tool_handle_01.wav",
+        "res://assets/audio/sfx/tool_handle/tool_handle_02.wav",
+        "res://assets/audio/sfx/tool_handle/tool_handle_03.wav",
+        "res://assets/audio/sfx/tool_handle/tool_handle_04.wav",
+        "res://assets/audio/sfx/tool_handle/tool_handle_05.wav",
+        "res://assets/audio/sfx/tool_handle/tool_handle_06.wav"
+      ],
+      "bus": "Characters",
+      "limit": 4,
+      "pitch_semitones": 2.0
+    },
+    "hollow_idle": {
+      "paths": [
+        "res://assets/audio/sfx/hollow_idle/hollow_idle_01.wav",
+        "res://assets/audio/sfx/hollow_idle/hollow_idle_02.wav",
+        "res://assets/audio/sfx/hollow_idle/hollow_idle_03.wav",
+        "res://assets/audio/sfx/hollow_idle/hollow_idle_04.wav",
+        "res://assets/audio/sfx/hollow_idle/hollow_idle_05.wav"
+      ],
+      "bus": "Threats",
+      "limit": 2,
+      "pitch_semitones": 2.2
+    },
+    "hollow_detect": {
+      "paths": [
+        "res://assets/audio/sfx/hollow_detect/hollow_detect_01.wav",
+        "res://assets/audio/sfx/hollow_detect/hollow_detect_02.wav",
+        "res://assets/audio/sfx/hollow_detect/hollow_detect_03.wav",
+        "res://assets/audio/sfx/hollow_detect/hollow_detect_04.wav"
+      ],
+      "bus": "Threats",
+      "limit": 2,
+      "pitch_semitones": 1.8
+    },
+    "hollow_attack": {
+      "paths": [
+        "res://assets/audio/sfx/hollow_attack/hollow_attack_01.wav",
+        "res://assets/audio/sfx/hollow_attack/hollow_attack_02.wav",
+        "res://assets/audio/sfx/hollow_attack/hollow_attack_03.wav",
+        "res://assets/audio/sfx/hollow_attack/hollow_attack_04.wav",
+        "res://assets/audio/sfx/hollow_attack/hollow_attack_05.wav"
+      ],
+      "bus": "Threats",
+      "limit": 3,
+      "pitch_semitones": 2.0
+    },
+    "hollow_hit": {
+      "paths": [
+        "res://assets/audio/sfx/hollow_hit/hollow_hit_01.wav",
+        "res://assets/audio/sfx/hollow_hit/hollow_hit_02.wav",
+        "res://assets/audio/sfx/hollow_hit/hollow_hit_03.wav",
+        "res://assets/audio/sfx/hollow_hit/hollow_hit_04.wav"
+      ],
+      "bus": "Threats",
+      "limit": 3,
+      "pitch_semitones": 2.2
+    },
+    "hollow_collapse": {
+      "paths": [
+        "res://assets/audio/sfx/hollow_collapse/hollow_collapse_01.wav",
+        "res://assets/audio/sfx/hollow_collapse/hollow_collapse_02.wav",
+        "res://assets/audio/sfx/hollow_collapse/hollow_collapse_03.wav",
+        "res://assets/audio/sfx/hollow_collapse/hollow_collapse_04.wav"
+      ],
+      "bus": "Threats",
+      "limit": 2,
+      "pitch_semitones": 1.5
+    },
+    "vehicle_start": {
+      "paths": [
+        "res://assets/audio/sfx/vehicle_start/vehicle_start_01.wav",
+        "res://assets/audio/sfx/vehicle_start/vehicle_start_02.wav",
+        "res://assets/audio/sfx/vehicle_start/vehicle_start_03.wav",
+        "res://assets/audio/sfx/vehicle_start/vehicle_start_04.wav"
+      ],
+      "bus": "SFX",
+      "limit": 1,
+      "pitch_semitones": 1.0
+    },
+    "vehicle_door": {
+      "paths": [
+        "res://assets/audio/sfx/vehicle_door/vehicle_door_01.wav",
+        "res://assets/audio/sfx/vehicle_door/vehicle_door_02.wav",
+        "res://assets/audio/sfx/vehicle_door/vehicle_door_03.wav",
+        "res://assets/audio/sfx/vehicle_door/vehicle_door_04.wav"
+      ],
+      "bus": "SFX",
+      "limit": 2,
+      "pitch_semitones": 1.5
+    },
+    "vehicle_exhaust": {
+      "paths": [
+        "res://assets/audio/sfx/vehicle_exhaust/vehicle_exhaust_01.wav",
+        "res://assets/audio/sfx/vehicle_exhaust/vehicle_exhaust_02.wav",
+        "res://assets/audio/sfx/vehicle_exhaust/vehicle_exhaust_03.wav"
+      ],
+      "bus": "SFX",
+      "limit": 2,
+      "pitch_semitones": 1.4
+    },
+    "vehicle_headlights": {
+      "paths": [
+        "res://assets/audio/sfx/vehicle_headlights/vehicle_headlights_01.wav",
+        "res://assets/audio/sfx/vehicle_headlights/vehicle_headlights_02.wav"
+      ],
+      "bus": "SFX",
+      "limit": 2,
+      "pitch_semitones": 0.8
+    },
+    "scavenge_launch": {
+      "paths": [
+        "res://assets/audio/sfx/scavenge_launch/scavenge_launch_01.wav",
+        "res://assets/audio/sfx/scavenge_launch/scavenge_launch_02.wav",
+        "res://assets/audio/sfx/scavenge_launch/scavenge_launch_03.wav"
+      ],
+      "bus": "Characters",
+      "limit": 2,
+      "pitch_semitones": 1.2
+    },
+    "scavenge_search": {
+      "paths": [
+        "res://assets/audio/sfx/scavenge_search/scavenge_search_01.wav",
+        "res://assets/audio/sfx/scavenge_search/scavenge_search_02.wav",
+        "res://assets/audio/sfx/scavenge_search/scavenge_search_03.wav",
+        "res://assets/audio/sfx/scavenge_search/scavenge_search_04.wav",
+        "res://assets/audio/sfx/scavenge_search/scavenge_search_05.wav"
+      ],
+      "bus": "Characters",
+      "limit": 3,
+      "pitch_semitones": 2.0
+    },
+    "scavenge_success": {
+      "paths": [
+        "res://assets/audio/sfx/scavenge_success/scavenge_success_01.wav",
+        "res://assets/audio/sfx/scavenge_success/scavenge_success_02.wav"
+      ],
+      "bus": "UI",
+      "limit": 2,
+      "pitch_semitones": 0.5
+    },
+    "scavenge_failure": {
+      "paths": [
+        "res://assets/audio/sfx/scavenge_failure/scavenge_failure_01.wav",
+        "res://assets/audio/sfx/scavenge_failure/scavenge_failure_02.wav"
+      ],
+      "bus": "Threats",
+      "limit": 2,
+      "pitch_semitones": 0.5
+    },
+    "defence_warning": {
+      "paths": [
+        "res://assets/audio/sfx/defence_warning/defence_warning_01.wav",
+        "res://assets/audio/sfx/defence_warning/defence_warning_02.wav"
+      ],
+      "bus": "Threats",
+      "limit": 1,
+      "pitch_semitones": 0.5
+    },
+    "barricade_impact": {
+      "paths": [
+        "res://assets/audio/sfx/barricade_impact/barricade_impact_01.wav",
+        "res://assets/audio/sfx/barricade_impact/barricade_impact_02.wav",
+        "res://assets/audio/sfx/barricade_impact/barricade_impact_03.wav",
+        "res://assets/audio/sfx/barricade_impact/barricade_impact_04.wav",
+        "res://assets/audio/sfx/barricade_impact/barricade_impact_05.wav",
+        "res://assets/audio/sfx/barricade_impact/barricade_impact_06.wav",
+        "res://assets/audio/sfx/barricade_impact/barricade_impact_07.wav",
+        "res://assets/audio/sfx/barricade_impact/barricade_impact_08.wav"
+      ],
+      "bus": "Threats",
+      "limit": 4,
+      "pitch_semitones": 2.3
+    },
+    "defence_success": {
+      "paths": [
+        "res://assets/audio/sfx/defence_success/defence_success_01.wav"
+      ],
+      "bus": "UI",
+      "limit": 1,
+      "pitch_semitones": 0
+    },
+    "defence_failure": {
+      "paths": [
+        "res://assets/audio/sfx/defence_failure/defence_failure_01.wav"
+      ],
+      "bus": "Threats",
+      "limit": 1,
+      "pitch_semitones": 0
+    },
+    "dialogue_advance": {
+      "paths": [
+        "res://assets/audio/sfx/dialogue_advance/dialogue_advance_01.wav",
+        "res://assets/audio/sfx/dialogue_advance/dialogue_advance_02.wav",
+        "res://assets/audio/sfx/dialogue_advance/dialogue_advance_03.wav"
+      ],
+      "bus": "UI",
+      "limit": 2,
+      "pitch_semitones": 1.0
+    },
+    "dialogue_choice": {
+      "paths": [
+        "res://assets/audio/sfx/dialogue_choice/dialogue_choice_01.wav",
+        "res://assets/audio/sfx/dialogue_choice/dialogue_choice_02.wav"
+      ],
+      "bus": "UI",
+      "limit": 2,
+      "pitch_semitones": 0.6
+    },
+    "radio_pulse": {
+      "paths": [
+        "res://assets/audio/sfx/radio_pulse/radio_pulse_01.wav",
+        "res://assets/audio/sfx/radio_pulse/radio_pulse_02.wav",
+        "res://assets/audio/sfx/radio_pulse/radio_pulse_03.wav",
+        "res://assets/audio/sfx/radio_pulse/radio_pulse_04.wav"
+      ],
+      "bus": "Characters",
+      "limit": 2,
+      "pitch_semitones": 1.5
+    }
+  },
+  "music": {
+    "main_menu": "res://assets/audio/music/main_menu_loop.wav",
+    "safe_residence": "res://assets/audio/music/safe_residence_loop.wav",
+    "merge_board": "res://assets/audio/music/merge_board_loop.wav",
+    "world_map": "res://assets/audio/music/world_map_loop.wav",
+    "scavenging": "res://assets/audio/music/scavenging_loop.wav",
+    "dialogue": "res://assets/audio/music/dialogue_loop.wav",
+    "tension": "res://assets/audio/music/tension_loop.wav",
+    "defence_preparation": "res://assets/audio/music/defence_preparation_loop.wav",
+    "defence": "res://assets/audio/music/defence_loop.wav",
+    "emotional": "res://assets/audio/music/emotional_loop.wav",
+    "victory": "res://assets/audio/music/victory_loop.wav",
+    "residence_completion": "res://assets/audio/music/residence_completion_loop.wav"
+  },
+  "ambience": {
+    "wind": "res://assets/audio/ambience/wind_loop.wav",
+    "rain": "res://assets/audio/ambience/rain_loop.wav",
+    "thunder": "res://assets/audio/ambience/thunder_loop.wav",
+    "distant_hollow": "res://assets/audio/ambience/distant_hollow_loop.wav",
+    "forest": "res://assets/audio/ambience/forest_loop.wav",
+    "abandoned_building": "res://assets/audio/ambience/abandoned_building_loop.wav",
+    "fire": "res://assets/audio/ambience/fire_loop.wav",
+    "lantern": "res://assets/audio/ambience/lantern_loop.wav",
+    "generator": "res://assets/audio/ambience/generator_loop.wav",
+    "electrical_hum": "res://assets/audio/ambience/electrical_hum_loop.wav",
+    "road": "res://assets/audio/ambience/road_loop.wav",
+    "vehicle_engine": "res://assets/audio/ambience/vehicle_engine_loop.wav",
+    "hollow_creek_storm": "res://assets/audio/ambience/hollow_creek_storm_loop.wav",
+    "redwater_station": "res://assets/audio/ambience/redwater_station_loop.wav"
+  }
+}

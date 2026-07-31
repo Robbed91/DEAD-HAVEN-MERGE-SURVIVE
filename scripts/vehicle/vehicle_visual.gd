@@ -55,6 +55,13 @@ func _draw() -> void:
 	var wheel_color: Color = Color("2a2825") if stage >= 2 else Color("4a2020")
 	draw_circle(Vector2(s.x * 0.22, s.y * 0.7), s.x * 0.07, wheel_color)
 	draw_circle(Vector2(s.x * 0.78, s.y * 0.7), s.x * 0.07, wheel_color)
+	if _engine_running:
+		var wheel_angle := _motion_time * 5.0
+		for wheel_x in [s.x * 0.22, s.x * 0.78]:
+			draw_line(Vector2(wheel_x, s.y * 0.7), Vector2(wheel_x, s.y * 0.7) + Vector2.from_angle(wheel_angle) * s.x * 0.05, Color("8a8f8a"), 2.0)
+		for i in 5:
+			var dust_x := fmod(_motion_time * (28.0 + i * 4.0) + i * 11.0, 78.0)
+			draw_circle(Vector2(s.x * 0.82 + dust_x, s.y * 0.74 + sin(i) * 4.0), 3.0 + i * 0.8, Color(0.48, 0.40, 0.30, 0.10))
 
 	# Engine highlight (stage 1+).
 	if stage >= 1:

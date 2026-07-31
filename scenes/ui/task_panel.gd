@@ -81,11 +81,17 @@ func _show_quest(quest: QuestDefinition) -> void:
 
 	_complete_button.disabled = owned < needed
 	visible = true
+	AudioManager.play_sfx("modal_open")
 	MotionFXScript.reveal($CenterContainer, Vector2(0, 22), 0.24)
 	MotionFXScript.pulse(_icon, Color("e8b93d"), 1)
 
 func hide_panel() -> void:
-	visible = false
+	AudioManager.play_sfx("modal_close")
+	$CenterContainer.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	MotionFXScript.dismiss($CenterContainer, Vector2(0, 18), 0.15, func():
+		visible = false
+		$CenterContainer.mouse_filter = Control.MOUSE_FILTER_PASS
+	)
 	_quest_id = ""
 
 func _on_find_pressed() -> void:
@@ -102,6 +108,7 @@ func _on_complete_pressed() -> void:
 	var dialogue_id: String = quest.dialogue_trigger_id if quest != null else ""
 	var result := ResidenceManager.try_complete_quest(_quest_id)
 	if not result.success:
+		AudioManager.play_sfx("error")
 		EventBus.show_toast.emit("Not enough materials yet.")
 		hide_panel()
 		return

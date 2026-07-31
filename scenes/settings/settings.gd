@@ -13,7 +13,11 @@ func _ready() -> void:
 
 	_bind_slider(%MasterSlider, "master_volume", s.master_volume)
 	_bind_slider(%MusicSlider, "music_volume", s.music_volume)
+	_bind_slider(%AmbienceSlider, "ambience_volume", s.get("ambience_volume", 0.75))
 	_bind_slider(%SfxSlider, "sfx_volume", s.sfx_volume)
+	_bind_slider(%UiSlider, "ui_volume", s.get("ui_volume", 0.9))
+	_bind_slider(%CharactersSlider, "characters_volume", s.get("characters_volume", 0.85))
+	_bind_slider(%ThreatsSlider, "threats_volume", s.get("threats_volume", 0.9))
 	_bind_slider(%TextScaleSlider, "text_scale", s.text_scale)
 
 	_bind_toggle(%VibrationToggle, "vibration", s.vibration)

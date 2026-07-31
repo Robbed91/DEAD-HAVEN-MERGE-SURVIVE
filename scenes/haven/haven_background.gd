@@ -50,6 +50,25 @@ func _exit_tree() -> void:
 	AudioManager.stop_ambience()
 	AudioManager.stop_music()
 
+func play_survivor_repair(hotspot_id: String) -> void:
+	if _mara == null or not GameManager.effects_enabled(): return
+	var residence := ResidenceManager.get_residence("hollow_creek_farmhouse")
+	var target := _mara.position
+	for hotspot in residence.hotspots:
+		if hotspot.id == hotspot_id:
+			target = size * hotspot.area_position + Vector2(-42, 22)
+			break
+	var origin := _mara.position
+	_mara.play_state("walking")
+	var tween := _mara.create_tween().set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+	tween.tween_property(_mara, "position", origin.lerp(target, 0.58), 0.32)
+	tween.tween_callback(func(): _mara.play_state("sawing" if hotspot_id in ["kitchen_window", "front_door", "barn"] else "hammering"))
+	tween.tween_interval(0.56)
+	tween.tween_callback(func(): _mara.play_state("look_around"))
+	tween.tween_interval(0.22)
+	tween.tween_property(_mara, "position", origin, 0.34)
+	tween.tween_callback(func(): _mara.play_state("idle_breathing"))
+
 func _build_environment_layers() -> void:
 	for path in STATE_TEXTURES:
 		var layer := _full_texture(path)

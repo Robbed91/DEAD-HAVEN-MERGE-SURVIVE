@@ -25,10 +25,16 @@ func _ready() -> void:
 func show_panel() -> void:
 	refresh()
 	visible = true
+	AudioManager.play_sfx("modal_open")
 	MotionFXScript.reveal($Panel, Vector2(0, 48), 0.22)
 
 func hide_panel() -> void:
-	visible = false
+	AudioManager.play_sfx("modal_close")
+	$Panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	MotionFXScript.dismiss($Panel, Vector2(0, 42), 0.16, func():
+		visible = false
+		$Panel.mouse_filter = Control.MOUSE_FILTER_PASS
+	)
 
 func refresh() -> void:
 	_capacity_label.text = "%d / %d" % [BoardState.storage_order.size(), BoardState.storage_capacity]

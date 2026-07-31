@@ -80,8 +80,10 @@ func show_for(instance_id: String, detailed: bool) -> void:
 	_delete_button.visible = detailed and BoardState.can_delete(instance_id)
 
 	visible = true
+	AudioManager.play_sfx("modal_open")
 
 func hide_panel() -> void:
+	if visible: AudioManager.play_sfx("modal_close")
 	visible = false
 	_instance_id = ""
 
@@ -89,7 +91,11 @@ func _chain_category(chain_id: String) -> String:
 	return String(ItemDatabase.get_chain(chain_id).get("category", chain_id))
 
 func _on_collect_pressed() -> void:
+	var def := BoardState.get_item_def(_instance_id)
+	var resource := String(ItemDatabase.get_chain(def.chain_id).get("resource", "")) if def != null else ""
 	if BoardState.collect_reward(_instance_id):
+		if def != null and def.id == "coin_reward_7": AudioManager.play_sfx("chest_open")
+		AudioManager.play_sfx("coin_collect" if resource == "coins" else ("energy_collect" if resource == "energy" else "reward"))
 		EventBus.show_toast.emit("Collected.")
 	hide_panel()
 	changed.emit()

@@ -110,6 +110,13 @@ func _build_vehicle_marker() -> void:
 	marker.offset_bottom = 32.0
 	marker.pressed.connect(func(): SceneRouter.go_to("vehicle"))
 	%MapArea.add_child(marker)
+	if GameManager.effects_enabled():
+		var destination := marker.position
+		marker.position += Vector2(-140, 70)
+		marker.modulate.a = 0.0
+		var route_tween := marker.create_tween().set_parallel(true).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+		route_tween.tween_property(marker, "position", destination, 0.72)
+		route_tween.tween_property(marker, "modulate:a", 1.0, 0.36)
 
 func _build_scavenging_markers() -> void:
 	var layer: Control = %MapArea

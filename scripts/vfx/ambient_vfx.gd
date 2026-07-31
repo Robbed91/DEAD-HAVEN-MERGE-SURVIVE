@@ -59,3 +59,12 @@ func _draw() -> void:
 	# Lantern/firelight pulse. It is deliberately subtle over final art.
 	var flicker := 0.025 + sin(_time * 8.3) * 0.009 + sin(_time * 13.7) * 0.006
 	draw_circle(Vector2(size.x * 0.58, size.y * 0.47), size.x * 0.11, Color(0.95, 0.55, 0.20, maxf(0.0, flicker)))
+	# Reusable radio pulse and generator vibration motifs. Residence art can
+	# place its own detailed objects beneath these deliberately faint accents.
+	if preset in ["industrial", "fog"]:
+		var radio_center := Vector2(size.x * 0.78, size.y * 0.35)
+		for ring in 3:
+			var radius := fmod(_time * 18.0 + ring * 10.0, 30.0)
+			draw_circle(radio_center, radius, Color(0.37, 0.75, 0.82, 0.12 * (1.0 - radius / 30.0)), false, 1.2)
+		var generator_y := sin(_time * 18.0) * 1.2
+		draw_rect(Rect2(size.x * 0.13, size.y * 0.72 + generator_y, 34, 18), Color(0.16, 0.15, 0.13, 0.16), false, 1.5)

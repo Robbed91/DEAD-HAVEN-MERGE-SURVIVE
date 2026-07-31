@@ -34,6 +34,8 @@ var _mission_id: String = ""
 var _selected_survivor_id: String = ""
 
 func _ready() -> void:
+	AudioManager.play_music("scavenging")
+	AudioManager.play_ambience("forest")
 	var params := SceneRouter.take_pending_params()
 	_mission_id = String(params.get("mission_id", ""))
 	var mission := ScavengingManager.get_mission(_mission_id)
@@ -77,8 +79,10 @@ func _survivor_group() -> ButtonGroup:
 func _on_send_pressed() -> void:
 	var result := ScavengingManager.launch_mission(_mission_id)
 	if not result.success:
+		AudioManager.play_sfx("error")
 		EventBus.show_toast.emit("Not enough energy to send anyone out.")
 		return
+	AudioManager.play_sfx("scavenge_launch")
 	_show_encounter()
 
 func _show_encounter() -> void:
@@ -97,6 +101,7 @@ func _show_encounter() -> void:
 		_choices_box.add_child(btn)
 
 func _on_choice_pressed(choice_index: int) -> void:
+	AudioManager.play_sfx("scavenge_search")
 	var result := ScavengingManager.resolve_choice(_mission_id, choice_index, _selected_survivor_id)
 	%EncounterPanel.visible = false
 	%OutcomePanel.visible = true
