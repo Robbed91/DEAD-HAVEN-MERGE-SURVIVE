@@ -34,20 +34,139 @@ layout_mode = 2
 [node name="Margin" type="MarginContainer" parent="Layout"]
 layout_mode = 2
 size_flags_vertical = 3
-theme_override_constants/margin_left = 20
-theme_override_constants/margin_right = 20
-theme_override_constants/margin_top = 16
-theme_override_constants/margin_bottom = 16
+theme_override_constants/margin_left = 18
+theme_override_constants/margin_right = 18
+theme_override_constants/margin_top = 14
+theme_override_constants/margin_bottom = 18
 
 [node name="Content" type="VBoxContainer" parent="Layout/Margin"]
 layout_mode = 2
-theme_override_constants/separation = 12
+theme_override_constants/separation = 10
+
+[node name="HeroPanel" type="PanelContainer" parent="Layout/Margin/Content"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 360)
+layout_mode = 2
+clip_contents = true
+theme_type_variation = "CharcoalPanel"
+
+[node name="HeroCanvas" type="Control" parent="Layout/Margin/Content/HeroPanel"]
+layout_mode = 2
+clip_contents = true
+mouse_filter = 2
+
+[node name="HeroImage" type="TextureRect" parent="Layout/Margin/Content/HeroPanel/HeroCanvas"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -8.0
+offset_top = -8.0
+offset_right = 8.0
+offset_bottom = 8.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 6
+
+[node name="HeroTint" type="ColorRect" parent="Layout/Margin/Content/HeroPanel/HeroCanvas"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0.04, 0.07, 0.08, 0.08)
+
+[node name="BottomShade" type="ColorRect" parent="Layout/Margin/Content/HeroPanel/HeroCanvas"]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -92.0
+grow_horizontal = 2
+grow_vertical = 0
+mouse_filter = 2
+color = Color(0.025, 0.035, 0.035, 0.72)
+
+[node name="SurvivorPortrait" type="TextureRect" parent="Layout/Margin/Content/HeroPanel/HeroCanvas"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+anchors_preset = 0
+anchor_left = 0.61
+anchor_top = 0.12
+anchor_right = 0.98
+anchor_bottom = 1.08
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="PhaseBadge" type="Label" parent="Layout/Margin/Content/HeroPanel/HeroCanvas"]
+unique_name_in_owner = true
+layout_mode = 0
+offset_left = 14.0
+offset_top = 12.0
+offset_right = 214.0
+offset_bottom = 42.0
+theme_override_colors/font_color = Color(0.94, 0.82, 0.57, 1)
+theme_override_colors/font_shadow_color = Color(0.02, 0.02, 0.02, 0.9)
+theme_override_constants/shadow_offset_x = 2
+theme_override_constants/shadow_offset_y = 2
+theme_override_font_sizes/font_size = 15
+text = "ROUTE ASSESSMENT"
+
+[node name="ThreatBadge" type="Label" parent="Layout/Margin/Content/HeroPanel/HeroCanvas"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -214.0
+offset_top = 12.0
+offset_right = -14.0
+offset_bottom = 42.0
+grow_horizontal = 0
+theme_override_colors/font_color = Color(0.88, 0.52, 0.34, 1)
+theme_override_colors/font_shadow_color = Color(0.02, 0.02, 0.02, 0.9)
+theme_override_constants/shadow_offset_x = 2
+theme_override_constants/shadow_offset_y = 2
+theme_override_font_sizes/font_size = 15
+text = "THREAT 1 / 5"
+horizontal_alignment = 2
+
+[node name="HeroCaption" type="Label" parent="Layout/Margin/Content/HeroPanel/HeroCanvas"]
+unique_name_in_owner = true
+layout_mode = 1
+anchor_top = 1.0
+anchor_right = 0.63
+anchor_bottom = 1.0
+offset_left = 16.0
+offset_top = -72.0
+offset_right = -8.0
+offset_bottom = -14.0
+grow_vertical = 0
+theme_override_colors/font_color = Color(0.92, 0.88, 0.78, 1)
+theme_override_colors/font_shadow_color = Color(0.02, 0.02, 0.02, 0.9)
+theme_override_constants/shadow_offset_x = 2
+theme_override_constants/shadow_offset_y = 2
+theme_override_font_sizes/font_size = 14
+text = "Assess the approach before committing a survivor."
+autowrap_mode = 3
 
 [node name="TitleLabel" type="Label" parent="Layout/Margin/Content"]
 unique_name_in_owner = true
 layout_mode = 2
 horizontal_alignment = 1
-theme_override_font_sizes/font_size = 22
+theme_override_colors/font_color = Color(0.94, 0.86, 0.68, 1)
+theme_override_font_sizes/font_size = 24
 text = "Location"
 
 [node name="FlavorLabel" type="Label" parent="Layout/Margin/Content"]
@@ -55,29 +174,33 @@ unique_name_in_owner = true
 layout_mode = 2
 horizontal_alignment = 1
 autowrap_mode = 3
-modulate = Color(1, 1, 1, 0.75)
+modulate = Color(1, 1, 1, 0.78)
 theme_override_font_sizes/font_size = 14
 text = "Danger 1/5"
 
 [node name="PrepPanel" type="VBoxContainer" parent="Layout/Margin/Content"]
 unique_name_in_owner = true
 layout_mode = 2
-theme_override_constants/separation = 10
+theme_override_constants/separation = 8
 
 [node name="PrepLabel" type="Label" parent="Layout/Margin/Content/PrepPanel"]
 layout_mode = 2
-text = "Send a survivor:"
+theme_override_colors/font_color = Color(0.9, 0.84, 0.71, 1)
+text = "Choose a survivor for the route"
 
-[node name="SurvivorBox" type="VBoxContainer" parent="Layout/Margin/Content/PrepPanel"]
+[node name="SurvivorBox" type="GridContainer" parent="Layout/Margin/Content/PrepPanel"]
 unique_name_in_owner = true
 layout_mode = 2
-theme_override_constants/separation = 8
+theme_override_constants/h_separation = 8
+theme_override_constants/v_separation = 8
+columns = 2
 
 [node name="SendButton" type="Button" parent="Layout/Margin/Content/PrepPanel"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 56)
 layout_mode = 2
-text = "Send"
+theme_type_variation = "OliveButton"
+text = "Begin Scavenge"
 
 [node name="EncounterPanel" type="VBoxContainer" parent="Layout/Margin/Content"]
 unique_name_in_owner = true
@@ -89,6 +212,8 @@ theme_override_constants/separation = 10
 unique_name_in_owner = true
 layout_mode = 2
 autowrap_mode = 3
+theme_override_colors/font_color = Color(0.92, 0.86, 0.73, 1)
+theme_override_font_sizes/font_size = 16
 text = "Encounter text."
 
 [node name="ChoicesBox" type="VBoxContainer" parent="Layout/Margin/Content/EncounterPanel"]
@@ -106,12 +231,15 @@ theme_override_constants/separation = 12
 unique_name_in_owner = true
 layout_mode = 2
 autowrap_mode = 3
+theme_override_colors/font_color = Color(0.92, 0.86, 0.73, 1)
+theme_override_font_sizes/font_size = 16
 text = "Outcome text."
 
 [node name="ReturnButton" type="Button" parent="Layout/Margin/Content/OutcomePanel"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 56)
 layout_mode = 2
+theme_type_variation = "NavButton"
 text = "Return to Map"
 
 [node name="Toast" parent="." instance=ExtResource("3")]
