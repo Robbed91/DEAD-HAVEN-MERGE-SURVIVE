@@ -20,14 +20,31 @@ func _ready() -> void:
 
 	# -- Content loads -----------------------------------------------------------
 	var mission_ids := ScavengingManager.get_all_mission_ids()
-	if mission_ids.size() != 5:
-		_fail("expected 5 scavenging missions, got %d" % mission_ids.size())
+	if mission_ids.size() != 10:
+		_fail("expected 10 scavenging missions (Phase 5's 5 + Phase 13's 5), got %d" % mission_ids.size())
 		return
 	var mission := ScavengingManager.get_mission("abandoned_grocery_store")
 	if mission == null or mission.encounter_choices.size() != 2:
 		_fail("abandoned_grocery_store should have 2 encounter choices, got %s" % str(mission))
 		return
 	print("SMOKE_SCAVENGING: mission content loads OK (%d missions)" % mission_ids.size())
+
+	# -- story_condition gates availability (Phase 13 - previously a dead field) --
+	if not ScavengingManager.is_available("abandoned_grocery_store"):
+		_fail("a mission with an empty story_condition should always be available")
+		return
+	if ScavengingManager.is_available("radio_relay_station"):
+		_fail("radio_relay_station should not be available before saint_mercy_unlocked is set")
+		return
+	var gated_launch := ScavengingManager.launch_mission("radio_relay_station")
+	if gated_launch.success or gated_launch.reason != "not_available":
+		_fail("launch_mission on a gated, unmet mission should fail with not_available, got %s" % str(gated_launch))
+		return
+	GameManager.set_story_flag("saint_mercy_unlocked", true)
+	if not ScavengingManager.is_available("radio_relay_station"):
+		_fail("radio_relay_station should become available once saint_mercy_unlocked is set")
+		return
+	print("SMOKE_SCAVENGING: story_condition correctly gates mission availability OK")
 
 	# -- Launch requires energy ---------------------------------------------------
 	var energy_before: int = GameManager.resources.energy

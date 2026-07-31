@@ -13,6 +13,7 @@ const HOTSPOT_SIZE := Vector2(64, 64)
 const CHAPTER_TITLES := {
 	"chapter_7_do_no_harm": "Chapter 7: Do No Harm",
 	"chapter_8_old_debts": "Chapter 8: Old Debts",
+	"chapter_9_the_signal_keeper": "Chapter 9: The Signal Keeper",
 }
 
 @onready var _hotspots_layer: Control = %Hotspots

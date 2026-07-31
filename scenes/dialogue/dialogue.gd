@@ -10,15 +10,31 @@ extends Control
 ## "quest_trigger" option fields are part of the DialogueEntry schema but
 ## unused by any current content - no dialogue in this build needs them yet.
 
+## Bug fix (Phase 13): these two dicts only ever had Mara/Noah, so every
+## later rescue scene's own speaker (Lena, Riley, Imogen, Caleb) fell back
+## to a literal id as the displayed name and a generic grey portrait -
+## never caught earlier because no smoke test asserts dialogue-screen
+## label text (headless tests exercise DialogueManager/branching logic,
+## not this screen's rendering - see tests/README.md).
 const SPEAKER_NAMES := {
 	"": "",
 	"mara_vale": "Mara Vale",
 	"noah_vance": "Noah Vance",
+	"lena_ortiz": "Lena Ortiz",
+	"riley_chen": "Riley Chen",
+	"imogen_shaw": "Dr Imogen Shaw",
+	"caleb_rusk": "Caleb Rusk",
+	"signal_keeper": "??? (The Signal Keeper)",
 }
 const SPEAKER_COLORS := {
 	"": Color("8a8f8a"),
 	"mara_vale": Color("6b7a56"),
 	"noah_vance": Color("8a3c1f"),
+	"lena_ortiz": Color("cf6a3f"),
+	"riley_chen": Color("4a7a9e"),
+	"imogen_shaw": Color("4d8a7a"),
+	"caleb_rusk": Color("5a5a4a"),
+	"signal_keeper": Color("7fb0b8"),
 }
 
 @onready var _portrait: SurvivorSilhouette = %Portrait

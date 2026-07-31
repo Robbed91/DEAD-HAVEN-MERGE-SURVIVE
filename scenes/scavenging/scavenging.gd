@@ -8,9 +8,17 @@ extends Control
 ## Phase 5 Known issues for why a true timed/background mission is
 ## deferred).
 
+## Bug fix (Phase 13): this dict only ever had Mara/Noah, so sending any
+## later-recruited survivor (Lena, Riley, Imogen, Caleb) on a scavenging
+## mission showed their raw id instead of a name - never caught earlier
+## because no smoke test asserts the survivor-picker's button text.
 const SURVIVOR_NAMES := {
 	"mara_vale": "Mara Vale",
 	"noah_vance": "Noah Vance",
+	"lena_ortiz": "Lena Ortiz",
+	"riley_chen": "Riley Chen",
+	"imogen_shaw": "Dr Imogen Shaw",
+	"caleb_rusk": "Caleb Rusk",
 }
 
 @onready var _title_label: Label = %TitleLabel
@@ -29,7 +37,7 @@ func _ready() -> void:
 	var params := SceneRouter.take_pending_params()
 	_mission_id = String(params.get("mission_id", ""))
 	var mission := ScavengingManager.get_mission(_mission_id)
-	if mission == null:
+	if mission == null or not ScavengingManager.is_available(_mission_id):
 		# Guard against navigating out from under a caller that instantiated
 		# this scene directly for inspection (e.g. tests/smoke_test.gd)
 		# rather than via SceneRouter - see haven.gd for the same pattern

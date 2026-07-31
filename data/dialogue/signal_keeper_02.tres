@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="DialogueEntry" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data_models/dialogue_entry.gd" id="1_sgk02"]
+
+[resource]
+script = ExtResource("1_sgk02")
+id = "signal_keeper_02"
+speaker_id = "signal_keeper"
+portrait_key = "signal_keeper"
+expression_key = "neutral"
+text = "\"...if anyone is hearing this on Hollow Creek's frequency, respond. Confirm the marked roads held. Confirm the gate.\""
+background_scene_path = ""
+animation = ""
+sound_cue = ""
+branching_options = Array[Dictionary]([])
+next_id = "signal_keeper_03"

@@ -17,6 +17,7 @@ const CHAPTER_TITLES := {
 	"chapter_6_the_signal": "Chapter 6: The Signal",
 	"chapter_7_do_no_harm": "Chapter 7: Do No Harm",
 	"chapter_8_old_debts": "Chapter 8: Old Debts",
+	"chapter_9_the_signal_keeper": "Chapter 9: The Signal Keeper",
 }
 
 @onready var _hotspots_layer: Control = %Hotspots
@@ -50,6 +51,17 @@ func _ready() -> void:
 	if get_tree().current_scene == self and not GameManager.get_story_flag("chapter_1_intro_seen", false):
 		GameManager.set_story_flag("chapter_1_intro_seen", true)
 		DialogueManager.start_dialogue("intro_01")
+
+	# Phase 13's main-story capstone: every residence's own defence event
+	# only knows about unlocking its immediate neighbour (see
+	# DEVELOPMENT_LOG.md Phase 8+ Known issues), so nothing previously
+	# recognised "all five secured" as a moment worth its own beat. Same
+	# active-scene guard and story-flag-gates-a-one-time-trigger pattern
+	# as the Chapter 1 intro above.
+	if get_tree().current_scene == self and DefenceManager.all_events_survived() and not GameManager.get_story_flag("signal_keeper_triggered", false):
+		GameManager.set_story_flag("signal_keeper_triggered", true)
+		GameManager.advance_chapter("chapter_9_the_signal_keeper")
+		DialogueManager.start_dialogue("signal_keeper_01")
 
 func _build_hotspot(hotspot: ResidenceHotspot) -> void:
 	var visual := HotspotVisual.new()

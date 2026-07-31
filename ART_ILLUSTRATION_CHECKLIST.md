@@ -156,22 +156,34 @@ requirements/description. None prompted yet.
 - [ ] Stage 8 - roof storage installed
 - [ ] Stage 9 - expedition-ready version
 
-## 11. Scavenging locations (5 built, 5 more in the original spec)
+## 11. Scavenging locations (all 10 built as of Phase 13)
 
 Each needs arrival/exploration/threat/loot/escape illustrated states.
+None have any illustration at all currently - the scavenging screen is
+plain text/UI, no background of any kind (unlike every residence, which
+at least has a procedural placeholder) - the single largest "zero art
+exists here" gap left in the project.
 
 - [ ] Abandoned grocery store (`data/scavenging/abandoned_grocery_store.tres`)
 - [ ] Petrol station (`data/scavenging/petrol_station.tres`)
 - [ ] Farm shed (`data/scavenging/farm_shed.tres`)
 - [ ] Roadside wreck (`data/scavenging/roadside_wreck.tres`)
 - [ ] Medical clinic (`data/scavenging/medical_clinic.tres`)
-- [ ] 5 more locations from the original design spec, not yet built in-game
+- [ ] Police checkpoint (`data/scavenging/police_checkpoint.tres`) - human-threat-heavy, an "arranged, not overrun" detail hinting at the Ashborn
+- [ ] Electronics workshop (`data/scavenging/electronics_workshop.tres`)
+- [ ] Clothing outlet (`data/scavenging/clothing_outlet.tres`)
+- [ ] Warehouse depot (`data/scavenging/warehouse_depot.tres`)
+- [ ] Radio relay station (`data/scavenging/radio_relay_station.tres`) - only reachable once `saint_mercy_unlocked` is set; ties into the Signal Keeper capstone's Haven Line theme
 
 ## 12. Dialogue scene backgrounds
 
 - [ ] **Intro scene** (farmhouse approach) - *prompt ready*, `ART_GENERATION_PROMPTS.md` #10
 - [ ] Noah rescue scene (upstairs bedroom interior - see checklist item 4)
 - [ ] Lena rescue scene (garage workshop interior)
+- [ ] Riley rescue scene (Greybridge stairwell/radio tower)
+- [ ] Imogen rescue scene (Saint Mercy isolation ward)
+- [ ] Caleb rescue scene (Northgate warden's office, bunkered)
+- [ ] **Signal Keeper capstone scene** (Phase 13, Hollow Creek kitchen at night, radio close-up) - the main-story climax of the current content roster; no illustration or portrait exists for the "signal_keeper" speaker itself, which is deliberately a voice without a face at this point in the story
 - [ ] Future dialogue scenes as later chapters are built
 
 ## 13. World map

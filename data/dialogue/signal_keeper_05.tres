@@ -1,0 +1,40 @@
+[gd_resource type="Resource" script_class="DialogueEntry" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data_models/dialogue_entry.gd" id="1_sgk05"]
+
+[resource]
+script = ExtResource("1_sgk05")
+id = "signal_keeper_05"
+speaker_id = "mara_vale"
+portrait_key = "mara_vale"
+expression_key = "determined"
+text = "The frequency goes quiet again, the way it always does. East isn't a destination - it's a direction, and a thin one. But it's more than she had this morning."
+background_scene_path = ""
+animation = ""
+sound_cue = ""
+branching_options = Array[Dictionary]([{
+"condition": "",
+"next_id": "",
+"quest_trigger": "",
+"relationship_changes": {
+"chasing_the_signal": true
+},
+"reward": {
+"coins": 40,
+"xp": 30
+},
+"text": "Start planning a route east. Eli comes first."
+}, {
+"condition": "",
+"next_id": "",
+"quest_trigger": "",
+"relationship_changes": {
+"chasing_the_signal": false
+},
+"reward": {
+"coins": 40,
+"xp": 30
+},
+"text": "Stay. Five residences are worth more than a direction."
+}])
+next_id = ""

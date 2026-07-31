@@ -2,16 +2,19 @@ extends Control
 ## WorldMap
 ##
 ## Hollow Creek Farmhouse's marker (a single active location with a gentle
-## pulse) is always reachable; Redwater Service Station (Phase 8) and
-## Greybridge School (Phase 10) unlock and become real navigable markers
-## once their story flag is set; Saint Mercy Hospital and Northgate Prison
-## remain locked placeholders. Routes, weather overlays and day/night
-## cycling are still unbuilt.
+## pulse) is always reachable; the other 4 residences in the current
+## roster (Redwater, Greybridge, Saint Mercy, Northgate) each unlock and
+## become real navigable markers once their story flag is set - see the
+## per-residence `_setup_*_marker()` functions below. Routes, weather
+## overlays and day/night cycling are still unbuilt.
 ##
 ## Phase 5 adds real scavenging location markers, built from
 ## ScavengingManager's content - positions are display-only UI data here
 ## (ScavengingMission's schema has no map-position field; spreading them
-## isn't gameplay-relevant enough to belong in the data model).
+## isn't gameplay-relevant enough to belong in the data model). Phase 13
+## adds 5 more locations (completing the original 10-location spec) and
+## wires ScavengingManager.is_available() so a mission with a
+## story_condition doesn't show a marker until that flag is set.
 
 const SCAVENGING_MARKER_POSITIONS := {
 	"abandoned_grocery_store": Vector2(0.16, 0.24),
@@ -19,6 +22,11 @@ const SCAVENGING_MARKER_POSITIONS := {
 	"farm_shed": Vector2(0.78, 0.42),
 	"roadside_wreck": Vector2(0.2, 0.62),
 	"medical_clinic": Vector2(0.75, 0.72),
+	"police_checkpoint": Vector2(0.3, 0.3),
+	"electronics_workshop": Vector2(0.65, 0.28),
+	"clothing_outlet": Vector2(0.12, 0.5),
+	"warehouse_depot": Vector2(0.88, 0.58),
+	"radio_relay_station": Vector2(0.35, 0.82),
 }
 
 func _ready() -> void:
@@ -106,7 +114,7 @@ func _build_scavenging_markers() -> void:
 	var layer: Control = %MapArea
 	for mission_id in SCAVENGING_MARKER_POSITIONS:
 		var mission := ScavengingManager.get_mission(mission_id)
-		if mission == null:
+		if mission == null or not ScavengingManager.is_available(mission_id):
 			continue
 		var pos: Vector2 = SCAVENGING_MARKER_POSITIONS[mission_id]
 		var marker := Button.new()

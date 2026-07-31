@@ -172,6 +172,17 @@ func reset_new_game() -> void:
 func has_survived(event_id: String) -> bool:
 	return survived_events.has(event_id)
 
+## True once every defence event in the current roster has been survived
+## at least once - the trigger condition for the Phase 13 "Signal Keeper"
+## story capstone (see scenes/haven/haven.gd), which every residence's
+## own defence event otherwise has no awareness of beyond unlocking its
+## immediate neighbour.
+func all_events_survived() -> bool:
+	for event_id in events.keys():
+		if not has_survived(event_id):
+			return false
+	return true
+
 func all_hotspots_complete(event_id: String) -> bool:
 	var event: Dictionary = events.get(event_id, {})
 	if event.is_empty():

@@ -35,6 +35,20 @@ func get_mission(id: String) -> ScavengingMission:
 func get_all_mission_ids() -> Array:
 	return _missions.keys()
 
+## ScavengingMission.story_condition previously existed on the schema but
+## was never read anywhere (see DEVELOPMENT_LOG.md Phase 13) - every
+## mission was always available regardless of its value. A non-empty
+## story_condition is a GameManager story-flag key that must be true for
+## this mission to be launchable or shown on the World Map; empty means
+## always available (every Phase 5 location).
+func is_available(mission_id: String) -> bool:
+	var mission := get_mission(mission_id)
+	if mission == null:
+		return false
+	if mission.story_condition.is_empty():
+		return true
+	return GameManager.get_story_flag(mission.story_condition, false)
+
 ## Spends the mission's energy cost. Does not resolve an outcome - that is
 ## a separate step (resolve_choice) so the UI can show the encounter's
 ## choices before anything is committed.
@@ -42,6 +56,8 @@ func launch_mission(mission_id: String) -> Dictionary:
 	var mission := get_mission(mission_id)
 	if mission == null:
 		return {"success": false, "reason": "unknown_mission"}
+	if not is_available(mission_id):
+		return {"success": false, "reason": "not_available"}
 	if not GameManager.spend_energy(mission.energy_cost):
 		return {"success": false, "reason": "no_energy"}
 	return {"success": true}

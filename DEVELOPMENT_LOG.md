@@ -1899,6 +1899,151 @@ overarching thread); and illustrated art, still gated on an
 image-generation tool becoming available (`ART_ILLUSTRATION_CHECKLIST.md`
 is ready whenever that happens).
 
+## Phase 13: Remaining scavenging locations + main-story capstone - complete
+
+Two threads requested together: finish the original 10-location
+scavenging spec (5 more locations), and give the 5-residence roster a
+connecting narrative thread instead of each residence only knowing about
+unlocking its immediate neighbour.
+
+### Files created
+
+- `data/scavenging/police_checkpoint.tres`, `electronics_workshop.tres`,
+  `clothing_outlet.tres`, `warehouse_depot.tres`, and
+  `radio_relay_station.tres` - completing the original 10-location spec
+  (Phase 5 built the first 5). Cover the trap, electronics, clothing,
+  and vehicle_parts/construction chains, none of which had a primary
+  scavenging source before. `police_checkpoint` is the first scavenging
+  location with `human_threat` higher than `zombie_threat` (3 vs 2) and
+  seeds an "arranged, not overrun" detail hinting at the Ashborn, echoing
+  Caleb Rusk's own tease from Phase 12. `radio_relay_station` is the
+  first mission ever to use `story_condition` for real (gated on
+  `saint_mercy_unlocked`) and is the first scavenging loot table to
+  include the `token_reward` (Haven Tokens) chain.
+- `data/dialogue/signal_keeper_01.tres` through `signal_keeper_05.tres` -
+  the main-story capstone: an unprompted, live transmission on Hollow
+  Creek's own radio (payoff for the very first line of dialogue in the
+  game, `intro_01`/`intro_02`) from whoever built the Haven Line network.
+  Confirms the network's status, gives Mara's search for her missing
+  brother Eli a genuine (unresolved) lead, and connects Caleb's seeded
+  Ashborn tease to something larger - deliberately a hook forward, not a
+  resolution. Ends on a branching choice (chase the lead east vs.
+  consolidate what's built) that's flavour/relationship-only for now,
+  same honest scope as every other branching choice in this build.
+- Tests: `tests/smoke_test_main_story.gd`/`.tscn`.
+
+### Files modified
+
+- `autoload/scavenging_manager.gd` - **bug fix**: `ScavengingMission.
+  story_condition` existed on the schema since Phase 5 but was never
+  read anywhere - every mission was always available regardless of its
+  value. Added `is_available()`, checked by `launch_mission()`
+  (returns `"not_available"` instead of silently launching) and by the
+  World Map's marker-building.
+- `autoload/defence_manager.gd` - new `all_events_survived()`, the
+  Signal Keeper capstone's trigger condition.
+- `scenes/world_map/world_map.gd`/`.tscn` - 5 new
+  `SCAVENGING_MARKER_POSITIONS` entries; `_build_scavenging_markers()`
+  now skips a mission whose `story_condition` isn't met instead of
+  always building every marker; refreshed the module docstring, which
+  had gone stale describing Saint Mercy/Northgate as still-locked
+  placeholders after Phases 11-12 actually built them.
+- `scenes/scavenging/scavenging.gd` - **bug fix**: `SURVIVOR_NAMES` only
+  ever had Mara and Noah, so sending any later-recruited survivor (Lena,
+  Riley, Imogen, Caleb) on a scavenging mission showed their raw id
+  instead of a display name - never caught earlier because no smoke
+  test asserts a screen's button text. Also now guards against
+  navigating to an unavailable (`story_condition` unmet) mission the
+  same way it already guarded against an unknown one.
+- `scenes/dialogue/dialogue.gd` - **the same bug, found while adding the
+  Signal Keeper speaker**: `SPEAKER_NAMES`/`SPEAKER_COLORS` also only
+  ever had Mara and Noah, so every later rescue scene's own speaker
+  (Lena, Riley, Imogen, Caleb) displayed as a literal id string with a
+  generic grey portrait instead of their name and an accent colour.
+  Fixed for all four, plus a new `"signal_keeper"` entry.
+- `scenes/haven/haven.gd` - the capstone trigger itself: once
+  `DefenceManager.all_events_survived()` is true and
+  `signal_keeper_triggered` isn't yet set, advances to
+  `chapter_9_the_signal_keeper` and starts the dialogue chain - same
+  active-scene-guard and one-time-flag pattern as the existing Chapter 1
+  intro trigger just above it.
+- `scenes/redwater/redwater.gd`, `scenes/greybridge/greybridge.gd`,
+  `scenes/saint_mercy/saint_mercy.gd`, `scenes/northgate/northgate.gd` -
+  added Chapter 9's title so every residence screen displays it
+  correctly once reached, not just Haven.
+- `tests/smoke_test_scavenging.gd` - now expects 10 missions, and adds a
+  section proving `story_condition` actually gates `launch_mission()`
+  and availability (the bug fix above).
+
+### Features completed
+
+- **All 10 of the original spec's scavenging locations exist.**
+- **`story_condition` does something real for the first time** - a
+  scavenging location can now be gated behind story progress, not just
+  always available from the start.
+- **Two more "only Mara and Noah" display bugs found and fixed** (Files
+  modified) - the same shape of gap Phase 9 found in
+  `EventBus.settings_changed`, now found twice more in screen-local
+  speaker/survivor name dicts that nobody had extended past Phase 4/5.
+- **The 5-residence roster has a connecting narrative thread.** Every
+  defence event previously only unlocked its immediate neighbour with no
+  awareness of the wider picture; the Signal Keeper capstone is the
+  first content that reacts to "the whole roster," not just one
+  residence, and it deliberately ties back to the game's very first
+  line of dialogue and Caleb's still-unresolved Ashborn tease rather
+  than introducing an unconnected new thread.
+
+### Tests performed
+
+Same headless approach as every phase, `timeout`-wrapped throughout:
+
+- `godot4 --headless --path . --import` - clean, zero script/parse errors.
+- Full existing suite (all 13 prior smoke tests) - all still pass, no
+  regressions.
+- `tests/smoke_test_scavenging.tscn` (updated) - 10 missions load;
+  `radio_relay_station` is correctly unavailable before
+  `saint_mercy_unlocked` is set (and `launch_mission()` refuses it with
+  `"not_available"`) and correctly available after; every other existing
+  assertion (energy cost, forced success/failure, completion tracking,
+  save/reload) still passes unchanged.
+- `tests/smoke_test_main_story.tscn` (new) - `all_events_survived()`
+  is false with 0-4 of 5 events survived and only becomes true once all
+  5 are (checked after each individual event, not just at the end,
+  guarding against an off-by-one); the `signal_keeper_01`-`05` chain's
+  `next_id` links are verified end to end and its final entry's
+  branching choice is real; the capstone's chapter advance and one-time
+  trigger flag both persist through a save/reload round trip.
+
+### Known issues
+
+- **The Signal Keeper's branching choice doesn't gate anything yet** -
+  both options grant identical mechanical rewards; only the
+  `relationship_changes` flag differs. Honest placeholder for whichever
+  future phase builds on this thread, not a bug.
+- **The Ashborn/Eli threads both remain open** - by design (see Features
+  completed), but there is currently no further content for either to
+  lead to. A future phase would need to build that before this capstone
+  stops feeling like a hook with nothing behind it.
+- **5 of the 10 scavenging locations remain danger_rating <= 2 with
+  human_threat 0** - `police_checkpoint` is the only new location that
+  meaningfully raises human threat; the original 5 are also still all
+  zombie-only encounters. Matches Phase 5's own established tone, not a
+  regression, but worth knowing if a future pass wants more human-threat
+  variety.
+- **Not visually confirmed**, same caveat as every phase.
+- **Godot binary still not persisted** in this environment.
+
+### Exact next phase
+
+With scavenging locations complete and the roster's residences now
+tied together by one real narrative thread, the largest remaining gaps
+are: illustrated art (still gated on an image-generation tool -
+`ART_ILLUSTRATION_CHECKLIST.md` is ready whenever that happens), real
+audio (same fundamental gap, see `AUDIO_ASSET_GUIDE.md`), and deciding
+whether the Ashborn/Eli threads get built out further or the project
+moves to a pure polish pass (animation, performance profiling on an
+actual device, accessibility beyond what Phase 9 covered).
+
 ### Commands required to run or export the project
 
 ```bash
@@ -1910,7 +2055,7 @@ godot4 --path /path/to/dead-haven-merge-survive
 godot4 --headless --path /path/to/dead-haven-merge-survive --import
 
 # Run the full smoke test suite (always with a timeout wrapper)
-for f in smoke_test smoke_test_save smoke_test_settings smoke_test_merge smoke_test_residence smoke_test_dialogue smoke_test_scavenging smoke_test_vehicle_survivors smoke_test_defence smoke_test_redwater smoke_test_greybridge smoke_test_saint_mercy smoke_test_northgate; do
+for f in smoke_test smoke_test_save smoke_test_settings smoke_test_merge smoke_test_residence smoke_test_dialogue smoke_test_scavenging smoke_test_vehicle_survivors smoke_test_defence smoke_test_redwater smoke_test_greybridge smoke_test_saint_mercy smoke_test_northgate smoke_test_main_story; do
   timeout 30 godot4 --headless --path /path/to/dead-haven-merge-survive "tests/$f.tscn"
 done
 

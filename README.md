@@ -35,22 +35,25 @@ cool blue-grey exteriors. See `scripts/ui/theme_factory.gd` for the exact
 palette values and `ART_ASSET_GUIDE.md` for how it's applied to
 environments and characters.
 
-## Current status: Phase 12 - Northgate Prison (residence roster complete)
+## Current status: Phase 13 - Scavenging complete + main-story capstone
 
 Phases 1-8 (foundation, merge board, residence system, story, scavenging,
 vehicles/survivors, defence, a second residence), Phase 9 part 1
 (accessibility/performance settings), Phase 10 (a third residence,
-Greybridge School), and Phase 11 (a fourth residence, Saint Mercy
-Hospital) are done. Art Phase 1 added a real logo/splash/brand identity
-and a full art-production spec (see "Documentation" below for
+Greybridge School), Phase 11 (a fourth residence, Saint Mercy Hospital),
+and Phase 12 (the fifth and final residence in the current roster,
+Northgate Prison) are done. Art Phase 1 added a real logo/splash/brand
+identity and a full art-production spec (see "Documentation" below for
 `ART_STYLE_GUIDE.md`, `ART_GENERATION_PROMPTS.md` and
-`ART_ILLUSTRATION_CHECKLIST.md`). Phase 12 adds the fifth and final
-residence in the current roster - Northgate Prison - and its rescue,
-Caleb Rusk, whose real skills close the loop on every prior defence
-event's "real but inert" skill bonus at once. **It is not yet the full
-game** - the 5 unbuilt scavenging locations, a connective main-story arc,
-and illustrated art all remain (see `DEVELOPMENT_LOG.md` for the
-authoritative phase-by-phase plan and status).
+`ART_ILLUSTRATION_CHECKLIST.md`). Phase 13 finishes the original
+10-location scavenging spec (5 more locations) and gives the 5-residence
+roster a connecting narrative thread - a main-story capstone ("The
+Signal Keeper") that triggers once every residence's defence event is
+survived, instead of each residence only knowing about unlocking its
+immediate neighbour. **It is not yet the full game** - illustrated art,
+real audio, and further main-story content all remain (see
+`DEVELOPMENT_LOG.md` for the authoritative phase-by-phase plan and
+status).
 
 What already works, end to end, in this build:
 - Everything from Phase 1 (main menu, save/load, settings, navigation, dev diagnostics), Phase 2 (the full 7x9 merge board, 101 items across 9 gameplay + 4 reward chains, producers, energy, storage), Phase 3 (9 real repair hotspots on Hollow Creek Farmhouse, task panels, "Find on Board" task highlighting), Phase 4 (a real dialogue engine, an intro scene, and Noah Vance's rescue scene with a genuine choice), Phase 5 (5 real scavenging locations with choice-based encounters and real loot), Phase 6 (a real survivor roster, Noah's personal quest, a 9-stage upgradeable delivery van, skill-based scavenging odds) and Phase 7 (Hollow Creek Farmhouse's tenth milestone: survive the first night attack)
@@ -58,7 +61,9 @@ What already works, end to end, in this build:
 - A third residence, Greybridge School, reachable once you've survived Redwater's own attack: 8 more repair hotspots (main hall, gymnasium, library, cafeteria, boiler room, admin office, playground fence, radio tower), a third rescue (radio technician Riley Chen, found behind a wedged-shut stairwell to the roof) with her own dialogue scene, and its own "Defend the School" attack event whose skill requirements specifically match Riley's own skills - so unlike every prior defence event's skill bonus, this one is live immediately rather than waiting on a future survivor who happens to match
 - A fourth residence, Saint Mercy Hospital, reachable once you've survived Greybridge's own attack: 8 more repair hotspots (ER reception, pharmacy, patient ward, surgical suite, power room, ambulance bay, records office, isolation ward), a fourth rescue (Dr Imogen Shaw, found behind the isolation ward's self-sealed doors) with her own dialogue scene, and its own "Defend the Hospital" attack event that deliberately keeps the standard skill requirements rather than matching Imogen's own medical skills - a doctor's triage skill doesn't make her better at holding a barricade
 - A fifth and final residence (for the current roster), Northgate Prison, reachable once you've survived Saint Mercy's own attack: 8 more repair hotspots (sally port, guard tower, armory, mess hall, cell block A, control room, transport bay, warden's office), a fifth rescue (Caleb Rusk, found bunkered in the warden's office, openly hostile at first) with his own dialogue scene - and its own "Defend the Prison" attack event's skill requirements are the same standard set Hollow Creek/Redwater/Saint Mercy already use, which means recruiting Caleb (whose real skills are trap/defence/combat) makes all four of those events' skill bonuses live at once, not just this one
-- Chapter tracking ("Chapter 1: The Open Door" -> "Chapter 2: Someone Upstairs" -> "Chapter 4: The First Wave" -> "Chapter 5: The Station" -> "Chapter 6: The Signal" -> "Chapter 7: Do No Harm" -> "Chapter 8: Old Debts"), shown on all five residence screens' headers
+- All 10 of the original design spec's scavenging locations, not just the first 5 - the 5 new ones (Police Checkpoint, Electronics Workshop, Clothing Outlet, Warehouse Depot, Radio Relay Station) cover chains the first 5 didn't (trap, electronics, clothing); the Radio Relay Station is the first location gated behind story progress rather than always available
+- A main-story capstone ("The Signal Keeper") that triggers once you've survived every residence's defence event, not just the one you just finished: an unprompted radio transmission that pays off the game's very first line of dialogue, gives Mara's search for her missing brother a real (unresolved) lead, and ties Caleb Rusk's seeded hint about the Ashborn faction to something larger - a genuine connecting thread across the whole roster instead of each residence only knowing about unlocking its immediate neighbour
+- Chapter tracking ("Chapter 1: The Open Door" -> "Chapter 2: Someone Upstairs" -> "Chapter 4: The First Wave" -> "Chapter 5: The Station" -> "Chapter 6: The Signal" -> "Chapter 7: Do No Harm" -> "Chapter 8: Old Debts" -> "Chapter 9: The Signal Keeper"), shown on all five residence screens' headers
 - A real survivor roster: unlocked cards (Mara always, Noah/Lena/Riley/Imogen/Caleb once rescued) show real biography/role/skills; Noah has a personal quest ("Noah's Workbench") completable from his card
 - A 9-stage upgradeable delivery van, discovered once all 9 Hollow Creek Farmhouse hotspots are repaired, with a visibly-evolving silhouette and real per-stage item requirements
 - Sending a survivor whose skills match a scavenging or defence encounter's needs (e.g. Noah's carpentry skills on the Farm Shed mission) genuinely improves the odds
@@ -97,10 +102,16 @@ skills, not just asserted in a comment (Phase 10); Saint Mercy Hospital's
 own hotspots/rescue behave the same way too, with its
 `saint_mercy_defence` event's skill requirements directly verified to be
 the standard set and to NOT match Dr Imogen Shaw's own medical skills
-(Phase 11); and (new in Phase 12) Northgate Prison's own hotspots/rescue
-behave the same way, with Caleb Rusk's real skills directly verified to
-overlap all four standard-tag defence events' requirements at once, not
-just his own - all behave as designed too (see `tests/README.md` for the smoke tests this was checked with). It has
+(Phase 11); Northgate Prison's own hotspots/rescue behave the same way,
+with Caleb Rusk's real skills directly verified to overlap all four
+standard-tag defence events' requirements at once, not just his own
+(Phase 12); and (new in Phase 13) the 5 new scavenging locations load
+correctly, `story_condition` genuinely gates `radio_relay_station`'s
+availability, `DefenceManager.all_events_survived()` only goes true once
+every one of the 5 defence events is survived (checked incrementally,
+not just at the end), and the Signal Keeper capstone dialogue is a
+complete, correctly-linked 5-entry chain with a real branching choice -
+all behave as designed too (see `tests/README.md` for the smoke tests this was checked with). It has
 **not** been visually confirmed on a real screen - touch input, drag
 gesture feel, layout at actual device resolutions, and animation timing
 still need a real run in the editor or on a device. Please report anything
@@ -116,7 +127,7 @@ network service, or third-party SDK is required to play.
 
 ```
 autoload/         Global singletons: EventBus, ItemDatabase, GameManager, BoardState, CharacterDatabase, ResidenceManager, DialogueManager, ScavengingManager, VehicleManager, DefenceManager, SaveManager, AudioManager, SceneRouter
-data/              Content: data/items/ (101 ItemDefinition .tres), data/chains/, data/residences/ (Hollow Creek Farmhouse + Redwater Service Station + Greybridge School + Saint Mercy Hospital + Northgate Prison - the full current roster) + data/quests/ (42 quests: 9 Hollow Creek + 8 each for Redwater/Greybridge/Saint Mercy/Northgate repair/rescue quests, plus Noah's personal quest), data/dialogue/ (intro, Noah/Lena/Riley/Imogen/Caleb rescues), data/scavenging/ (5 locations), data/characters/ (6 survivors, all with an unlock path now), data/vehicles/ (delivery van) - see data/README.md. All five defence events' choice data are a deliberate exception, kept inline in autoload/defence_manager.gd rather than data/ - see DEVELOPMENT_LOG.md Phase 7/8/10/11/12.
+data/              Content: data/items/ (101 ItemDefinition .tres), data/chains/, data/residences/ (Hollow Creek Farmhouse + Redwater Service Station + Greybridge School + Saint Mercy Hospital + Northgate Prison - the full current roster) + data/quests/ (42 quests: 9 Hollow Creek + 8 each for Redwater/Greybridge/Saint Mercy/Northgate repair/rescue quests, plus Noah's personal quest), data/dialogue/ (intro, Noah/Lena/Riley/Imogen/Caleb rescues, the 5-entry Signal Keeper capstone), data/scavenging/ (10 locations - the complete original spec), data/characters/ (6 survivors, all with an unlock path now), data/vehicles/ (delivery van) - see data/README.md. All five defence events' choice data are a deliberate exception, kept inline in autoload/defence_manager.gd rather than data/ - see DEVELOPMENT_LOG.md Phase 7/8/10/11/12.
 scenes/            One folder per screen; scenes/ui/ holds shared components (top bar, bottom nav, toast, storage panel, item info panel, discovery banner, task panel); scenes/splash/, scenes/dialogue/, scenes/scavenging/, scenes/vehicle/, scenes/defence/, scenes/redwater/, scenes/greybridge/, scenes/saint_mercy/ and scenes/northgate/ are the Phase 4-12 screens
 scripts/
   data_models/     Strongly-typed Resource classes (ItemDefinition, ResidenceDefinition, SurvivorDefinition, ScavengingMission, VehicleDefinition, ...)

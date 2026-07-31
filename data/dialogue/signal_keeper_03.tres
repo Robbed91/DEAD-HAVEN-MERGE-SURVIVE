@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="DialogueEntry" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data_models/dialogue_entry.gd" id="1_sgk03"]
+
+[resource]
+script = ExtResource("1_sgk03")
+id = "signal_keeper_03"
+speaker_id = "mara_vale"
+portrait_key = "mara_vale"
+expression_key = "determined"
+text = "\"Held. Five doors, five residences, all standing.\" A pause. \"Who is this? And - I'm looking for someone. Eli Vale. My brother. Tell me you've heard that name somewhere on this network.\""
+background_scene_path = ""
+animation = ""
+sound_cue = ""
+branching_options = Array[Dictionary]([])
+next_id = "signal_keeper_04"

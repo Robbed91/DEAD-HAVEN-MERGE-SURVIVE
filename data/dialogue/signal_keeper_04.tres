@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="DialogueEntry" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data_models/dialogue_entry.gd" id="1_sgk04"]
+
+[resource]
+script = ExtResource("1_sgk04")
+id = "signal_keeper_04"
+speaker_id = "signal_keeper"
+portrait_key = "signal_keeper"
+expression_key = "neutral"
+text = "\"I built this network before any of this started. I don't know your brother's face. But someone matching that description passed a relay site months back, heading east, travelling light.\" A pause, longer this time. \"One more thing. If you're finding people wearing marks you don't recognise stitched into their gear - be careful who you trust. They were part of this once. They aren't anymore.\""
+background_scene_path = ""
+animation = ""
+sound_cue = ""
+branching_options = Array[Dictionary]([])
+next_id = "signal_keeper_05"
