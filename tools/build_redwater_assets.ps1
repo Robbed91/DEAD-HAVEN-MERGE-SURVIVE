@@ -1,7 +1,12 @@
+param(
+    [ValidateSet('redwater', 'greybridge')]
+    [string]$Residence = 'redwater'
+)
+
 Add-Type -AssemblyName System.Drawing
 
 $repoRoot = Split-Path -Parent $PSScriptRoot
-$assetRoot = Join-Path $repoRoot 'assets/art/redwater'
+$assetRoot = Join-Path $repoRoot "assets/art/$Residence"
 $sourceRoot = Join-Path $assetRoot 'source'
 $runtimeRoot = Join-Path $assetRoot 'runtime'
 $layerRoot = Join-Path $assetRoot 'layers'
@@ -50,21 +55,49 @@ function Export-Band-Layer([System.Drawing.Bitmap]$source, [string]$name, [int]$
     $output.Dispose()
 }
 
-$destroyed = Resize-Bitmap (Join-Path $sourceRoot 'redwater_master_destroyed.png')
-$upgraded = Resize-Bitmap (Join-Path $sourceRoot 'redwater_master_upgraded.png')
+$destroyed = Resize-Bitmap (Join-Path $sourceRoot "${Residence}_master_destroyed.png")
+$upgraded = Resize-Bitmap (Join-Path $sourceRoot "${Residence}_master_upgraded.png")
 
 try {
-    Save-Jpeg $destroyed (Join-Path $runtimeRoot 'redwater_state_01_destroyed.jpg')
+    foreach ($directory in @($runtimeRoot, $layerRoot, $overlayRoot)) {
+        if (-not (Test-Path $directory)) { New-Item -ItemType Directory -Path $directory -Force | Out-Null }
+    }
+    Save-Jpeg $destroyed (Join-Path $runtimeRoot "${Residence}_state_01_destroyed.jpg")
 
-    $hotspots = [ordered]@{
-        fuel_pumps = @(45, 420, 420, 780)
-        service_bay = @(430, 250, 720, 555)
-        convenience_store = @(155, 260, 430, 520)
-        cashier_office = @(205, 245, 475, 430)
-        generator_room = @(475, 465, 720, 735)
-        perimeter_fence = @(0, 245, 330, 1080)
-        drainage_tunnel = @(420, 715, 720, 1080)
-        garage_workshop = @(430, 280, 720, 665)
+    if ($Residence -eq 'greybridge') {
+        $hotspots = [ordered]@{
+            main_hall = @(250, 310, 505, 690)
+            gymnasium = @(0, 285, 330, 700)
+            library = @(450, 250, 720, 620)
+            cafeteria = @(80, 300, 390, 700)
+            boiler_room = @(480, 610, 720, 1080)
+            admin_office = @(380, 210, 680, 500)
+            playground_fence = @(0, 650, 720, 1080)
+            radio_tower = @(300, 0, 470, 370)
+        }
+        $stateGroups = @(
+            @('main_hall'),
+            @('main_hall', 'playground_fence', 'gymnasium'),
+            @('main_hall', 'playground_fence', 'gymnasium', 'cafeteria', 'library'),
+            @('main_hall', 'playground_fence', 'gymnasium', 'cafeteria', 'library', 'boiler_room', 'admin_office', 'radio_tower')
+        )
+    } else {
+        $hotspots = [ordered]@{
+            fuel_pumps = @(45, 420, 420, 780)
+            service_bay = @(430, 250, 720, 555)
+            convenience_store = @(155, 260, 430, 520)
+            cashier_office = @(205, 245, 475, 430)
+            generator_room = @(475, 465, 720, 735)
+            perimeter_fence = @(0, 245, 330, 1080)
+            drainage_tunnel = @(420, 715, 720, 1080)
+            garage_workshop = @(430, 280, 720, 665)
+        }
+        $stateGroups = @(
+            @('fuel_pumps', 'drainage_tunnel'),
+            @('fuel_pumps', 'drainage_tunnel', 'cashier_office', 'perimeter_fence'),
+            @('fuel_pumps', 'drainage_tunnel', 'cashier_office', 'perimeter_fence', 'convenience_store', 'service_bay'),
+            @('fuel_pumps', 'drainage_tunnel', 'cashier_office', 'perimeter_fence', 'convenience_store', 'service_bay', 'generator_room', 'garage_workshop')
+        )
     }
 
     $overlays = @{}
@@ -87,12 +120,6 @@ try {
         $overlays[$entry.Key] = $overlay
     }
 
-    $stateGroups = @(
-        @('fuel_pumps', 'drainage_tunnel'),
-        @('fuel_pumps', 'drainage_tunnel', 'cashier_office', 'perimeter_fence'),
-        @('fuel_pumps', 'drainage_tunnel', 'cashier_office', 'perimeter_fence', 'convenience_store', 'service_bay'),
-        @('fuel_pumps', 'drainage_tunnel', 'cashier_office', 'perimeter_fence', 'convenience_store', 'service_bay', 'generator_room', 'garage_workshop')
-    )
     $stateNames = @('02_cleared', '03_temporary', '04_habitable', '05_defended')
     for ($index = 0; $index -lt $stateGroups.Count; $index++) {
         $state = $destroyed.Clone()
@@ -100,10 +127,10 @@ try {
         try {
             foreach ($id in $stateGroups[$index]) { $graphics.DrawImageUnscaled($overlays[$id], 0, 0) }
         } finally { $graphics.Dispose() }
-        Save-Jpeg $state (Join-Path $runtimeRoot "redwater_state_$($stateNames[$index]).jpg")
+        Save-Jpeg $state (Join-Path $runtimeRoot "${Residence}_state_$($stateNames[$index]).jpg")
         $state.Dispose()
     }
-    Save-Jpeg $upgraded (Join-Path $runtimeRoot 'redwater_state_06_upgraded.jpg')
+    Save-Jpeg $upgraded (Join-Path $runtimeRoot "${Residence}_state_06_upgraded.jpg")
 
     Export-Band-Layer $destroyed 'sky' 0 255 24
     Export-Band-Layer $destroyed 'distant_landscape' 135 360 28
@@ -124,4 +151,4 @@ try {
     $upgraded.Dispose()
 }
 
-Write-Output 'Built Redwater locked states, aligned hotspot overlays, and production layers.'
+Write-Output "Built $Residence locked states, aligned hotspot overlays, and production layers."

@@ -1,79 +1,222 @@
 extends Control
-## GreybridgeBackground
-##
-## Original internally-drawn placeholder illustration for Greybridge
-## School (cold overcast midday) - same layered/procedural technique as
-## haven_background.gd and redwater_background.gd, given a third distinct
-## palette/time-of-day (flat grey daylight rather than Hollow Creek's warm
-## day or Redwater's dusk) so all three residences read as different
-## places at a glance even as procedural placeholders.
+class_name GreybridgeEnvironment
+## Locked, layered Greybridge School environment. Presentation reads existing
+## hotspot/defence state and never owns progression or save data.
 
-const SKY_TOP := Color("6b7278")
-const SKY_BOTTOM := Color("9aa2a0")
-const GROUND := Color("6e6a5e")
-const GROUND_DARK := Color("55524a")
-const BRICK := Color("7a5a4a")
-const BRICK_DARK := Color("5c4238")
-const ROOF := Color("3a3835")
-const DAMAGE := Color("201f1c")
-const TOWER := Color("8a8f8a")
+const RESIDENCE_ID := "greybridge_school"
+const DEFENCE_EVENT_ID := "greybridge_defence"
+const BASE_TEXTURE := "res://assets/art/greybridge/runtime/greybridge_state_01_destroyed.jpg"
+const OVERLAY_DIR := "res://assets/art/greybridge/repair_overlays"
+const LAYER_DIR := "res://assets/art/greybridge/layers"
+const HOTSPOT_IDS := [
+	"main_hall", "gymnasium", "library", "cafeteria", "boiler_room",
+	"admin_office", "playground_fence", "radio_tower",
+]
+
+var _base: TextureRect
+var _sky: TextureRect
+var _vegetation: TextureRect
+var _foreground: TextureRect
+var _lighting: TextureRect
+var _damage: TextureRect
+var _debris: TextureRect
+var _repair_layers: Dictionary = {}
+var _rain: CPUParticles2D
+var _dust: CPUParticles2D
+var _repair_particles: CPUParticles2D
+var _riley: LayeredCharacterRig
+var _drifter: LayeredCharacterRig
+var _ambient_time := 0.0
+var _state_index := -1
 
 func _ready() -> void:
-	queue_redraw()
+	mouse_filter = Control.MOUSE_FILTER_IGNORE
+	clip_contents = true
+	_build_layers()
+	_build_actors()
+	_build_particles()
+	resized.connect(_layout_dynamic_content)
+	EventBus.hotspot_state_changed.connect(_on_hotspot_state_changed)
+	EventBus.survivor_unlocked.connect(func(_id): _refresh_actor_visibility())
+	EventBus.defence_resolved.connect(func(_outcome): _refresh_visual_state(true))
+	EventBus.settings_changed.connect(_refresh_effects_setting)
+	_layout_dynamic_content()
+	_refresh_visual_state(false)
+	_refresh_effects_setting()
+	set_process(true)
 
-func _draw() -> void:
-	var s := size
+func _build_layers() -> void:
+	_base = _full_texture(BASE_TEXTURE)
+	add_child(_base)
+	_sky = _layer("sky", 0.08)
+	_layer("distant_landscape", 0.05)
+	_layer("background_structures", 0.04)
+	_layer("main_building", 0.035)
+	_damage = _layer("damage", 0.06)
+	_debris = _layer("debris", 0.06)
+	_layer("furniture", 0.035)
+	_vegetation = _layer("vegetation", 0.07)
+	_foreground = _layer("foreground", 0.13)
+	for hotspot_id in HOTSPOT_IDS:
+		var overlay := _full_texture("%s/%s.png" % [OVERLAY_DIR, hotspot_id])
+		overlay.name = "Repair_%s" % hotspot_id
+		overlay.modulate.a = 0.0
+		add_child(overlay)
+		_repair_layers[hotspot_id] = overlay
+	_lighting = _layer("lighting", 0.0)
+	_layer("weather", 0.035)
 
-	# Sky - flat, cold, overcast (no gradient bands - the point is a duller,
-	# flatter light than either other residence).
-	var bands := 12
-	for i in bands:
-		var t := float(i) / float(bands - 1)
-		draw_rect(Rect2(0, s.y * 0.4 * t, s.x, s.y * 0.4 / bands + 1), SKY_TOP.lerp(SKY_BOTTOM, t))
+func _layer(layer_name: String, alpha: float) -> TextureRect:
+	var layer := _full_texture("%s/%s.png" % [LAYER_DIR, layer_name])
+	layer.name = layer_name.to_pascal_case()
+	layer.modulate.a = alpha
+	add_child(layer)
+	return layer
 
-	# Playground / grounds.
-	draw_rect(Rect2(0, s.y * 0.4, s.x, s.y * 0.6), GROUND)
-	for i in 8:
-		var x := s.x * float(i) / 7.0
-		draw_line(Vector2(x, s.y * 0.7), Vector2(x, s.y * 0.98), GROUND_DARK, 2.0)
+func _full_texture(path: String) -> TextureRect:
+	var view := TextureRect.new()
+	view.set_anchors_preset(Control.PRESET_FULL_RECT)
+	view.texture = load(path)
+	view.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	view.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
+	view.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	return view
 
-	# Gymnasium wing (background layer, left side - lower, flat-roofed).
-	var gym_w := s.x * 0.26
-	var gym_x := s.x * 0.04
-	draw_rect(Rect2(gym_x, s.y * 0.52, gym_w, s.y * 0.24), BRICK_DARK)
-	draw_rect(Rect2(gym_x, s.y * 0.49, gym_w, s.y * 0.04), ROOF)
+func _build_actors() -> void:
+	_drifter = LayeredCharacterRig.new()
+	_drifter.character_id = "drifter_hollow"
+	_drifter.hollow = true
+	_drifter.display_height = 76.0
+	_drifter.auto_play = "distant_wandering"
+	_drifter.modulate = Color(0.48, 0.56, 0.62, 0.50)
+	add_child(_drifter)
+	_riley = LayeredCharacterRig.new()
+	_riley.character_id = "riley_chen"
+	_riley.display_height = 148.0
+	_riley.auto_play = "using_radio"
+	add_child(_riley)
+	_refresh_actor_visibility()
 
-	# Main school building (mid-ground, two-storey brick block).
-	var main_w := s.x * 0.62
-	var main_x := s.x * 0.5 - main_w * 0.5
-	var wall_top := s.y * 0.32
-	var wall_bottom := s.y * 0.76
+func _build_particles() -> void:
+	var particle_texture: Texture2D = load("res://assets/ui/hollow_creek/particle_soft.png")
+	_rain = CPUParticles2D.new()
+	_rain.amount = 50
+	_rain.lifetime = 1.7
+	_rain.emission_shape = CPUParticles2D.EMISSION_SHAPE_RECTANGLE
+	_rain.direction = Vector2(0.12, 1.0)
+	_rain.spread = 4.0
+	_rain.gravity = Vector2(16, 360)
+	_rain.initial_velocity_min = 220.0
+	_rain.initial_velocity_max = 315.0
+	_rain.scale_amount_min = 0.025
+	_rain.scale_amount_max = 0.06
+	_rain.color = Color(0.66, 0.76, 0.84, 0.24)
+	_rain.texture = particle_texture
+	add_child(_rain)
+	_dust = CPUParticles2D.new()
+	_dust.amount = 10
+	_dust.lifetime = 3.6
+	_dust.emission_shape = CPUParticles2D.EMISSION_SHAPE_RECTANGLE
+	_dust.emission_rect_extents = Vector2(145, 85)
+	_dust.direction = Vector2(0.1, -1.0)
+	_dust.spread = 60.0
+	_dust.initial_velocity_min = 2.0
+	_dust.initial_velocity_max = 7.0
+	_dust.color = Color(0.90, 0.69, 0.38, 0.22)
+	_dust.texture = particle_texture
+	add_child(_dust)
+	_repair_particles = CPUParticles2D.new()
+	_repair_particles.one_shot = true
+	_repair_particles.amount = 24
+	_repair_particles.lifetime = 0.75
+	_repair_particles.direction = Vector2(0, -1)
+	_repair_particles.spread = 70.0
+	_repair_particles.gravity = Vector2(0, 120)
+	_repair_particles.initial_velocity_min = 42.0
+	_repair_particles.initial_velocity_max = 100.0
+	_repair_particles.scale_amount_min = 0.04
+	_repair_particles.scale_amount_max = 0.10
+	_repair_particles.color = Color(1.0, 0.68, 0.26, 0.9)
+	_repair_particles.texture = particle_texture
+	add_child(_repair_particles)
 
-	draw_rect(Rect2(main_x, wall_top, main_w, wall_bottom - wall_top), BRICK)
-	draw_rect(Rect2(main_x, wall_top - 10, main_w, 12), ROOF)
+func _layout_dynamic_content() -> void:
+	if size.x <= 0.0 or size.y <= 0.0:
+		return
+	_rain.position = Vector2(size.x * 0.5, -16)
+	_rain.emission_rect_extents = Vector2(size.x * 0.62, 15)
+	_dust.position = Vector2(size.x * 0.56, size.y * 0.56)
+	_riley.position = Vector2(size.x * 0.70, size.y * 0.64)
+	_drifter.position = Vector2(size.x * 0.12, size.y * 0.34)
 
-	# Window rows (damage layer - several hotspots live roughly here).
-	for row in 2:
-		for col in 5:
-			var wx: float = main_x + main_w * (0.08 + col * 0.18)
-			var wy: float = wall_top + (wall_bottom - wall_top) * (0.15 + row * 0.32)
-			draw_rect(Rect2(wx, wy, main_w * 0.11, (wall_bottom - wall_top) * 0.16), DAMAGE)
+func _process(delta: float) -> void:
+	_ambient_time += delta
+	if not GameManager.effects_enabled():
+		return
+	_sky.offset_left = sin(_ambient_time * 0.08) * 8.0
+	_sky.offset_right = _sky.offset_left
+	_vegetation.offset_left = sin(_ambient_time * 0.66) * 1.6
+	_vegetation.offset_right = _vegetation.offset_left
+	_foreground.rotation = sin(_ambient_time * 0.52) * 0.0018
+	var light_target := 0.04 + float(_state_index) * 0.055
+	_lighting.modulate.a = light_target + sin(_ambient_time * 6.2) * 0.014
+	if _drifter.visible:
+		_drifter.position.x += delta * 0.62
+		if _drifter.position.x > size.x * 0.20:
+			_drifter.position.x = size.x * 0.08
 
-	# Main hall double doors (front_door-equivalent hotspot area).
-	var door_pos := Vector2(main_x + main_w * 0.5 - 26, wall_bottom - 70)
-	draw_rect(Rect2(door_pos, Vector2(52, 70)), DAMAGE)
-	draw_line(door_pos + Vector2(26, 0), door_pos + Vector2(26, 70), Color("1a1917"), 2.0)
+func _on_hotspot_state_changed(hotspot_id: String, _new_state: int) -> void:
+	if _repair_layers.has(hotspot_id):
+		_refresh_visual_state(true)
 
-	# Radio tower on the roof (foreground structure - radio_tower hotspot).
-	var tower_base := Vector2(s.x * 0.5, wall_top - 10)
-	draw_line(tower_base, tower_base + Vector2(-10, -70), TOWER, 4.0)
-	draw_line(tower_base, tower_base + Vector2(10, -70), TOWER, 4.0)
-	draw_line(tower_base + Vector2(-6, -42), tower_base + Vector2(6, -42), TOWER, 2.5)
-	draw_line(tower_base + Vector2(-3, -70), tower_base + Vector2(3, -70), TOWER, 2.5)
-	draw_circle(tower_base + Vector2(0, -74), 3.0, Color("cf6a3f"))
+func _refresh_visual_state(animated: bool) -> void:
+	var completed := 0
+	for hotspot_id in HOTSPOT_IDS:
+		var repaired := ResidenceManager.get_hotspot_state(hotspot_id) == ResidenceHotspot.State.COMPLETED
+		if repaired:
+			completed += 1
+		var layer: TextureRect = _repair_layers[hotspot_id]
+		var alpha := 1.0 if repaired else 0.0
+		if animated:
+			create_tween().tween_property(layer, "modulate:a", alpha, 0.42).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+		else:
+			layer.modulate.a = alpha
+	_state_index = 5 if DefenceManager.has_survived(DEFENCE_EVENT_ID) else (4 if completed >= 8 else (3 if completed >= 5 else (2 if completed >= 3 else (1 if completed >= 1 else 0))))
+	_damage.modulate.a = maxf(0.0, 0.07 - completed * 0.008)
+	_debris.modulate.a = maxf(0.0, 0.07 - completed * 0.007)
+	_refresh_actor_visibility()
 
-	# Playground fence (closest layer, adds depth).
-	var fence_color := GROUND_DARK
-	for i in 10:
-		var x := s.x * float(i) / 9.0
-		draw_line(Vector2(x, s.y - 8), Vector2(x + 8, s.y - 30), fence_color, 3.0)
+func play_repair(hotspot_id: String) -> void:
+	if not _repair_layers.has(hotspot_id):
+		return
+	var layer: TextureRect = _repair_layers[hotspot_id]
+	layer.modulate = Color(1.3, 1.1, 0.78, 0.0)
+	var tween := create_tween()
+	tween.tween_property(layer, "modulate", Color(1.25, 1.08, 0.74, 1.0), 0.22).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	tween.tween_property(layer, "modulate", Color.WHITE, 0.46)
+	_repair_particles.position = _hotspot_position(hotspot_id)
+	_repair_particles.restart()
+	AudioManager.play_sfx("radio_pulse" if hotspot_id == "radio_tower" else "repair_whoosh")
+
+func _hotspot_position(hotspot_id: String) -> Vector2:
+	var residence := ResidenceManager.get_residence(RESIDENCE_ID)
+	if residence:
+		for hotspot in residence.hotspots:
+			if hotspot.id == hotspot_id:
+				return Vector2(hotspot.area_position.x * size.x, hotspot.area_position.y * size.y)
+	return size * 0.5
+
+func _refresh_actor_visibility() -> void:
+	if _riley:
+		_riley.visible = GameManager.is_survivor_unlocked("riley_chen")
+	if _drifter:
+		_drifter.visible = not DefenceManager.has_survived(DEFENCE_EVENT_ID)
+
+func _refresh_effects_setting() -> void:
+	var enabled := GameManager.effects_enabled()
+	_rain.emitting = enabled
+	_dust.emitting = enabled and _state_index >= 3
+	_refresh_actor_visibility()
+
+func state_name() -> String:
+	return ["destroyed", "cleared", "temporarily_repaired", "habitable", "defended", "fully_upgraded"][_state_index]
