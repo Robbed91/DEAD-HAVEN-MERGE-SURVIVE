@@ -171,6 +171,46 @@ Replace every Android launcher fallback with one original painterly safe-haven i
 
 Batch 2/3: formalise the debug-signed Android verification presets and audit every dynamic runtime dependency so version-code-2 exports include required catalogs while excluding source/development content.
 
+## 2026-08-01 — Strict-quality Batch 2: Android debug toolchain and baseline
+
+### Starting commit
+
+`9d3c7b5` on `visual-production`.
+
+### Batch objective
+
+Lock the approved debug-signing policy, verify the matching Godot 4.3/JDK 17/Android toolchain, and preserve an exact version-code-1 upgrade source without committing an APK, keystore, or secret.
+
+### Assets created or rejected
+
+- No presentation assets were created or rejected. This is a build-verification batch.
+
+### Files modified
+
+- Added `tools/verify_android_debug_toolchain.ps1`.
+- Added `docs/production-batches/20_android_debug_baseline.md`.
+- Updated `DEVELOPMENT_LOG.md`.
+
+### Visual states, animation, audio, and optimisation
+
+- No runtime changes. Gameplay, saves, presentation, animation, audio, and resource imports are unchanged.
+
+### Tests and evidence
+
+- Verified Godot `4.3.stable.official.77dcf97d8`, matching templates, OpenJDK 17, Android SDK/build tools, Pixel 9 AVD, and Godot debug keystore.
+- Verified the external v1 APK package/version/ABIs, APK SHA-256, and debug-certificate SHA-256.
+- Verified the representative installed save SHA-256 matches its external fixture.
+- Clean import, focused launcher test, and all 33 smoke-test scenes pass for the unchanged runtime tree.
+
+### Known issues and remaining placeholders
+
+- The 373 MB baseline is intentionally unaudited and dynamically discovered catalogs are empty in the packed baseline. Both are carried directly into Batch 3.
+- All presentation placeholders listed after Batch 1 remain unchanged.
+
+### Exact next phase
+
+Batch 3: audit static and dynamic resource dependencies, repair packed catalog discovery without changing IDs or save schema, and create separate arm64 shipping and arm64+x86_64 verification presets at version code 2.
+
 ---
 
 ## Steering reconciliation — data-driven Mara portraits (31 July 2026)
