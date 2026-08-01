@@ -4,8 +4,32 @@
 export.cfg
 export_credentials.cfg
 
-# Android build artifacts
-android/build/
+# Android build artifacts. Keep only the authored Android 13 themed-icon
+# overlay that Godot 4.3.stable's Gradle exporter cannot generate itself.
+android/build/*
+!android/build/res/
+android/build/res/*
+!android/build/res/mipmap/
+!android/build/res/mipmap-anydpi-v26/
+!android/build/res/mipmap-mdpi-v4/
+!android/build/res/mipmap-hdpi-v4/
+!android/build/res/mipmap-xhdpi-v4/
+!android/build/res/mipmap-xxhdpi-v4/
+!android/build/res/mipmap-xxxhdpi-v4/
+android/build/res/mipmap/*
+android/build/res/mipmap-anydpi-v26/*
+android/build/res/mipmap-mdpi-v4/*
+android/build/res/mipmap-hdpi-v4/*
+android/build/res/mipmap-xhdpi-v4/*
+android/build/res/mipmap-xxhdpi-v4/*
+android/build/res/mipmap-xxxhdpi-v4/*
+!android/build/res/mipmap/icon_monochrome.png
+!android/build/res/mipmap-anydpi-v26/icon.xml
+!android/build/res/mipmap-mdpi-v4/icon_monochrome.png
+!android/build/res/mipmap-hdpi-v4/icon_monochrome.png
+!android/build/res/mipmap-xhdpi-v4/icon_monochrome.png
+!android/build/res/mipmap-xxhdpi-v4/icon_monochrome.png
+!android/build/res/mipmap-xxxhdpi-v4/icon_monochrome.png
 *.apk
 *.aab
 *.aar

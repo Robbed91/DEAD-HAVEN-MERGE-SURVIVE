@@ -10,7 +10,7 @@ config/name="Dead Haven: Merge & Survive"
 config/description="An original zombie-survival merge-puzzle adventure. Build shelter, find survivors, outlast the dead."
 run/main_scene="res://scenes/boot/boot.tscn"
 config/features=PackedStringArray("4.3")
-config/icon="res://icon.svg"
+config/icon="res://assets/branding/android/launcher_main.png"
 
 [autoload]
 

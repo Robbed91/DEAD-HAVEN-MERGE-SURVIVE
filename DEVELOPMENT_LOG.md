@@ -106,6 +106,73 @@ godot4 --headless --path /path/to/dead-haven-merge-survive \
 
 ---
 
+## 2026-08-01 — Strict-quality Batch 1: final Android launcher identity
+
+### Starting commit
+
+`b79ae07a6d0d7847fdfc10a9c4cb5bf251bc2ed3` on `visual-production`.
+
+### Batch objective
+
+Replace every Android launcher fallback with one original painterly safe-haven identity, including legacy, adaptive foreground/background, and Android 13 monochrome presentation, while preserving gameplay and save compatibility.
+
+### Assets created
+
+- Three reviewed 1024×1024 source masters under `assets/branding/android/source/`.
+- Opaque 512×512 main launcher, transparent 432×432 adaptive foreground, opaque 432×432 adaptive background, and 432×432 monochrome layer.
+- Deterministic launcher build/review script and mask/48-pixel evidence captures.
+- Density-specific Android monochrome resources and adaptive XML overlay.
+
+### Assets rejected
+
+- The first automated chroma-key conversion was rejected for visible green/teal edge spill. It was replaced by the deterministic dominance/despill conversion and was not retained in a runtime path.
+- The first detail-derived monochrome mask was rejected after the installed themed-icon review because its timber gaps read like a letter at dock size. It was replaced with the authored fortified-doorway silhouette.
+
+### Files modified
+
+- `.gitignore`, `project.godot`, and `export_presets.cfg`.
+- `assets/branding/android/`, `android/build/res/`, `tools/build_android_launcher_assets.ps1`.
+- `tests/android_launcher_asset_test.gd` and `.tscn`.
+- `docs/android-launcher-captures/` and `docs/production-batches/19_android_launcher_identity.md`.
+
+### Visual states added
+
+- Legacy full-square, adaptive color, themed monochrome light, and themed monochrome dark launcher presentations.
+
+### Animations and audio
+
+- None. This batch changes branding presentation only.
+
+### Optimisation changes
+
+- Runtime launcher files are right-sized; editable 1024×1024 masters remain separate from the runtime paths.
+
+### Tests and evidence
+
+- Full-resolution, transparency, adjacent-layer, actual 48-pixel, adaptive-mask, and installed Pixel 9 reviews completed.
+- Focused launcher asset/configuration test passes.
+- Matching Godot 4.3.stable clean headless import passes.
+- All 33 `tests/smoke_test*.tscn` scenes pass; output scan finds no parser, missing-resource, invalid-call, orphan-node, audio-catalog, save, import, shader, or texture failures.
+- Debug-signed version-code-1 artifact installs as `com.deadhaven.mergeandsurvive`; signing certificate matches the baseline debug certificate.
+- Evidence paths are recorded in `docs/production-batches/19_android_launcher_identity.md`.
+
+### Known issues
+
+- Godot 4.3.stable does not itself emit Android's monochrome adaptive-icon element. The tracked Gradle resource overlay supplies the authored layer and APK inspection proves it is packaged.
+- The exact-final zero-cache importer suffered one native Godot 4.3 access violation after 5m51s on the network workspace. Resuming that same empty-origin import completed with exit 0, the focused test passed, and the subsequent full suite passed 33/33. An earlier independent zero-cache import also completed with exit 0.
+- The first exact-final suite run saw one transient headless audio timing failure. The unchanged audio test then passed three consecutive isolated reruns and the complete 33-scene rerun passed cleanly.
+- The baseline broad-resource export and packed-build dynamic catalog enumeration defect are unchanged and remain the next audited build task.
+
+### Remaining placeholders
+
+- Producer state sets, chain-specific merge effects, environment/danger effects, and verified procedural fallbacks remain for their approved later batches. No launcher fallback remains.
+
+### Exact next phase
+
+Batch 2/3: formalise the debug-signed Android verification presets and audit every dynamic runtime dependency so version-code-2 exports include required catalogs while excluding source/development content.
+
+---
+
 ## Steering reconciliation — data-driven Mara portraits (31 July 2026)
 
 ### Files modified
