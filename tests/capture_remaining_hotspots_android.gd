@@ -1,9 +1,11 @@
 extends Node
-## Captures the three newly illustrated hotspot sets through a true
-## 1080x2400 SubViewport, independent of the desktop monitor's window limit.
+## Captures through the project's 720-wide canvas at a tall Android aspect,
+## then scales to a 1080x2400 device reference. This matches canvas_items
+## stretch behaviour instead of laying the UI out at device pixels.
 
 const OUTPUT_DIR := "res://docs/hotspot-captures"
-const CAPTURE_SIZE := Vector2i(1080, 2400)
+const LOGICAL_SIZE := Vector2i(720, 1600)
+const OUTPUT_SIZE := Vector2i(1080, 2400)
 const SETS := [
 	{
 		"name": "redwater_available_1080x2400",
@@ -33,6 +35,7 @@ func _ready() -> void:
 	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path(OUTPUT_DIR))
 	for entry in SETS:
 		GameManager.new_game()
+		GameManager.settings.reduced_motion = true
 		GameManager.profile.current_chapter_id = entry.chapter
 		GameManager.profile.story_flags[entry.flag] = true
 		var residence := ResidenceManager.get_residence(entry.residence)
@@ -40,7 +43,7 @@ func _ready() -> void:
 			ResidenceManager.hotspot_states[hotspot.id] = ResidenceHotspot.State.DESTROYED
 
 		var viewport := SubViewport.new()
-		viewport.size = CAPTURE_SIZE
+		viewport.size = LOGICAL_SIZE
 		viewport.render_target_update_mode = SubViewport.UPDATE_ALWAYS
 		viewport.transparent_bg = false
 		add_child(viewport)
@@ -52,12 +55,14 @@ func _ready() -> void:
 		viewport.render_target_update_mode = SubViewport.UPDATE_ONCE
 		await RenderingServer.frame_post_draw
 		var output := "%s/%s.png" % [OUTPUT_DIR, entry.name]
-		var error := viewport.get_texture().get_image().save_png(ProjectSettings.globalize_path(output))
+		var image := viewport.get_texture().get_image()
+		image.resize(OUTPUT_SIZE.x, OUTPUT_SIZE.y, Image.INTERPOLATE_LANCZOS)
+		var error := image.save_png(ProjectSettings.globalize_path(output))
 		if error != OK:
 			push_error("Could not save %s: %s" % [output, error])
 			get_tree().quit(1)
 			return
 		viewport.queue_free()
 		await get_tree().process_frame
-	print("ANDROID_HOTSPOT_CAPTURE_OK residences=3 size=%dx%d" % [CAPTURE_SIZE.x, CAPTURE_SIZE.y])
+	print("ANDROID_HOTSPOT_CAPTURE_OK residences=3 logical=%dx%d output=%dx%d" % [LOGICAL_SIZE.x, LOGICAL_SIZE.y, OUTPUT_SIZE.x, OUTPUT_SIZE.y])
 	get_tree().quit()

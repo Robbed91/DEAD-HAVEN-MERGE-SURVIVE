@@ -51,7 +51,7 @@ The procedural renderer remains only as a defensive fallback for unknown future 
 - Saint Mercy gameplay, six visual-state save round trips, and Imogen rescue pass.
 - General save, reload, and backup recovery pass.
 - Eighteen desktop running-game state captures refreshed.
-- Three true 1080×2400 SubViewport captures saved under `docs/hotspot-captures/`.
+- Three 720×1600 expanded-canvas captures, scaled to the 1080×2400 Android device reference, saved under `docs/hotspot-captures/`.
 
 Godot 4.3 was used for import and verification. Runtime icons use lossless UI texture import, alpha-border correction, and no mipmaps.
 
