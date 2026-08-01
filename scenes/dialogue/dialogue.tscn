@@ -18,7 +18,8 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 color = Color(0.109804, 0.101961, 0.0941176, 1)
 
-[node name="FarmhouseArt" type="TextureRect" parent="."]
+[node name="SceneArt" type="TextureRect" parent="."]
+unique_name_in_owner = true
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -39,12 +40,33 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
-color = Color(0.055, 0.06, 0.06, 0.36)
+color = Color(0.035, 0.043, 0.047, 0.28)
+
+[node name="LocationMargin" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_top = 26.0
+offset_bottom = 76.0
+grow_horizontal = 2
+theme_override_constants/margin_left = 22
+theme_override_constants/margin_right = 22
+
+[node name="LocationLabel" type="Label" parent="LocationMargin"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.91, 0.82, 0.64, 0.9)
+theme_override_colors/font_shadow_color = Color(0.02, 0.025, 0.025, 0.9)
+theme_override_constants/shadow_offset_x = 2
+theme_override_constants/shadow_offset_y = 2
+theme_override_font_sizes/font_size = 14
+text = "HOLLOW CREEK — FARMHOUSE APPROACH"
+horizontal_alignment = 1
 
 [node name="Layout" type="VBoxContainer" parent="."]
 layout_mode = 1
 anchors_preset = 12
-anchor_top = 0.5
+anchor_top = 0.56
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_vertical = 2
@@ -60,26 +82,30 @@ size_flags_horizontal = 3
 theme_override_constants/separation = 14
 
 [node name="PortraitMargin" type="MarginContainer" parent="Layout/Row"]
+unique_name_in_owner = true
 layout_mode = 2
-theme_override_constants/margin_left = 16
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_bottom = 10
 
 [node name="Portrait" type="Control" parent="Layout/Row/PortraitMargin"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(112, 112)
+custom_minimum_size = Vector2(218, 244)
 layout_mode = 2
 script = ExtResource("2")
 
 [node name="TextPanel" type="PanelContainer" parent="Layout/Row"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 196)
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
 [node name="TextMargin" type="MarginContainer" parent="Layout/Row/TextPanel"]
 layout_mode = 2
-theme_override_constants/margin_left = 16
-theme_override_constants/margin_right = 16
-theme_override_constants/margin_top = 12
-theme_override_constants/margin_bottom = 12
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_right = 20
+theme_override_constants/margin_top = 16
+theme_override_constants/margin_bottom = 16
 
 [node name="TextLayout" type="VBoxContainer" parent="Layout/Row/TextPanel/TextMargin"]
 layout_mode = 2
@@ -88,20 +114,21 @@ theme_override_constants/separation = 6
 [node name="SpeakerLabel" type="Label" parent="Layout/Row/TextPanel/TextMargin/TextLayout"]
 unique_name_in_owner = true
 layout_mode = 2
-theme_override_font_sizes/font_size = 18
+theme_override_font_sizes/font_size = 20
 text = "Speaker"
 
 [node name="TextLabel" type="Label" parent="Layout/Row/TextPanel/TextMargin/TextLayout"]
 unique_name_in_owner = true
 layout_mode = 2
+theme_override_font_sizes/font_size = 17
 autowrap_mode = 3
 text = "Dialogue text goes here."
 
 [node name="BottomMargin" type="MarginContainer" parent="Layout"]
 layout_mode = 2
-theme_override_constants/margin_left = 16
-theme_override_constants/margin_right = 16
-theme_override_constants/margin_bottom = 20
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_right = 20
+theme_override_constants/margin_bottom = 26
 
 [node name="BottomLayout" type="VBoxContainer" parent="Layout/BottomMargin"]
 layout_mode = 2

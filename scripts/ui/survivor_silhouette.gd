@@ -21,6 +21,7 @@ var _portrait_view: TextureRect
 var _lock_view: TextureRect
 var _animation_player: AnimationPlayer
 var _using_procedural_fallback := false
+var _override_texture_path := ""
 
 func _ready() -> void:
 	_build_presentation()
@@ -86,6 +87,8 @@ func _refresh_final_portrait() -> void:
 	queue_redraw()
 
 func _resolve_portrait_path() -> String:
+	if not _override_texture_path.is_empty() and ResourceLoader.exists(_override_texture_path):
+		return _override_texture_path
 	var definition: SurvivorDefinition = CharacterDatabase.get_survivor(survivor_id)
 	if definition != null:
 		var registered_path := str(definition.expressions.get(expression, ""))
@@ -109,6 +112,10 @@ func is_using_texture_portrait() -> bool:
 
 func is_using_procedural_fallback() -> bool:
 	return _using_procedural_fallback
+
+func set_override_texture(path: String) -> void:
+	_override_texture_path = path
+	_refresh_final_portrait()
 
 func _draw() -> void:
 	if not _using_procedural_fallback:

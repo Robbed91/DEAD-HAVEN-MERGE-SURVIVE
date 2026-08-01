@@ -36,12 +36,35 @@ const SPEAKER_COLORS := {
 	"caleb_rusk": Color("5a5a4a"),
 	"signal_keeper": Color("7fb0b8"),
 }
+const BACKGROUNDS := {
+	"intro": "res://assets/concepts/vertical_slice/dialogue/intro_farmhouse_approach_concept.png",
+	"noah": "res://assets/art/hollow_creek/environments/runtime/hollow_creek_state_03_habitable.png",
+	"lena": "res://assets/art/redwater/runtime/redwater_state_03_temporary.jpg",
+	"riley": "res://assets/art/greybridge/runtime/greybridge_state_03_temporary.jpg",
+	"imogen": "res://assets/art/saint_mercy/runtime/saint_mercy_state_03_temporary.jpg",
+	"caleb": "res://assets/art/northgate/runtime/northgate_state_03_temporary.jpg",
+	"signal_keeper": "res://assets/art/scavenging/runtime/radio_relay_station.png",
+}
+const LOCATION_NAMES := {
+	"intro": "HOLLOW CREEK — FARMHOUSE APPROACH",
+	"noah": "HOLLOW CREEK — WEST FIELD",
+	"lena": "REDWATER — SERVICE WORKSHOP",
+	"riley": "GREYBRIDGE — SCHOOL HALL",
+	"imogen": "SAINT MERCY — EMERGENCY WARD",
+	"caleb": "NORTHGATE — CELL BLOCK",
+	"signal_keeper": "HAVEN SEVEN — NIGHT TRANSMISSION",
+}
+const SIGNAL_KEEPER_ART := "res://assets/ui/world_map/markers/runtime/radio_relay_station.png"
 
 @onready var _portrait: SurvivorSilhouette = %Portrait
 @onready var _speaker_label: Label = %SpeakerLabel
 @onready var _text_label: Label = %TextLabel
 @onready var _continue_button: Button = %ContinueButton
 @onready var _choices_box: VBoxContainer = %ChoicesBox
+@onready var _scene_art: TextureRect = %SceneArt
+@onready var _location_label: Label = %LocationLabel
+@onready var _portrait_margin: MarginContainer = %PortraitMargin
+@onready var _text_panel: PanelContainer = %TextPanel
 
 var _current_id: String = ""
 var _return_scene_key: String = "haven"
@@ -53,6 +76,7 @@ func _ready() -> void:
 	_speaker_label.add_theme_color_override("font_color", ThemeFactory.RUST_DARK)
 	_text_label.add_theme_color_override("font_color", ThemeFactory.CHARCOAL_LIGHT)
 	_continue_button.theme_type_variation = "OliveButton"
+	_scene_art.pivot_offset = _scene_art.size * 0.5
 	var params := SceneRouter.take_pending_params()
 	_return_scene_key = String(params.get("return_scene_key", "haven"))
 	var start_id := String(params.get("start_id", ""))
@@ -75,18 +99,22 @@ func _show_entry(id: String) -> void:
 		_finish()
 		return
 	_current_id = id
+	_update_scene_art(id)
 
 	var has_speaker: bool = not entry.speaker_id.is_empty()
 	_speaker_label.visible = has_speaker
 	_speaker_label.text = SPEAKER_NAMES.get(entry.speaker_id, entry.speaker_id)
 	_portrait.visible = has_speaker
+	_portrait_margin.visible = has_speaker
 	_portrait.silhouette_color = SPEAKER_COLORS.get(entry.speaker_id, Color("8a8f8a"))
 	_portrait.survivor_id = entry.speaker_id
-	_portrait.expression = _expression_for_text(entry.text)
+	_portrait.set_override_texture(SIGNAL_KEEPER_ART if entry.speaker_id == "signal_keeper" else "")
+	_portrait.expression = _expression_for_entry(entry)
 	if _portrait.expression in ["injured", "relieved", "exhausted"]:
 		AudioManager.play_music("emotional")
 	_portrait.play_state("fear" if _portrait.expression == "afraid" else ("injured" if _portrait.expression == "injured" else "speaking"))
 	_text_label.text = entry.text
+	_play_entry_reveal(has_speaker)
 	if entry.speaker_id == "mara_vale" or entry.speaker_id == "noah_vance":
 		AudioManager.play_sfx("dialogue_radio" if entry.speaker_id == "mara_vale" and _current_id.begins_with("intro") else "ui_tap")
 
@@ -106,30 +134,68 @@ func _show_entry(id: String) -> void:
 			btn.theme_type_variation = "RustButton"
 			btn.pressed.connect(_on_choice_selected.bind(option))
 			_choices_box.add_child(btn)
+			if GameManager.effects_enabled():
+				btn.modulate.a = 0.0
+				var choice_tween := btn.create_tween().set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+				choice_tween.tween_property(btn, "modulate:a", 1.0, 0.22).set_delay(0.07 * float(btn.get_index()))
 	else:
 		_choices_box.visible = false
 		_continue_button.visible = true
 		_continue_button.text = "Continue" if not entry.next_id.is_empty() else "Done"
 
-func _expression_for_text(line: String) -> String:
-	# Dialogue data remains untouched; presentation infers a matching authored
-	# portrait only from the current line.
-	var lower := line.to_lower()
-	if "hurt" in lower or "blood" in lower or "injur" in lower:
-		return "injured"
-	if "afraid" in lower or "scared" in lower or "hollow" in lower or "run" in lower:
-		return "afraid"
-	if "damn" in lower or "angry" in lower or "enough" in lower:
-		return "angry"
-	if "safe" in lower or "thank" in lower or "made it" in lower:
-		return "relieved"
-	if "tired" in lower or "exhaust" in lower:
-		return "exhausted"
-	if "will" in lower or "have to" in lower or "ready" in lower:
-		return "determined"
-	if "but" in lower or "maybe" in lower or "think" in lower:
+func _expression_for_entry(entry: DialogueEntry) -> String:
+	# Use the existing authored key. Historical data used two labels that do
+	# not have dedicated portrait exports, so they map to the nearest approved
+	# expression without changing the dialogue resource.
+	var authored: String = entry.expression_key
+	if authored == "suspicious":
 		return "concerned"
+	if authored == "defensive":
+		return "angry"
+	if authored in ["neutral", "concerned", "angry", "afraid", "relieved", "injured", "exhausted", "determined"]:
+		return authored
 	return "neutral"
+
+func _sequence_key(id: String) -> String:
+	for raw_key in BACKGROUNDS:
+		var key: String = raw_key
+		if id.begins_with("%s_" % key):
+			return key
+	return "intro"
+
+func _update_scene_art(id: String) -> void:
+	var key: String = _sequence_key(id)
+	var path: String = BACKGROUNDS[key]
+	if _scene_art.texture == null or _scene_art.texture.resource_path != path:
+		_scene_art.texture = load(path)
+		if GameManager.effects_enabled():
+			_scene_art.modulate = Color(0.48, 0.52, 0.56, 0.0)
+			_scene_art.scale = Vector2(1.025, 1.025)
+			var scene_tween := _scene_art.create_tween().set_parallel(true).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+			scene_tween.tween_property(_scene_art, "modulate", Color(0.72, 0.76, 0.80, 0.82), 0.44)
+			scene_tween.tween_property(_scene_art, "scale", Vector2.ONE, 1.8)
+		else:
+			_scene_art.modulate = Color(0.72, 0.76, 0.80, 0.82)
+			_scene_art.scale = Vector2.ONE
+	_location_label.text = LOCATION_NAMES[key]
+
+func _play_entry_reveal(has_speaker: bool) -> void:
+	_text_label.visible_ratio = 1.0
+	_text_panel.modulate = Color.WHITE
+	if not GameManager.effects_enabled():
+		return
+	_text_panel.modulate.a = 0.0
+	_text_label.visible_ratio = 0.0
+	var panel_tween := _text_panel.create_tween().set_parallel(true).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+	panel_tween.tween_property(_text_panel, "modulate:a", 1.0, 0.24)
+	panel_tween.tween_property(_text_label, "visible_ratio", 1.0, clampf(_text_label.text.length() * 0.012, 0.35, 1.15))
+	if has_speaker:
+		_portrait.modulate.a = 0.0
+		_portrait.scale = Vector2(0.94, 0.94)
+		_portrait.pivot_offset = _portrait.size * 0.5
+		var portrait_tween := _portrait.create_tween().set_parallel(true).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+		portrait_tween.tween_property(_portrait, "modulate:a", 1.0, 0.24)
+		portrait_tween.tween_property(_portrait, "scale", Vector2.ONE, 0.36)
 
 func _on_continue_pressed() -> void:
 	AudioManager.play_sfx("dialogue_advance")
