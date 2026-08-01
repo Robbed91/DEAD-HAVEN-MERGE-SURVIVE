@@ -1,7 +1,41 @@
-[gd_scene load_steps=3 format=3 uid="uid://main_menu_scene"]
+[gd_scene load_steps=6 format=3 uid="uid://main_menu_scene"]
 
 [ext_resource type="Script" path="res://scenes/main_menu/main_menu.gd" id="1"]
 [ext_resource type="Script" path="res://scenes/main_menu/main_menu_background.gd" id="2"]
+[ext_resource type="Texture2D" path="res://assets/art/main_menu/runtime/main_menu_safe_haven.png" id="3"]
+[sub_resource type="StyleBoxFlat" id="MenuPlate"]
+bg_color = Color(0.055, 0.064, 0.067, 0.88)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.34, 0.31, 0.24, 0.82)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+shadow_color = Color(0, 0, 0, 0.48)
+shadow_size = 10
+content_margin_left = 18.0
+content_margin_top = 18.0
+content_margin_right = 18.0
+content_margin_bottom = 18.0
+
+[sub_resource type="StyleBoxFlat" id="TitlePlate"]
+bg_color = Color(0.045, 0.052, 0.054, 0.7)
+border_width_left = 2
+border_width_bottom = 3
+border_color = Color(0.55, 0.24, 0.12, 0.78)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+shadow_color = Color(0, 0, 0, 0.52)
+shadow_size = 8
+content_margin_left = 16.0
+content_margin_top = 10.0
+content_margin_right = 16.0
+content_margin_bottom = 12.0
 
 [node name="MainMenu" type="Control"]
 layout_mode = 3
@@ -10,76 +44,115 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 script = ExtResource("1")
 
-[node name="Background" type="Control" parent="."]
+[node name="Background" type="TextureRect" parent="."]
+unique_name_in_owner = true
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 mouse_filter = 2
+texture = ExtResource("3")
+expand_mode = 1
+stretch_mode = 6
 script = ExtResource("2")
+
+[node name="AtmosphereScrim" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+color = Color(0.018, 0.024, 0.027, 0.2)
 
 [node name="Content" type="VBoxContainer" parent="."]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 48.0
-offset_top = 140.0
-offset_right = -48.0
-offset_bottom = -80.0
-alignment = 1
-theme_override_constants/separation = 10
+offset_left = 44.0
+offset_top = 48.0
+offset_right = -44.0
+offset_bottom = -50.0
+theme_override_constants/separation = 8
 
-[node name="TitleLabel" type="Label" parent="Content"]
+[node name="TitlePlate" type="PanelContainer" parent="Content"]
+layout_mode = 2
+theme_override_styles/panel = SubResource("TitlePlate")
+
+[node name="Titles" type="VBoxContainer" parent="Content/TitlePlate"]
+layout_mode = 2
+theme_override_constants/separation = -2
+
+[node name="TitleLabel" type="Label" parent="Content/TitlePlate/Titles"]
 unique_name_in_owner = true
 layout_mode = 2
-horizontal_alignment = 1
-theme_override_font_sizes/font_size = 56
+theme_override_colors/font_color = Color(0.92, 0.89, 0.80, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.95)
+theme_override_constants/shadow_offset_x = 3
+theme_override_constants/shadow_offset_y = 3
+theme_override_font_sizes/font_size = 62
 text = "DEAD HAVEN"
-
-[node name="SubtitleLabel" type="Label" parent="Content"]
-layout_mode = 2
 horizontal_alignment = 1
-theme_override_font_sizes/font_size = 30
+
+[node name="SubtitleLabel" type="Label" parent="Content/TitlePlate/Titles"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.83, 0.40, 0.20, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.9)
+theme_override_constants/shadow_offset_x = 2
+theme_override_constants/shadow_offset_y = 2
+theme_override_font_sizes/font_size = 27
 text = "MERGE & SURVIVE"
+horizontal_alignment = 1
 
 [node name="TaglineLabel" type="Label" parent="Content"]
 layout_mode = 2
-horizontal_alignment = 1
+theme_override_colors/font_color = Color(0.92, 0.88, 0.77, 0.92)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.9)
+theme_override_constants/shadow_offset_x = 2
+theme_override_constants/shadow_offset_y = 2
 theme_override_font_sizes/font_size = 18
-modulate = Color(1, 1, 1, 0.75)
-text = "Build shelter. Find survivors. Outlast the dead."
+text = "BUILD SHELTER  •  FIND SURVIVORS  •  OUTLAST THE DEAD"
+horizontal_alignment = 1
+autowrap_mode = 2
 
-[node name="ButtonSpacer" type="Control" parent="Content"]
-custom_minimum_size = Vector2(0, 48)
+[node name="FlexibleSpacer" type="Control" parent="Content"]
 layout_mode = 2
+size_flags_vertical = 3
 
-[node name="NewGameButton" type="Button" parent="Content"]
+[node name="MenuPlate" type="PanelContainer" parent="Content"]
+layout_mode = 2
+theme_override_styles/panel = SubResource("MenuPlate")
+
+[node name="Buttons" type="VBoxContainer" parent="Content/MenuPlate"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="NewGameButton" type="Button" parent="Content/MenuPlate/Buttons"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 72)
+custom_minimum_size = Vector2(0, 70)
 layout_mode = 2
-text = "New Game"
+text = "NEW GAME"
 theme_type_variation = "OliveButton"
 
-[node name="ContinueButton" type="Button" parent="Content"]
+[node name="ContinueButton" type="Button" parent="Content/MenuPlate/Buttons"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 72)
+custom_minimum_size = Vector2(0, 70)
 layout_mode = 2
-text = "Continue"
+text = "CONTINUE"
 theme_type_variation = "RustButton"
 
-[node name="SettingsButton" type="Button" parent="Content"]
+[node name="SettingsButton" type="Button" parent="Content/MenuPlate/Buttons"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 72)
+custom_minimum_size = Vector2(0, 70)
 layout_mode = 2
-text = "Settings"
+text = "SETTINGS"
 theme_type_variation = "NavButton"
 
-[node name="QuitButton" type="Button" parent="Content"]
+[node name="QuitButton" type="Button" parent="Content/MenuPlate/Buttons"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 72)
+custom_minimum_size = Vector2(0, 70)
 layout_mode = 2
-text = "Quit"
+text = "QUIT"
 theme_type_variation = "DangerButton"
 
 [node name="VersionLabel" type="Label" parent="."]
@@ -89,13 +162,13 @@ anchor_left = 1.0
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = -160.0
+offset_left = -210.0
 offset_top = -32.0
 offset_right = -12.0
-modulate = Color(1, 1, 1, 0.5)
+modulate = Color(0.86, 0.84, 0.76, 0.62)
 horizontal_alignment = 2
-theme_override_font_sizes/font_size = 14
-text = "v0.1.0 - Foundation"
+theme_override_font_sizes/font_size = 13
+text = "v0.1.0  •  FOUNDATION"
 
 [node name="OverwriteDialog" type="ConfirmationDialog" parent="."]
 unique_name_in_owner = true

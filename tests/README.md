@@ -16,6 +16,7 @@ godot4 --headless --path . tests/smoke_test_merge.tscn
 godot4 --headless --path . tests/smoke_test_merge_icons.tscn
 godot4 --headless --path . tests/smoke_test_character_portraits.tscn
 godot4 --headless --path . tests/smoke_test_ui_skin.tscn
+godot4 --headless --path . tests/smoke_test_main_menu_presentation.tscn
 godot4 --headless --path . tests/smoke_test_residence.tscn
 godot4 --headless --path . tests/smoke_test_dialogue.tscn
 godot4 --headless --path . tests/smoke_test_scavenging.tscn
@@ -49,6 +50,7 @@ opt-in, point Godot at them directly as shown above.
 - **smoke_test_merge_icons** - inventories all 101 implemented item definitions, asserts every `icon_path` exists and imports as a 256 x 256 texture, and verifies every definition takes the final-art rendering path rather than the procedural fallback.
 - **smoke_test_character_portraits** - verifies all 48 implemented survivor expression portraits (6 survivors × 8 expressions) are registered in character data and load through the final-art route; confirms a missing asset degrades safely to the retained fallback; and instantiates the merge board to prove its runtime grid remains exactly 7 columns by 9 rows (63 cells).
 - **smoke_test_ui_skin** - verifies all eight component-state styles, final resource/navigation/toggle icons, selected navigation treatment, illustrated map-marker routing, and the absence of marker text placeholders.
+- **smoke_test_main_menu_presentation** - verifies the procedural title-screen house is gone, the final 720 x 1280 painterly environment and live title treatment are integrated, all four interactive menu controls retain Android-sized touch targets, and rain/mist/light layers stop under reduced motion.
 - **smoke_test_animation_layer** - verifies shared UI motion, reduced-motion fallback, off-screen ambience suspension, vehicle presentation state neutrality, and that animation does not mutate resources or profile progression.
 - **smoke_test_audio_presentation** - verifies all seven audio buses, 61 cue families, 12 music tracks, 14 ambience loops, every one of the 250 catalogued original files, independent volume routing, dialogue ducking, trigger playback, and gameplay-state neutrality.
 - **smoke_test_residence** (Phase 3) - residence/hotspot/quest data loads correctly; a task refuses to complete before its required item exists; completing it consumes the item, grants coins/XP, and flips the hotspot to COMPLETED; re-completing the same quest is rejected; completing the Noah-rescue quest unlocks him via the generic `unlock_survivor` reward; `get_active_quest_for_hotspot()` returns null once a hotspot's task is done; a full save/reload round trip preserves completed quests, hotspot state and the Noah unlock.

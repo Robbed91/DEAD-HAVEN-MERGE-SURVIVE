@@ -1,80 +1,96 @@
-extends Control
-## MainMenuBackground
-##
-## Original, internally-drawn placeholder scene (no external image assets):
-## a cool night sky, a distant treeline, and the silhouette of a boarded
-## farmhouse doorway with warm light spilling through the gaps - the same
-## motif as the app icon, established here as the game's visual identity.
-## Replace with painted art later; nothing else needs to change to do so.
+extends TextureRect
+class_name MainMenuEnvironment
+## Final painterly title-screen environment. The illustration remains a static,
+## Android-friendly texture; restrained weather and light layers provide the
+## cinemagraph treatment without affecting menu behaviour.
 
-const SKY_TOP := Color("1a1e22")
-const SKY_BOTTOM := Color("100f0e")
-const TREELINE := Color("14130f")
-const HOUSE := Color("201d1a")
-const WOOD_BOARD := Color("8f4a26")
-const GLOW := Color(0.96, 0.82, 0.55, 0.5)
-const GROUND := Color("0e0d0b")
-
-var _glow_phase: float = 0.0
+var _rain: CPUParticles2D
+var _mist: CPUParticles2D
+var _house_glow: Sprite2D
+var _gate_glow: Sprite2D
+var _ambient_time := 0.0
 
 func _ready() -> void:
-	set_process(not GameManager.settings.get("reduced_motion", false))
+	mouse_filter = Control.MOUSE_FILTER_IGNORE
+	clip_contents = true
+	_build_ambient_layers()
+	resized.connect(_layout_ambient_layers)
+	EventBus.settings_changed.connect(_refresh_effects_setting)
+	visibility_changed.connect(_refresh_effects_setting)
+	_layout_ambient_layers()
+	_refresh_effects_setting()
+
+func _build_ambient_layers() -> void:
+	var particle_texture: Texture2D = load("res://assets/ui/hollow_creek/particle_soft.png")
+	_house_glow = _make_glow("HouseGlow", particle_texture, Color(1.0, 0.58, 0.20, 0.15))
+	_gate_glow = _make_glow("GateGlow", particle_texture, Color(1.0, 0.48, 0.14, 0.09))
+	_rain = CPUParticles2D.new()
+	_rain.name = "Rain"
+	_rain.amount = 58
+	_rain.lifetime = 1.65
+	_rain.emission_shape = CPUParticles2D.EMISSION_SHAPE_RECTANGLE
+	_rain.direction = Vector2(0.12, 1.0)
+	_rain.spread = 3.5
+	_rain.gravity = Vector2(18.0, 390.0)
+	_rain.initial_velocity_min = 230.0
+	_rain.initial_velocity_max = 330.0
+	_rain.scale_amount_min = 0.018
+	_rain.scale_amount_max = 0.045
+	_rain.color = Color(0.67, 0.77, 0.86, 0.22)
+	_rain.texture = particle_texture
+	add_child(_rain)
+	_mist = CPUParticles2D.new()
+	_mist.name = "RoadMist"
+	_mist.amount = 8
+	_mist.lifetime = 6.0
+	_mist.emission_shape = CPUParticles2D.EMISSION_SHAPE_RECTANGLE
+	_mist.direction = Vector2(1.0, -0.08)
+	_mist.spread = 16.0
+	_mist.initial_velocity_min = 4.0
+	_mist.initial_velocity_max = 11.0
+	_mist.scale_amount_min = 2.2
+	_mist.scale_amount_max = 4.5
+	_mist.color = Color(0.48, 0.59, 0.65, 0.045)
+	_mist.texture = particle_texture
+	add_child(_mist)
+
+func _make_glow(node_name: String, glow_texture: Texture2D, glow_color: Color) -> Sprite2D:
+	var glow := Sprite2D.new()
+	glow.name = node_name
+	glow.texture = glow_texture
+	glow.modulate = glow_color
+	glow.scale = Vector2(5.5, 5.5)
+	add_child(glow)
+	return glow
+
+func _layout_ambient_layers() -> void:
+	if size.x <= 0.0 or size.y <= 0.0:
+		return
+	_rain.position = Vector2(size.x * 0.5, -20.0)
+	_rain.emission_rect_extents = Vector2(size.x * 0.64, 18.0)
+	_mist.position = Vector2(size.x * 0.48, size.y * 0.77)
+	_mist.emission_rect_extents = Vector2(size.x * 0.42, size.y * 0.05)
+	_house_glow.position = Vector2(size.x * 0.53, size.y * 0.40)
+	_gate_glow.position = Vector2(size.x * 0.48, size.y * 0.59)
 
 func _process(delta: float) -> void:
-	_glow_phase += delta * 0.6
-	queue_redraw()
+	if not _effects_active():
+		return
+	_ambient_time += delta
+	_house_glow.modulate.a = 0.13 + sin(_ambient_time * 3.4) * 0.025 + sin(_ambient_time * 7.1) * 0.008
+	_gate_glow.modulate.a = 0.075 + sin(_ambient_time * 2.1 + 0.8) * 0.015
 
-func _draw() -> void:
-	var s := size
-	# Sky gradient (drawn as stacked bands - no shader dependency).
-	var bands := 24
-	for i in bands:
-		var t := float(i) / float(bands - 1)
-		draw_rect(Rect2(0, s.y * t * 0.6, s.x, s.y * 0.6 / bands + 1), SKY_TOP.lerp(SKY_BOTTOM, t))
-	draw_rect(Rect2(0, s.y * 0.6, s.x, s.y * 0.4), SKY_BOTTOM)
+func _effects_active() -> bool:
+	return is_inside_tree() and is_visible_in_tree() and GameManager.effects_enabled()
 
-	# Distant treeline silhouette.
-	var tree_y := s.y * 0.62
-	var points := PackedVector2Array()
-	points.append(Vector2(0, s.y * 0.7))
-	var segments := 10
-	for i in segments + 1:
-		var x := s.x * float(i) / float(segments)
-		var jitter := sin(float(i) * 1.7) * 18.0
-		points.append(Vector2(x, tree_y + jitter))
-	points.append(Vector2(s.x, s.y * 0.7))
-	draw_colored_polygon(points, TREELINE)
-
-	# Ground.
-	draw_rect(Rect2(0, s.y * 0.7, s.x, s.y * 0.3), GROUND)
-
-	# Warm glow behind the doorway (pulses gently unless reduced motion).
-	var pulse := 1.0 if GameManager.settings.get("reduced_motion", false) else (0.85 + 0.15 * sin(_glow_phase))
-	var house_center_x := s.x * 0.5
-	var glow_center := Vector2(house_center_x, s.y * 0.66)
-	draw_circle(glow_center, s.x * 0.42 * pulse, GLOW)
-
-	# Farmhouse silhouette (simple roofline + walls).
-	var house_w := s.x * 0.62
-	var house_left := house_center_x - house_w * 0.5
-	var roof_peak := Vector2(house_center_x, s.y * 0.42)
-	var wall_top := s.y * 0.56
-	var wall_bottom := s.y * 0.78
-	var house_points := PackedVector2Array([
-		Vector2(house_left, wall_bottom),
-		Vector2(house_left, wall_top),
-		roof_peak,
-		Vector2(house_left + house_w, wall_top),
-		Vector2(house_left + house_w, wall_bottom),
-	])
-	draw_colored_polygon(house_points, HOUSE)
-
-	# Boarded doorway.
-	var door_w := s.x * 0.14
-	var door_h := s.y * 0.16
-	var door_pos := Vector2(house_center_x - door_w * 0.5, wall_bottom - door_h)
-	draw_rect(Rect2(door_pos, Vector2(door_w, door_h)), Color("0c0b0a"))
-	var board_count := 4
-	for i in board_count:
-		var by := door_pos.y + door_h * (float(i) + 0.5) / float(board_count)
-		draw_line(door_pos + Vector2(-2, by - door_pos.y), door_pos + Vector2(door_w + 2, by - door_pos.y), WOOD_BOARD, 5.0)
+func _refresh_effects_setting() -> void:
+	var enabled := _effects_active()
+	set_process(enabled)
+	if _rain:
+		_rain.emitting = enabled
+	if _mist:
+		_mist.emitting = enabled
+	if _house_glow:
+		_house_glow.modulate.a = 0.13 if enabled else 0.11
+	if _gate_glow:
+		_gate_glow.modulate.a = 0.075 if enabled else 0.06
