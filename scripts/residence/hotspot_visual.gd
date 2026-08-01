@@ -1,11 +1,8 @@
 extends Control
 class_name HotspotVisual
-## One tappable repair area on a residence screen. Draws its own small
-## before/after patch (distinct shape per hotspot, damaged-vs-fixed
-## colouring) so the environment visibly changes on completion rather than
-## just a label or icon swap - per the placeholder art policy, this is a
-## deliberately simple but recognisable stand-in for a real illustrated
-## before/after, not a blank rectangle or generic circle.
+## One tappable repair area on a residence screen. Production residences use
+## final illustrated physical-object icons; the procedural drawing remains a
+## defensive fallback for unknown or incomplete future residence data only.
 
 signal tapped(hotspot_id: String)
 
@@ -17,6 +14,9 @@ const HOLLOW_RING := preload("res://assets/ui/hollow_creek/hotspot_ring.png")
 const HOLLOW_REPAIRED := preload("res://assets/ui/hollow_creek/hotspot_repaired.png")
 const FINAL_ICON_FOLDERS := {
 	"hollow_creek_farmhouse": "hollow_creek",
+	"redwater_service_station": "redwater",
+	"greybridge_school": "greybridge",
+	"saint_mercy_hospital": "saint_mercy",
 	"northgate_prison": "northgate",
 }
 
