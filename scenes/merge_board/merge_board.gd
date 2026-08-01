@@ -40,6 +40,7 @@ func _ready() -> void:
 	_storage_panel.item_tapped.connect(func(id): _info_panel.show_for(id, false))
 	_storage_panel.item_long_pressed.connect(func(id): _info_panel.show_for(id, true))
 	_info_panel.changed.connect(_on_state_changed)
+	EventBus.producer_unlocked.connect(func(_producer_item_id): refresh_board())
 	refresh_board()
 
 	var params := SceneRouter.take_pending_params()
@@ -142,7 +143,7 @@ func _on_item_double_tapped(instance_id: String) -> void:
 		AudioManager.play_sfx("producer_activate")
 	else:
 		_play_producer_failure(instance_id, result.reason)
-		_toast_for_producer_failure(result.reason)
+		_toast_for_producer_failure(result.reason, String(result.get("unlock_label", "")))
 
 func _on_drop_attempted(dragged_id: String, cell: BoardCell) -> void:
 	if _interaction_busy:
@@ -333,12 +334,13 @@ func _merge_audio_key(chain_id: String) -> String:
 	if chain_id == "fuel": return "merge_fuel"
 	return "merge_generic"
 
-func _toast_for_producer_failure(reason: String) -> void:
+func _toast_for_producer_failure(reason: String, unlock_label: String = "") -> void:
 	var messages := {
 		"cooldown": "Still recharging.",
 		"exhausted": "This producer is used up.",
 		"no_energy": "Not enough energy.",
 		"board_full": "The board is full.",
+		"producer_locked": "Unlocks after: %s." % unlock_label,
 	}
 	if messages.has(reason):
 		EventBus.show_toast.emit(messages[reason])

@@ -66,9 +66,15 @@ func _show_quest(quest: QuestDefinition) -> void:
 	var needed: int = int(quest.requirements[item_id])
 	var owned: int = BoardState.count_item(item_id)
 	var def := ItemDatabase.get_item(item_id)
+	var chain_id: String = def.chain_id if def != null else ""
 
 	_icon.preview_item_id = item_id
 	_requirement_label.text = "%s: %d / %d" % [def.display_name if def else item_id, owned, needed]
+	_find_button.text = "Find on Board"
+	if not chain_id.is_empty() and not BoardState.is_chain_producer_unlocked(chain_id):
+		var unlock_label := BoardState.get_chain_unlock_label(chain_id)
+		_desc_label.text += "\n\nSupply source unlocks after: %s." % unlock_label
+		_find_button.text = "Show Locked Source"
 
 	var reward_parts: Array[String] = []
 	if quest.rewards.has("coins"):

@@ -52,6 +52,8 @@ func _ready() -> void:
 	_check(DialogueManager.has_entry("signal_keeper_05"), "dialogue catalog incomplete")
 	_check(ResidenceManager.get_residence("northgate_prison") != null, "residence catalog incomplete")
 	_check(ResidenceManager.get_quest("q_rescue_caleb") != null, "quest catalog incomplete")
+	_check(ResidenceManager.get_hotspot_quest_link_count() == 41, "packed hotspot task-link count changed")
+	_check(ResidenceManager.validate_hotspot_quest_links().is_empty(), "packed hotspot task links are invalid")
 	_check(VehicleManager.get_vehicle("delivery_van") != null, "vehicle catalog incomplete")
 
 	if _failures.is_empty():

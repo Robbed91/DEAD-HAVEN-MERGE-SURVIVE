@@ -16,13 +16,30 @@ func _fail(msg: String) -> void:
 func _ready() -> void:
 	GameManager.new_game()
 
-	# -- Starting layout: every producer placed, plus two starter items ----
+	# -- Starting layout: every producer retained, one active at first ------
 	var producer_count := ItemDatabase.get_producer_ids().size()
 	var expected_items := producer_count + 2
 	if BoardState.items.size() != expected_items:
 		_fail("expected %d starting items, got %d" % [expected_items, BoardState.items.size()])
 		return
-	print("SMOKE_MERGE: starting layout OK (%d items, %d producers)" % [BoardState.items.size(), producer_count])
+	var producer_instance_ids: Array[String] = []
+	var construction_producer_id := ""
+	var tool_producer_id := ""
+	for id in BoardState.items:
+		var def := BoardState.get_item_def(id)
+		if def != null and def.is_producer:
+			producer_instance_ids.append(id)
+			if def.chain_id == "construction": construction_producer_id = id
+			if def.chain_id == "tool": tool_producer_id = id
+	if _active_producer_count() != 1 or BoardState.items[construction_producer_id].is_locked:
+		_fail("new board should activate only the construction producer")
+		return
+	var energy_before_locked_tap: int = GameManager.resources.energy
+	var locked_tap := BoardState.tap_producer(tool_producer_id)
+	if locked_tap.success or locked_tap.reason != "producer_locked" or GameManager.resources.energy != energy_before_locked_tap:
+		_fail("locked tool producer should reject without spending energy, got %s" % str(locked_tap))
+		return
+	print("SMOKE_MERGE: starting layout OK (%d items, 1/%d producers active)" % [BoardState.items.size(), producer_count])
 
 	# -- Valid merge + discovery reward -------------------------------------
 	var construction_ids: Array[String] = []
@@ -48,12 +65,41 @@ func _ready() -> void:
 		return
 	print("SMOKE_MERGE: valid merge + discovery reward OK")
 
+	# -- Progressive producer milestones -----------------------------------
+	var repair_result := ResidenceManager.try_complete_quest("q_secure_front_door")
+	if not repair_result.success or _active_producer_count() != 2 or BoardState.items[tool_producer_id].is_locked:
+		_fail("securing the front door should unlock only the tool producer")
+		return
+	ResidenceManager.completed_quest_ids["q_clear_living_room"] = true
+	BoardState.refresh_producer_locks(false)
+	if _active_producer_count() != 3:
+		_fail("clearing the living room should unlock the food producer")
+		return
+	ResidenceManager.completed_quest_ids["q_repair_pantry"] = true
+	BoardState.refresh_producer_locks(false)
+	if _active_producer_count() != 4:
+		_fail("repairing the pantry should unlock the medical producer")
+		return
+	ResidenceManager.completed_quest_ids["q_rescue_noah"] = true
+	BoardState.refresh_producer_locks(false)
+	if _active_producer_count() != 5:
+		_fail("rescuing Noah should unlock the trap producer")
+		return
+	VehicleManager.discover_vehicle("delivery_van")
+	if _active_producer_count() != 6:
+		_fail("discovering the delivery van should unlock vehicle parts")
+		return
+	GameManager.set_story_flag("redwater_unlocked", true)
+	if _active_producer_count() != 8:
+		_fail("unlocking Redwater should unlock fuel and electronics")
+		return
+	GameManager.set_story_flag("greybridge_unlocked", true)
+	if _active_producer_count() != 9:
+		_fail("unlocking Greybridge should unlock clothing and complete producer progression")
+		return
+	print("SMOKE_MERGE: producer progression milestones unlock 1 -> 9 without replacing instances OK")
+
 	# -- Invalid merges: producers, and mismatched chain/level --------------
-	var producer_ids := ItemDatabase.get_producer_ids()
-	var producer_instance_ids: Array[String] = []
-	for id in BoardState.items:
-		if BoardState.get_item_def(id).is_producer:
-			producer_instance_ids.append(id)
 	var producer_merge := BoardState.try_merge(producer_instance_ids[0], producer_instance_ids[1])
 	if producer_merge.success or producer_merge.reason != "producers_do_not_merge":
 		_fail("merging two producers should fail with producers_do_not_merge, got %s" % str(producer_merge))
@@ -79,11 +125,6 @@ func _ready() -> void:
 	print("SMOKE_MERGE: max-level merge correctly rejected OK")
 
 	# -- Producer tap: energy spend + cooldown blocks immediate re-tap ------
-	var construction_producer_id := ""
-	for id in producer_instance_ids:
-		if BoardState.get_item_def(id).chain_id == "construction":
-			construction_producer_id = id
-			break
 	var energy_before: int = GameManager.resources.energy
 	var tap_result := BoardState.tap_producer(construction_producer_id)
 	if not tap_result.success:
@@ -194,3 +235,11 @@ func _ready() -> void:
 
 	print("SMOKE_MERGE_TEST_OK")
 	get_tree().quit(0)
+
+func _active_producer_count() -> int:
+	var count := 0
+	for instance_id in BoardState.items:
+		var def := BoardState.get_item_def(instance_id)
+		if def != null and def.is_producer and not BoardState.items[instance_id].is_locked:
+			count += 1
+	return count

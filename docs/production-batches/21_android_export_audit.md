@@ -31,6 +31,8 @@ The regenerated filtered Android tree contains 2,179 files and 163,664,357 bytes
 - Signature: verified with the same debug certificate as the version-code-1 baseline.
 - Certificate SHA-256: `1fba3d732cbc32351fb7e67e69044aeed0d27d1a84fc680fec79ffc7eb2b9f94`.
 
+Provenance clarification: the APK was assembled from an uncommitted working tree based on `781c27c`. Its runtime source changes were subsequently committed in `72fae9b`, so the artifact is runtime-equivalent to that commit but was not produced from a clean checkout of `72fae9b`.
+
 The earlier version-code-2 verification package was installed over the signed version-code-1 baseline without clearing data. The canonical `files/saves/slot1.json` SHA-256 remained `dccf7b2030d7b4113b2c0c108d60d6d79877d5f45f74506d868d2fffd5c33abf`; Continue, residence progress, merge-board contents, and stored inventory were visible afterward. Captures are in `docs/android-export-captures/`.
 
 The newly rebuilt portrait APK above has signature/package inspection only. Its final emulator install was intentionally deferred when local Gradle packaging became slow, at the user's request to push the checkpoint for another packager.

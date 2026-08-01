@@ -26,8 +26,11 @@ var completed_quest_ids: Dictionary = {} # quest_id -> true
 func _ready() -> void:
 	_load_dir(RESIDENCES_DIR, _residences)
 	_load_dir(QUESTS_DIR, _quests)
+	var link_errors := validate_hotspot_quest_links()
+	for error in link_errors:
+		push_error("ResidenceManager: %s" % error)
 	if OS.is_debug_build():
-		print("RUNTIME_CATALOG residences=%d quests=%d" % [_residences.size(), _quests.size()])
+		print("RUNTIME_CATALOG residences=%d quests=%d hotspot_links=%d link_errors=%d" % [_residences.size(), _quests.size(), get_hotspot_quest_link_count(), link_errors.size()])
 
 func _load_dir(path: String, into: Dictionary) -> void:
 	var dir := DirAccess.open(path)
@@ -65,6 +68,28 @@ func get_hotspot(residence_id: String, hotspot_id: String) -> ResidenceHotspot:
 		if h.id == hotspot_id:
 			return h
 	return null
+
+func get_hotspot_quest_link_count() -> int:
+	var count := 0
+	for residence in _residences.values():
+		for hotspot in residence.hotspots:
+			count += hotspot.required_task_ids.size()
+	return count
+
+func validate_hotspot_quest_links() -> Array[String]:
+	var errors: Array[String] = []
+	for residence in _residences.values():
+		for hotspot in residence.hotspots:
+			if hotspot.required_task_ids.is_empty():
+				errors.append("%s/%s has no required task" % [residence.id, hotspot.id])
+				continue
+			for quest_id in hotspot.required_task_ids:
+				var quest := get_quest(quest_id)
+				if quest == null:
+					errors.append("%s/%s references missing quest %s" % [residence.id, hotspot.id, quest_id])
+				elif quest.residence_hotspot_id != hotspot.id:
+					errors.append("%s points to %s but quest %s points to %s" % [hotspot.id, quest_id, quest_id, quest.residence_hotspot_id])
+	return errors
 
 func get_hotspot_state(hotspot_id: String) -> int:
 	return hotspot_states.get(hotspot_id, ResidenceHotspot.State.DESTROYED)

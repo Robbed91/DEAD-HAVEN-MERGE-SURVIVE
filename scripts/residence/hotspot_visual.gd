@@ -201,6 +201,11 @@ func is_completed() -> bool:
 
 func _gui_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
+		accept_event()
+		if _is_locked():
+			AudioManager.play_sfx("error")
+			EventBus.show_toast.emit("This repair is not available yet.")
+			return
 		tapped.emit(hotspot_id)
 
 func _draw() -> void:

@@ -128,11 +128,13 @@ func new_game() -> void:
 		"last_energy_tick_unix": Time.get_unix_time_from_system(),
 	}
 	is_game_active = true
-	BoardState.reset_new_board()
 	ResidenceManager.reset_new_game()
 	ScavengingManager.apply_save_data({})
 	VehicleManager.reset_new_game()
 	DefenceManager.reset_new_game()
+	# Producer availability is derived from residence/story/vehicle progress,
+	# so those systems must be reset before the board reconciles its locks.
+	BoardState.reset_new_board()
 	SaveManager.save_game()
 	EventBus.game_loaded.emit()
 
@@ -167,11 +169,15 @@ func apply_save_data(data: Dictionary) -> void:
 	if data.has("settings"):
 		settings.merge(data["settings"], true)
 	_apply_offline_energy_regen()
-	BoardState.apply_save_data(data.get("board", {}))
 	ResidenceManager.apply_save_data(data.get("residence", {}))
 	ScavengingManager.apply_save_data(data.get("scavenging", {}))
 	VehicleManager.apply_save_data(data.get("vehicle", {}))
 	DefenceManager.apply_save_data(data.get("defence", {}))
+	# Load the global board after every system its producer locks depend on.
+	# Legacy saves keep every producer instance/position, but activation is
+	# reconciled to the loaded progression state.
+	BoardState.apply_save_data(data.get("board", {}))
+	BoardState.refresh_producer_locks(false)
 	AudioManager.apply_volume_settings()
 
 # -- Resources ---------------------------------------------------------------
@@ -248,7 +254,10 @@ func get_unlocked_survivor_ids() -> Array[String]:
 ## consequence now, without inventing a numeric relationship model that
 ## nothing else reads yet.
 func set_story_flag(key: String, value: Variant) -> void:
+	if profile.story_flags.get(key) == value:
+		return
 	profile.story_flags[key] = value
+	EventBus.story_flag_changed.emit(key, value)
 	SaveManager.request_autosave()
 
 func get_story_flag(key: String, default_value: Variant = false) -> Variant:

@@ -3,6 +3,7 @@ extends Node
 ## the running marker uses the final illustration rather than its old proxy.
 
 const IDS := ["front_door", "kitchen_window", "living_room", "fireplace", "pantry", "upstairs_bedroom", "barn", "rear_escape", "perimeter_traps"]
+var _tap_count := 0
 
 func _ready() -> void:
 	GameManager.new_game()
@@ -46,7 +47,32 @@ func _ready() -> void:
 		visual.set_selected(false)
 		visual.queue_free()
 		await get_tree().process_frame
-	print("SMOKE_HOLLOW_CREEK_HOTSPOT_ICONS_OK icons=9 source=1024 runtime=256 fallback=0")
+
+	# Reproduce a genuinely locked marker without changing production data:
+	# its quest is marked complete while the hotspot remains destroyed. This
+	# is also the inconsistent state that an older/bad packed save can expose.
+	ResidenceManager.completed_quest_ids["q_board_kitchen_windows"] = true
+	var gated := HotspotVisual.new()
+	gated.residence_id = "hollow_creek_farmhouse"
+	gated.hotspot_id = "kitchen_window"
+	gated.size = Vector2(76, 76)
+	gated.tapped.connect(func(_id): _tap_count += 1)
+	add_child(gated)
+	await get_tree().process_frame
+	var tap := InputEventMouseButton.new()
+	tap.button_index = MOUSE_BUTTON_LEFT
+	tap.pressed = true
+	gated._gui_input(tap)
+	if _tap_count != 0:
+		_fail("locked hotspot emitted its tap signal")
+		return
+	ResidenceManager.completed_quest_ids.erase("q_board_kitchen_windows")
+	gated._gui_input(tap)
+	if _tap_count != 1:
+		_fail("available hotspot did not emit exactly one tap signal")
+		return
+	gated.queue_free()
+	print("SMOKE_HOLLOW_CREEK_HOTSPOT_ICONS_OK icons=9 source=1024 runtime=256 fallback=0 lock_tap=pass")
 	get_tree().quit()
 
 func _fail(message: String) -> void:

@@ -27,6 +27,7 @@ signal board_item_removed(instance_id: String)
 signal items_merged(dragged_instance_id: String, target_instance_id: String, resulting_instance_id: String)
 signal item_discovered(item_id: String)
 signal producer_activated(producer_instance_id: String, spawned_instance_id: String)
+signal producer_unlocked(producer_item_id: String)
 
 # -- Residence / quests (Phase 3) ------------------------------------------
 signal hotspot_state_changed(hotspot_id: String, new_state: int)
@@ -35,6 +36,7 @@ signal survivor_unlocked(survivor_id: String)
 
 # -- Story (Phase 4) --------------------------------------------------------
 signal chapter_changed(chapter_id: String)
+signal story_flag_changed(flag_id: String, value: Variant)
 signal dialogue_finished(entry_id: String)
 
 # -- Scavenging (Phase 5) -----------------------------------------------

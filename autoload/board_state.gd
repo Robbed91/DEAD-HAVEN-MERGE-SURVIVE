@@ -14,6 +14,21 @@ const DELETE_UNDO_WINDOW_SECONDS := 5.0
 ## Rarity at/above which the UI must ask for confirmation before deleting.
 const CONFIRM_DELETE_MIN_RARITY := ItemDefinition.Rarity.RARE
 
+## Producers stay in their established board positions for save compatibility,
+## but activation is derived from existing story/repair/vehicle milestones.
+## No separate unlock field is added to the save schema.
+const PRODUCER_UNLOCK_RULES := {
+	"construction_producer": {"kind": "always", "label": "Available from the start"},
+	"tool_producer": {"kind": "quest", "id": "q_secure_front_door", "label": "Secure the Front Door"},
+	"food_producer": {"kind": "quest", "id": "q_clear_living_room", "label": "Clear the Living Room"},
+	"medical_producer": {"kind": "quest", "id": "q_repair_pantry", "label": "Repair the Food Pantry"},
+	"trap_producer": {"kind": "quest", "id": "q_rescue_noah", "label": "Rescue Noah"},
+	"vehicle_parts_producer": {"kind": "vehicle", "id": "delivery_van", "label": "Discover the delivery van"},
+	"fuel_producer": {"kind": "story_flag", "id": "redwater_unlocked", "label": "Unlock Redwater"},
+	"electronics_producer": {"kind": "story_flag", "id": "redwater_unlocked", "label": "Unlock Redwater"},
+	"clothing_producer": {"kind": "story_flag", "id": "greybridge_unlocked", "label": "Unlock Greybridge"},
+}
+
 var items: Dictionary = {} # instance_id -> BoardItem
 var grid: Dictionary = {} # Vector2i -> instance_id
 var storage_order: Array[String] = [] # instance_id, in storage, display order
@@ -29,6 +44,9 @@ var _next_instance_num: int = 0
 
 func _ready() -> void:
 	set_process(true)
+	EventBus.quest_completed.connect(func(_quest_id): refresh_producer_locks(true))
+	EventBus.story_flag_changed.connect(func(_flag_id, _value): refresh_producer_locks(true))
+	EventBus.vehicle_discovered.connect(func(_vehicle_id): refresh_producer_locks(true))
 
 func _process(_delta: float) -> void:
 	purge_expired_deletions()
@@ -44,10 +62,11 @@ func reset_new_board() -> void:
 	storage_capacity = DEFAULT_STORAGE_CAPACITY
 	_next_instance_num = 0
 	_place_starting_layout()
+	refresh_producer_locks(false)
 
-## Every producer starts on the board (Phase 2 has no producer-unlock
-## progression yet - that arrives with residence/quest gating in Phase 3+),
-## plus two loose level-1 items so a first merge is immediately available.
+## Every producer remains in its established board position for legacy-save
+## compatibility; refresh_producer_locks() activates them progressively.
+## Two loose level-1 items make a first construction merge immediately viable.
 func _place_starting_layout() -> void:
 	var producer_ids := ItemDatabase.get_producer_ids()
 	producer_ids.sort()
@@ -62,6 +81,51 @@ func _place_starting_layout() -> void:
 	var starter_row := pos.y + 2
 	spawn_item("construction_1", Vector2i(3, starter_row))
 	spawn_item("construction_1", Vector2i(4, starter_row))
+
+func is_producer_unlocked(producer_item_id: String) -> bool:
+	var rule: Dictionary = PRODUCER_UNLOCK_RULES.get(producer_item_id, {})
+	match String(rule.get("kind", "")):
+		"always":
+			return true
+		"quest":
+			return ResidenceManager.is_quest_complete(String(rule.get("id", "")))
+		"story_flag":
+			return bool(GameManager.get_story_flag(String(rule.get("id", "")), false))
+		"vehicle":
+			return VehicleManager.is_discovered(String(rule.get("id", "")))
+		_:
+			return false
+
+func get_producer_unlock_label(producer_item_id: String) -> String:
+	return String(PRODUCER_UNLOCK_RULES.get(producer_item_id, {}).get("label", "Unknown milestone"))
+
+func get_chain_producer_id(chain_id: String) -> String:
+	for producer_item_id in PRODUCER_UNLOCK_RULES:
+		var def := ItemDatabase.get_item(producer_item_id)
+		if def != null and def.chain_id == chain_id:
+			return producer_item_id
+	return ""
+
+func get_chain_unlock_label(chain_id: String) -> String:
+	var producer_item_id := get_chain_producer_id(chain_id)
+	return get_producer_unlock_label(producer_item_id) if not producer_item_id.is_empty() else ""
+
+func is_chain_producer_unlocked(chain_id: String) -> bool:
+	var producer_item_id := get_chain_producer_id(chain_id)
+	# Reward chains intentionally have no producer and are sourced elsewhere.
+	return producer_item_id.is_empty() or is_producer_unlocked(producer_item_id)
+
+func refresh_producer_locks(announce_unlocks: bool = false) -> void:
+	for instance_id in items:
+		var board_item: BoardItem = items[instance_id]
+		var def := ItemDatabase.get_item(board_item.item_id)
+		if def == null or not def.is_producer:
+			continue
+		var was_locked := board_item.is_locked
+		board_item.is_locked = not is_producer_unlocked(def.id)
+		if announce_unlocks and was_locked and not board_item.is_locked:
+			EventBus.producer_unlocked.emit(def.id)
+			EventBus.show_toast.emit("Producer unlocked: %s" % def.display_name)
 
 # -- Instance management ------------------------------------------------------
 
@@ -235,6 +299,9 @@ func tap_producer(instance_id: String) -> Dictionary:
 	var def := get_item_def(instance_id)
 	if def == null or not def.is_producer:
 		return {"success": false, "reason": "not_a_producer"}
+	board_item.is_locked = not is_producer_unlocked(def.id)
+	if board_item.is_locked:
+		return {"success": false, "reason": "producer_locked", "unlock_label": get_producer_unlock_label(def.id)}
 	if board_item.is_on_cooldown():
 		return {"success": false, "reason": "cooldown", "cooldown_end_unix": board_item.cooldown_end_unix}
 	if board_item.charge_count == 0:

@@ -104,6 +104,53 @@ godot4 --headless --path /path/to/dead-haven-merge-survive \
   --export-debug "Android" build/android/dead_haven.apk
 ```
 
+---
+
+## 2026-08-01 — Progression gating fixes
+
+### Starting commit and objective
+
+- Starting commit: `72fae9b` on `visual-production`.
+- Objective: block interaction with locked residence hotspots and activate the nine existing chain producers progressively, without changing gameplay data or the save schema.
+
+### Implementation and source tracing
+
+- `HotspotVisual._gui_input()` now consumes locked presses, plays the existing error feedback, and emits no `tapped` signal. Available hotspots retain their existing behavior.
+- The padlock seen on Hollow Creek markers is drawn procedurally by `HotspotVisual._draw_illustrated_marker()`; it entered in commit `ef661a1` and is not baked into the final residence artwork.
+- The uploaded v2 APK was assembled from a working tree based on `781c27c`. Its runtime files were later committed in `72fae9b`, but the artifact was not produced from a clean checkout of that commit.
+- The nine established board producer objects and positions remain intact. Their existing `BoardItem.is_locked` state is reconciled from current progress after new-game reset, save load, quest completion, vehicle discovery, and relevant story-flag changes.
+- Unlock order is Construction at start; Tools after Secure the Front Door; Food after Clear the Living Room; Medical after Repair the Food Pantry; Traps after Rescue Noah; Vehicle Parts after delivery-van discovery; Fuel and Electronics after Redwater unlock; and Clothing after Greybridge unlock.
+- Locked producer taps return `producer_locked`, identify the required milestone, and spend no energy. Task panels now expose that milestone when their required chain source is still locked.
+- Residence catalog validation now checks all 41 hotspot-to-quest links for missing IDs, missing quests, and mismatched hotspot IDs.
+
+### Assets, animation, audio, and optimisation
+
+- Assets created or rejected: none.
+- Visual states and animations added: none; this batch corrects interaction and progression gating only.
+- Audio changes: none; existing locked/error cues are reused.
+- Optimisation changes: none.
+
+### Files modified
+
+- `autoload/board_state.gd`, `autoload/event_bus.gd`, `autoload/game_manager.gd`, and `autoload/residence_manager.gd`.
+- `scripts/residence/hotspot_visual.gd`, `scenes/merge_board/merge_board.gd`, and `scenes/ui/task_panel.gd`.
+- Focused assertions in `tests/smoke_test_merge.gd`, `tests/smoke_test_hollow_creek_hotspot_icons.gd`, and `tests/android_export_resource_test.gd`.
+- Detailed evidence: `docs/production-batches/22_progression_gating_fixes.md`.
+
+### Verification
+
+- Clean Godot 4.3 headless import: pass.
+- Hotspot focused test: all nine Hollow Creek icons resolve; locked tap emits zero signals; available tap emits one.
+- Merge focused test: 11 starting objects retained; active producers advance from 1 to 9; locked taps consume no energy; board save/reload remains intact.
+- Android export resource test: 41 hotspot links and zero validation errors; both Android presets and all runtime catalog totals pass.
+- Full smoke suite: 33/33 pass.
+
+### Compatibility, known issues, and exact next phase
+
+- No item, producer, quest, residence, hotspot, story, vehicle, resource, economy, merge-rule, board-position, save-key, or save-schema changes.
+- The previously uploaded APK still contains its previously packaged behavior. A later Android package must verify the new `hotspot_links=41 link_errors=0` runtime line and recheck marker interaction on-device.
+- Next: extract the merge board into a reusable panel, embed it in all five residence screens, remove Merge as a navigation destination, and keep hotspot requirements and task-to-board highlighting inside the unified Home screen.
+
 ## 2026-08-01 — Android export dependency audit checkpoint
 
 ### Starting commit and objective
