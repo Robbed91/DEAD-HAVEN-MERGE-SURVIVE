@@ -37,7 +37,7 @@ const SPEAKER_COLORS := {
 	"signal_keeper": Color("7fb0b8"),
 }
 const BACKGROUNDS := {
-	"intro": "res://assets/concepts/vertical_slice/dialogue/intro_farmhouse_approach_concept.png",
+	"intro": "res://assets/art/dialogue/runtime/intro_farmhouse_approach.png",
 	"noah": "res://assets/art/hollow_creek/environments/runtime/hollow_creek_state_03_habitable.png",
 	"lena": "res://assets/art/redwater/runtime/redwater_state_03_temporary.jpg",
 	"riley": "res://assets/art/greybridge/runtime/greybridge_state_03_temporary.jpg",

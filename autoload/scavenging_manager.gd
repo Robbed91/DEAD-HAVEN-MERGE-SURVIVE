@@ -8,6 +8,7 @@ extends Node
 ## most a small coin/energy/morale cost, never a lost item or survivor.
 
 const MISSIONS_DIR := "res://data/scavenging/"
+const PackedDirectoryScript := preload("res://scripts/data/packed_directory.gd")
 
 var _missions: Dictionary = {} # id -> ScavengingMission
 var completed_mission_ids: Dictionary = {} # mission_id -> times completed (flavor/stats only)
@@ -20,14 +21,17 @@ func _ready() -> void:
 	dir.list_dir_begin()
 	var file_name := dir.get_next()
 	while file_name != "":
-		if not dir.current_is_dir() and file_name.ends_with(".tres"):
-			var mission: ScavengingMission = load(MISSIONS_DIR + file_name)
+		var runtime_name: String = PackedDirectoryScript.resource_name(file_name)
+		if not dir.current_is_dir() and not runtime_name.is_empty():
+			var mission: ScavengingMission = load(MISSIONS_DIR + runtime_name)
 			if mission == null:
-				push_error("ScavengingManager: failed to load %s" % file_name)
+				push_error("ScavengingManager: failed to load %s" % runtime_name)
 			else:
 				_missions[mission.id] = mission
 		file_name = dir.get_next()
 	dir.list_dir_end()
+	if OS.is_debug_build():
+		print("RUNTIME_CATALOG scavenging=%d" % _missions.size())
 
 func get_mission(id: String) -> ScavengingMission:
 	return _missions.get(id)

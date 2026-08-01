@@ -8,6 +8,7 @@ extends Node
 ## a completed quest, ...) calls through.
 
 const DIALOGUE_DIR := "res://data/dialogue/"
+const PackedDirectoryScript := preload("res://scripts/data/packed_directory.gd")
 
 var _entries: Dictionary = {} # id -> DialogueEntry
 
@@ -19,14 +20,17 @@ func _ready() -> void:
 	dir.list_dir_begin()
 	var file_name := dir.get_next()
 	while file_name != "":
-		if not dir.current_is_dir() and file_name.ends_with(".tres"):
-			var entry: DialogueEntry = load(DIALOGUE_DIR + file_name)
+		var runtime_name: String = PackedDirectoryScript.resource_name(file_name)
+		if not dir.current_is_dir() and not runtime_name.is_empty():
+			var entry: DialogueEntry = load(DIALOGUE_DIR + runtime_name)
 			if entry == null:
-				push_error("DialogueManager: failed to load %s" % file_name)
+				push_error("DialogueManager: failed to load %s" % runtime_name)
 			else:
 				_entries[entry.id] = entry
 		file_name = dir.get_next()
 	dir.list_dir_end()
+	if OS.is_debug_build():
+		print("RUNTIME_CATALOG dialogue=%d" % _entries.size())
 
 func get_entry(id: String) -> DialogueEntry:
 	if not _entries.has(id):

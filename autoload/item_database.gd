@@ -7,6 +7,7 @@ extends Node
 
 const ITEMS_DIR := "res://data/items/"
 const CHAINS_DIR := "res://data/chains/"
+const PackedDirectoryScript := preload("res://scripts/data/packed_directory.gd")
 
 var _definitions: Dictionary = {} # item_id -> ItemDefinition
 var _chains: Dictionary = {} # chain_id -> Dictionary (parsed chain json)
@@ -15,6 +16,8 @@ var _chain_order: Array[String] = []
 func _ready() -> void:
 	_load_definitions()
 	_load_chains()
+	if OS.is_debug_build():
+		print("RUNTIME_CATALOG items=%d chains=%d" % [_definitions.size(), _chains.size()])
 
 func _load_definitions() -> void:
 	var dir := DirAccess.open(ITEMS_DIR)
@@ -24,12 +27,13 @@ func _load_definitions() -> void:
 	dir.list_dir_begin()
 	var file_name := dir.get_next()
 	while file_name != "":
-		if not dir.current_is_dir() and file_name.ends_with(".tres"):
-			var def: ItemDefinition = load(ITEMS_DIR + file_name)
+		var runtime_name: String = PackedDirectoryScript.resource_name(file_name)
+		if not dir.current_is_dir() and not runtime_name.is_empty():
+			var def: ItemDefinition = load(ITEMS_DIR + runtime_name)
 			if def == null:
-				push_error("ItemDatabase: failed to load %s" % file_name)
+				push_error("ItemDatabase: failed to load %s" % runtime_name)
 			elif def.id.is_empty():
-				push_error("ItemDatabase: %s has an empty id" % file_name)
+				push_error("ItemDatabase: %s has an empty id" % runtime_name)
 			else:
 				_definitions[def.id] = def
 		file_name = dir.get_next()

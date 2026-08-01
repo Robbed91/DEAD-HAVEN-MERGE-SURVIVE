@@ -3,7 +3,7 @@ extends Node
 ## artwork and the correct illustrated location without touching dialogue data.
 
 const CASES := [
-	["intro_02", "mara_vale", "intro_farmhouse_approach_concept.png", "neutral"],
+	["intro_02", "mara_vale", "intro_farmhouse_approach.png", "neutral"],
 	["noah_02", "noah_vance", "hollow_creek_state_03_habitable.png", "injured"],
 	["lena_02", "lena_ortiz", "redwater_state_03_temporary.jpg", "angry"],
 	["riley_02", "riley_chen", "greybridge_state_03_temporary.jpg", "concerned"],

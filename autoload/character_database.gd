@@ -9,6 +9,7 @@ extends Node
 ## DEVELOPMENT_LOG.md Known issues).
 
 const CHARACTERS_DIR := "res://data/characters/"
+const PackedDirectoryScript := preload("res://scripts/data/packed_directory.gd")
 
 var _survivors: Dictionary = {} # id -> SurvivorDefinition
 
@@ -20,14 +21,17 @@ func _ready() -> void:
 	dir.list_dir_begin()
 	var file_name := dir.get_next()
 	while file_name != "":
-		if not dir.current_is_dir() and file_name.ends_with(".tres"):
-			var def: SurvivorDefinition = load(CHARACTERS_DIR + file_name)
+		var runtime_name: String = PackedDirectoryScript.resource_name(file_name)
+		if not dir.current_is_dir() and not runtime_name.is_empty():
+			var def: SurvivorDefinition = load(CHARACTERS_DIR + runtime_name)
 			if def == null:
-				push_error("CharacterDatabase: failed to load %s" % file_name)
+				push_error("CharacterDatabase: failed to load %s" % runtime_name)
 			else:
 				_survivors[def.id] = def
 		file_name = dir.get_next()
 	dir.list_dir_end()
+	if OS.is_debug_build():
+		print("RUNTIME_CATALOG characters=%d" % _survivors.size())
 
 func get_survivor(id: String) -> SurvivorDefinition:
 	return _survivors.get(id)

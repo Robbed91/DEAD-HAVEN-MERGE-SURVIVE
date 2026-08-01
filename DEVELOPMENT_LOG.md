@@ -104,6 +104,45 @@ godot4 --headless --path /path/to/dead-haven-merge-survive \
   --export-debug "Android" build/android/dead_haven.apk
 ```
 
+## 2026-08-01 — Android export dependency audit checkpoint
+
+### Starting commit and objective
+
+- Starting commit: `781c27c` on `visual-production`.
+- Objective: replace the broad Android export with audited shipping and verification presets, prove dynamically loaded content survives packing, preserve version-code-1 save data, and prepare a debug-signed version-code-2 playtest package.
+
+### Assets and files
+
+- Promoted the live farmhouse-approach dialogue painting from the excluded concepts tree to `assets/art/dialogue/runtime/intro_farmhouse_approach.png`; no new or rejected artwork.
+- Added `scripts/data/packed_directory.gd` and updated the six catalog autoloads so Godot PCK `.tres.remap` directory entries resolve to their canonical `.tres` paths.
+- Added `Android` (arm64) and `Android Verification` (arm64 plus x86_64) version-code-2 presets with explicit runtime includes and audited development/source exclusions.
+- Corrected `project.godot` from the string `"portrait"` to Godot 4.3's integer orientation enum `1`. The generated Android manifest now says `screenOrientation="portrait"`.
+- Added `tests/android_export_resource_test.gd/.tscn`, updated the dialogue presentation assertion for the promoted runtime filename, and captured prior upgrade evidence under `docs/android-export-captures/`.
+- Detailed evidence: `docs/production-batches/21_android_export_audit.md`.
+- Visual states, animations, audio assets, gameplay values, identifiers, and save schema: unchanged.
+
+### Export, install, and optimisation evidence
+
+- Filtered export tree: 2,179 files, 163,664,357 bytes; all expected catalog remaps and 13 chain JSON files present.
+- Earlier v2 verification install loaded complete runtime catalogs and upgraded the v1 representative save without clearing data. Canonical `files/saves/slot1.json` retained SHA-256 `dccf7b2030d7b4113b2c0c108d60d6d79877d5f45f74506d868d2fffd5c33abf`.
+- Regenerated portrait verification APK is stored outside Git at `S:\Rob B\Codex\B\Codex\godot-4.3\artifacts\batch3-export-audit\dead-haven-v2-debug-verification-portrait.apk`.
+- APK size: 315,345,644 bytes; SHA-256 `ED06DF7387B7DC091D16CED5E60E2A980A0F517852674DF37E7EDBA212891CA1`.
+- Debug certificate SHA-256 `1fba3d732cbc32351fb7e67e69044aeed0d27d1a84fc680fec79ffc7eb2b9f94`, matching the v1 baseline. No credential is tracked.
+- Packaging excludes non-runtime material but the APK remains above the final 200 MB target; texture/audio optimisation remains Batch 4 work.
+
+### Tests run
+
+- Clean Godot 4.3 headless import from a new cache: pass.
+- Focused Android export resource test: pass with both presets and catalog totals 101 items, 13 chains, 6 characters, 5 residences, 42 quests, 23 dialogue entries, 10 scavenging locations, and 1 vehicle.
+- Dialogue presentation focused rerun: pass.
+- All non-audio smoke scenes: 32/32 pass.
+- Audio presentation: pass on its first isolated rerun; the same pre-existing headless playback-start timing check failed in the rapid final 33-scene loop, leaving that loop at 32/33. This checkpoint is deliberately not described as a final 33/33 acceptance build.
+
+### Known issues and exact next phase
+
+- Godot's Gradle wrapper did not return promptly after generating the complete export tree. Direct Gradle assembly succeeded and the resulting APK verifies, but the newly rebuilt portrait artifact has not yet been installed on the emulator.
+- Next: install the portrait v2 APK over the retained v1/v2 data, verify portrait presentation and canonical save persistence, make the headless audio test deterministic enough for a clean 33/33 loop, then produce the arm64-only playtest APK and begin texture/audio/memory optimisation.
+
 ---
 
 ## 2026-08-01 — Strict-quality Batch 1: final Android launcher identity

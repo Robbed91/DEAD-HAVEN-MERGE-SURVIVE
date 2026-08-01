@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" path="res://scenes/dialogue/dialogue.gd" id="1"]
 [ext_resource type="Script" path="res://scripts/ui/survivor_silhouette.gd" id="2"]
-[ext_resource type="Texture2D" path="res://assets/concepts/vertical_slice/dialogue/intro_farmhouse_approach_concept.png" id="3"]
+[ext_resource type="Texture2D" path="res://assets/art/dialogue/runtime/intro_farmhouse_approach.png" id="3"]
 
 [node name="Dialogue" type="Control"]
 layout_mode = 3

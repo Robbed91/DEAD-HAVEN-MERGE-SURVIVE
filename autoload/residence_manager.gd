@@ -15,6 +15,7 @@ extends Node
 
 const RESIDENCES_DIR := "res://data/residences/"
 const QUESTS_DIR := "res://data/quests/"
+const PackedDirectoryScript := preload("res://scripts/data/packed_directory.gd")
 
 var _residences: Dictionary = {} # id -> ResidenceDefinition
 var _quests: Dictionary = {} # id -> QuestDefinition
@@ -25,6 +26,8 @@ var completed_quest_ids: Dictionary = {} # quest_id -> true
 func _ready() -> void:
 	_load_dir(RESIDENCES_DIR, _residences)
 	_load_dir(QUESTS_DIR, _quests)
+	if OS.is_debug_build():
+		print("RUNTIME_CATALOG residences=%d quests=%d" % [_residences.size(), _quests.size()])
 
 func _load_dir(path: String, into: Dictionary) -> void:
 	var dir := DirAccess.open(path)
@@ -34,10 +37,11 @@ func _load_dir(path: String, into: Dictionary) -> void:
 	dir.list_dir_begin()
 	var file_name := dir.get_next()
 	while file_name != "":
-		if not dir.current_is_dir() and file_name.ends_with(".tres"):
-			var res: Resource = load(path + file_name)
+		var runtime_name: String = PackedDirectoryScript.resource_name(file_name)
+		if not dir.current_is_dir() and not runtime_name.is_empty():
+			var res: Resource = load(path + runtime_name)
 			if res == null:
-				push_error("ResidenceManager: failed to load %s" % file_name)
+				push_error("ResidenceManager: failed to load %s" % runtime_name)
 			else:
 				into[res.id] = res
 		file_name = dir.get_next()
