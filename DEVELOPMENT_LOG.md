@@ -151,6 +151,31 @@ godot4 --headless --path /path/to/dead-haven-merge-survive \
 - The previously uploaded APK still contains its previously packaged behavior. A later Android package must verify the new `hotspot_links=41 link_errors=0` runtime line and recheck marker interaction on-device.
 - Next: extract the merge board into a reusable panel, embed it in all five residence screens, remove Merge as a navigation destination, and keep hotspot requirements and task-to-board highlighting inside the unified Home screen.
 
+## 2026-08-01 — Per-residence board save migration
+
+### Starting commit and objective
+
+- Starting commit: `644e396` on `visual-production`.
+- Objective: replace the singular saved board with five isolated residence boards and a deterministic version-1 migration before changing board layouts or presentation.
+
+### Implementation
+
+- `BoardState` remains the public gameplay API while snapshotting inactive boards by stable residence ID. Its existing item/grid/storage calls operate on the active residence.
+- Save version 2 stores all five residence payloads, the active residence, and account-wide discovery history. The existing profile residence stays synchronized.
+- Version-1 saves move their complete legacy board into the saved residence exactly once, preserving instance/item IDs, coordinates, storage, producer charges/cooldowns, lock/cobweb/bubble flags, and discovery history. Four clean boards are then materialized; legacy items are never duplicated.
+- Assets created/rejected, visual states, animations, audio, Android export, gameplay values, merge rules, quest data, and economy: unchanged.
+- Files: `autoload/board_state.gd`, `autoload/save_manager.gd`, `tests/smoke_test_merge.gd`, `tests/smoke_test_save.gd`, and `docs/production-batches/23_per_residence_board_save_migration.md`.
+
+### Verification
+
+- Godot 4.3 zero-cache import: exit 0. One allocator cleanup diagnostic appeared once at shutdown; an immediate rerun completed cleanly with no parser/import/resource error.
+- Focused merge/save tests: board isolation, five residence keys, exact legacy sentinel position, version-2 round trip, and backup recovery pass.
+- Full discovered smoke suite: 33/33 pass.
+
+### Known issues and exact next phase
+
+- All five boards intentionally retain the old sparse starting layout in this schema-only batch.
+- Next: authored per-residence box/cobweb layouts plus covered/cobweb interaction and task-count restrictions.
 ## 2026-08-01 — Android export dependency audit checkpoint
 
 ### Starting commit and objective

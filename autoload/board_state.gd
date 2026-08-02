@@ -11,6 +11,15 @@ const ROWS := 9
 const PRODUCER_ENERGY_COST := 1
 const DEFAULT_STORAGE_CAPACITY := 30
 const DELETE_UNDO_WINDOW_SECONDS := 5.0
+const BOARD_FORMAT_VERSION := 2
+const DEFAULT_RESIDENCE_ID := "hollow_creek_farmhouse"
+const RESIDENCE_IDS := [
+	"hollow_creek_farmhouse",
+	"redwater_service_station",
+	"greybridge_school",
+	"saint_mercy_hospital",
+	"northgate_prison",
+]
 ## Rarity at/above which the UI must ask for confirmation before deleting.
 const CONFIRM_DELETE_MIN_RARITY := ItemDefinition.Rarity.RARE
 
@@ -34,6 +43,12 @@ var grid: Dictionary = {} # Vector2i -> instance_id
 var storage_order: Array[String] = [] # instance_id, in storage, display order
 var storage_capacity: int = DEFAULT_STORAGE_CAPACITY
 var discovered_item_ids: Dictionary = {} # item_id -> true, for one-time discovery rewards
+var active_residence_id: String = DEFAULT_RESIDENCE_ID
+
+## Inactive residence boards are stored in the same shape used on disk.
+## The existing public items/grid/storage API always represents the active
+## residence so merge and quest callers do not need gameplay-facing changes.
+var _residence_board_data: Dictionary = {}
 
 ## instance_id -> {item_id, grid_position, expires_at_unix}. Soft-deleted
 ## items are already off the board/out of storage but can still be restored
@@ -54,16 +69,49 @@ func _process(_delta: float) -> void:
 # -- Lifecycle ---------------------------------------------------------------
 
 func reset_new_board() -> void:
+	_residence_board_data.clear()
+	discovered_item_ids.clear()
+	active_residence_id = DEFAULT_RESIDENCE_ID
+	_reset_active_board()
+	_materialize_missing_boards()
+
+func _reset_active_board() -> void:
 	items.clear()
 	grid.clear()
 	storage_order.clear()
-	discovered_item_ids.clear()
 	_pending_deletions.clear()
 	storage_capacity = DEFAULT_STORAGE_CAPACITY
 	_next_instance_num = 0
 	_place_starting_layout()
 	refresh_producer_locks(false)
 
+func activate_residence_board(residence_id: String) -> bool:
+	if not residence_id in RESIDENCE_IDS:
+		push_error("BoardState: unknown residence board '%s'" % residence_id)
+		return false
+	if residence_id == active_residence_id:
+		GameManager.profile.current_residence_id = active_residence_id
+		refresh_producer_locks(false)
+		return true
+	_residence_board_data[active_residence_id] = _active_board_to_data()
+	active_residence_id = residence_id
+	GameManager.profile.current_residence_id = active_residence_id
+	if _residence_board_data.has(residence_id):
+		_apply_active_board_data(_residence_board_data[residence_id])
+	else:
+		_reset_active_board()
+	refresh_producer_locks(false)
+	return true
+
+func has_residence_board(residence_id: String) -> bool:
+	return residence_id == active_residence_id or _residence_board_data.has(residence_id)
+
+func _materialize_missing_boards() -> void:
+	var original_residence_id := active_residence_id
+	for residence_id in RESIDENCE_IDS:
+		if not has_residence_board(residence_id):
+			activate_residence_board(residence_id)
+	activate_residence_board(original_residence_id)
 ## Every producer remains in its established board position for legacy-save
 ## compatibility; refresh_producer_locks() activates them progressively.
 ## Two loose level-1 items make a first construction merge immediately viable.
@@ -444,7 +492,7 @@ func collect_reward(instance_id: String) -> bool:
 
 # -- Save/load -----------------------------------------------------------
 
-func to_save_data() -> Dictionary:
+func _active_board_to_data() -> Dictionary:
 	var items_data := {}
 	for instance_id in items:
 		var board_item: BoardItem = items[instance_id]
@@ -462,19 +510,62 @@ func to_save_data() -> Dictionary:
 		"items": items_data,
 		"storage_order": storage_order.duplicate(),
 		"storage_capacity": storage_capacity,
-		"discovered_item_ids": discovered_item_ids.keys(),
 		"next_instance_num": _next_instance_num,
 	}
 
+func to_save_data() -> Dictionary:
+	_residence_board_data[active_residence_id] = _active_board_to_data()
+	return {
+		"format_version": BOARD_FORMAT_VERSION,
+		"active_residence_id": active_residence_id,
+		"discovered_item_ids": discovered_item_ids.keys(),
+		"residences": _residence_board_data.duplicate(true),
+	}
+
 func apply_save_data(data: Dictionary) -> void:
+	_residence_board_data.clear()
+	discovered_item_ids.clear()
+	if data.is_empty():
+		reset_new_board()
+		return
+
+	# SaveManager normally upgrades version-1 data before it reaches here.
+	# This fallback keeps direct BoardState fixture loads safe and deterministic.
+	if not data.has("residences"):
+		active_residence_id = DEFAULT_RESIDENCE_ID
+		for item_id in data.get("discovered_item_ids", []):
+			discovered_item_ids[item_id] = true
+		_apply_active_board_data(data)
+		_residence_board_data[active_residence_id] = _active_board_to_data()
+		_materialize_missing_boards()
+		return
+
+	active_residence_id = String(data.get("active_residence_id", DEFAULT_RESIDENCE_ID))
+	if not active_residence_id in RESIDENCE_IDS:
+		active_residence_id = DEFAULT_RESIDENCE_ID
+	GameManager.profile.current_residence_id = active_residence_id
+	for item_id in data.get("discovered_item_ids", []):
+		discovered_item_ids[item_id] = true
+	var raw_residences: Dictionary = data.get("residences", {})
+	for residence_id in raw_residences:
+		if residence_id in RESIDENCE_IDS and raw_residences[residence_id] is Dictionary:
+			_residence_board_data[residence_id] = raw_residences[residence_id].duplicate(true)
+	if _residence_board_data.has(active_residence_id):
+		_apply_active_board_data(_residence_board_data[active_residence_id])
+	else:
+		_reset_active_board()
+	_residence_board_data[active_residence_id] = _active_board_to_data()
+	_materialize_missing_boards()
+	refresh_producer_locks(false)
+
+func _apply_active_board_data(data: Dictionary) -> void:
 	items.clear()
 	grid.clear()
 	storage_order.clear()
-	discovered_item_ids.clear()
 	_pending_deletions.clear()
 
 	if data.is_empty():
-		reset_new_board()
+		_reset_active_board()
 		return
 
 	for instance_id in data.get("items", {}):
@@ -500,9 +591,7 @@ func apply_save_data(data: Dictionary) -> void:
 			storage_order.append(instance_id)
 
 	storage_capacity = data.get("storage_capacity", DEFAULT_STORAGE_CAPACITY)
-	for item_id in data.get("discovered_item_ids", []):
-		discovered_item_ids[item_id] = true
 	_next_instance_num = data.get("next_instance_num", items.size())
 
 	if items.is_empty():
-		reset_new_board()
+		_reset_active_board()

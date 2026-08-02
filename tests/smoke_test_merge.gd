@@ -209,6 +209,37 @@ func _ready() -> void:
 		return
 	print("SMOKE_MERGE: reward-chain collection OK")
 
+	# -- Per-residence board isolation -----------------------------------------
+	var hollow_marker := BoardState.spawn_item("construction_3", BoardState.find_empty_cell())
+	var hollow_marker_pos: Vector2i = hollow_marker.grid_position
+	var hollow_count: int = BoardState.items.size()
+	if not BoardState.activate_residence_board("redwater_service_station"):
+		_fail("could not activate Redwater board")
+		return
+	if BoardState.active_residence_id != "redwater_service_station" or BoardState.items.size() != expected_items:
+		_fail("Redwater should activate its own untouched starting board")
+		return
+	var redwater_marker := BoardState.spawn_item("food_2", BoardState.find_empty_cell())
+	if redwater_marker == null:
+		_fail("could not add Redwater isolation marker")
+		return
+	BoardState.activate_residence_board("hollow_creek_farmhouse")
+	if BoardState.items.size() != hollow_count or BoardState.count_item("food_2") != 0:
+		_fail("Redwater mutation leaked into Hollow Creek")
+		return
+	if not BoardState.items.has(hollow_marker.instance_id) or BoardState.items[hollow_marker.instance_id].grid_position != hollow_marker_pos:
+		_fail("Hollow Creek item position did not survive board switching")
+		return
+	BoardState.activate_residence_board("redwater_service_station")
+	if BoardState.count_item("food_2") != 1:
+		_fail("Redwater board mutation did not survive switching")
+		return
+	BoardState.activate_residence_board("hollow_creek_farmhouse")
+	var board_preview := BoardState.to_save_data()
+	if board_preview.residences.size() != BoardState.RESIDENCE_IDS.size():
+		_fail("version-2 board save must contain all five residences")
+		return
+	print("SMOKE_MERGE: five residence boards remain isolated across switching OK")
 	# -- Save / reload round trip ------------------------------------------------
 	var items_before: int = BoardState.items.size()
 	var storage_before: int = BoardState.storage_order.size()
