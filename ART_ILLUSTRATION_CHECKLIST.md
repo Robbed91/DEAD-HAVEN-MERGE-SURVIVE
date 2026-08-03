@@ -171,7 +171,7 @@ Tool Crate as the template).
 - [x] **Broken Radio Desk** (electronics producer) - approved normal plus selected/active/low-charge/empty/recharge at `assets/items/electronics/producer*.png`; source master at `assets/concepts/producer_states/electronics_states_master.png`
 - [x] **Abandoned Wardrobe** (clothing producer) - approved normal plus selected/active/low-charge/empty/recharge at `assets/items/clothing/producer*.png`; source master at `assets/concepts/producer_states/clothing_states_master.png`
 
-The eight sets are artwork-complete but await generalized runtime texture resolution in `scripts/merge/item_view.gd`. Review evidence: `docs/producer-state-captures/producer_states_contact_sheet.png` and `producer_states_board_scale_68px.png`.
+All nine producers now resolve their state art live through `scripts/merge/item_view.gd`'s generalized `_resolve_producer_state_path()`, verified by `tests/smoke_test_producer_states.gd` and captured running in the real embedded Haven board at `docs/producer-state-captures/live_embedded_tool_*.png`. Original review evidence: `docs/producer-state-captures/producer_states_contact_sheet.png` and `producer_states_board_scale_68px.png`.
 
 ## 10. Vehicle - delivery van (9 upgrade stages)
 

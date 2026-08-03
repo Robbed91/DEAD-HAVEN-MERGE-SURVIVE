@@ -106,6 +106,29 @@ godot4 --headless --path /path/to/dead-haven-merge-survive \
 
 ---
 
+## 2026-08-03 — Strict-quality Batch 3, part 2: status doc reconciliation
+
+### Starting commit and objective
+
+- Starting commit: `64f94c2` on `visual-production` (the chain-legend final-art batch).
+- Objective: the doc-reconciliation piece of Batch 3 from `docs/CLAUDE_HANDOVER_2026-08-03.md` - update `docs/RELEASE_PRESENTATION_GAP_REPORT.md`, `docs/FINAL_ASSET_MANIFEST.csv`, and `ART_ILLUSTRATION_CHECKLIST.md` against runtime truth, without touching any code.
+
+### Changes
+
+- `docs/RELEASE_PRESENTATION_GAP_REPORT.md`: rewrote against the current branch tip. Added rows for producer state art, gameplay-chain cash-out, chain-legend art, and the unified Home screen, all with real test-name evidence. Removed the Android launcher/icon blocker (done, per `docs/production-batches/19_android_launcher_identity.md`). Reframed the remaining blockers as exactly two: Android device optimisation/APK verification (Batch 4, not started) and chain-VFX/environment/danger presentation (the rest of Batch 3, not started). Updated the branch-consolidation counts (`visual-production` is 47 commits ahead of `main`, 32 ahead of `claude/dead-haven-repo-setup-gvbesn`, both re-measured directly rather than copied from the stale report).
+- `docs/FINAL_ASSET_MANIFEST.csv`: the 8 non-Construction producer rows still read "awaiting generalized resolver" / "Approved awaiting integration" from before Batch 1 of this handover; updated to "integrated via generalized resolver" / "Integrated - already acceptable". Fixed `UI_CHAIN_LEGEND`'s row the same way for this batch's own chain-legend-art change. Caught and fixed a CSV-breaking mistake during editing: my first replacement text for the producer rows contained an unescaped comma, which would have silently shifted every later column on those two lines - verified with `awk -F',' '{print NF}'` that all 92 rows have exactly 14 columns both before treating it as done and after the real fix.
+- `ART_ILLUSTRATION_CHECKLIST.md`: updated the producer section's trailing note, which still said the 8 sets were "artwork-complete but await generalized runtime texture resolution" - no longer true since Batch 1 integrated them.
+- `assets/manifests/asset_manifest.json` checked for the same stale phrasing; none found, so left alone rather than making unevidenced changes.
+
+### Tests performed
+
+- Clean headless import: zero parse/script errors (no `.gd`/`.tscn` files changed in this batch).
+- Full suite: 36/36 pass, confirming the doc-only changes didn't affect anything runtime.
+
+### Exact next phase
+
+- Continue Batch 3: the two remaining, larger pieces - a pooled chain-ID-driven merge VFX system for all 9 gameplay chains, and per-residence environment presets (rain/fog/dust/leaves/smoke/embers/sparks/flicker/radio pulses/cloud shadows/foliage) plus gameplay-neutral danger presentation on existing triggers.
+
 ## 2026-08-03 — Strict-quality Batch 3, part 1: chain-legend final art
 
 ### Starting commit and objective
