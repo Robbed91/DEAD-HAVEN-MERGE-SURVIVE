@@ -40,14 +40,27 @@ func _scan_scene() -> void:
 		if node.get_node_or_null("AmbientVFX") == null:
 			var ambience := AmbientVFXScript.new()
 			ambience.name = "AmbientVFX"
-			ambience.preset = _preset_for_scene(scene.scene_file_path)
+			ambience.layers = _layers_for_scene(scene.scene_file_path)
 			node.add_child(ambience)
 
-func _preset_for_scene(path: String) -> String:
-	if "northgate" in path or "vehicle" in path: return "industrial"
-	if "saint_mercy" in path: return "fog"
-	if "greybridge" in path: return "dust"
-	return "storm"
+## Per-residence atmosphere combinations - each picks the specific named
+## layers that suit its own setting rather than one exclusive preset for
+## the whole screen. Cloud shadows and lantern/interior flicker are always
+## drawn by AmbientVFX itself regardless of this list.
+func _layers_for_scene(path: String) -> Array[String]:
+	if "haven" in path: # Hollow Creek Farmhouse - scenes/haven/haven.tscn
+		return ["rain", "foliage", "dust", "smoke", "embers"] # storm clouds, rain, grass, chimney fire
+	if "redwater" in path:
+		return ["rain", "dust", "sparks", "smoke"] # road mist/wind debris, fuel-station flicker, generator exhaust
+	if "greybridge" in path:
+		return ["rain", "leaves", "radio_pulse", "smoke", "foliage"] # leaves, radio tower, boiler smoke, schoolyard vegetation
+	if "saint_mercy" in path:
+		return ["fog", "rain", "sparks", "smoke"] # fog, emergency-light/electrical sparks, generator exhaust
+	if "northgate" in path:
+		return ["rain", "dust", "sparks"] # yard dust, restrained sparks
+	if "vehicle" in path:
+		return ["dust", "sparks"]
+	return ["dust"]
 
 func _bind_button(button: Button) -> void:
 	if not is_instance_valid(button) or button.has_meta("motion_fx_bound"): return

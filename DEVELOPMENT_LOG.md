@@ -129,6 +129,38 @@ godot4 --headless --path /path/to/dead-haven-merge-survive \
 
 - Continue Batch 3: the two remaining, larger pieces - a pooled chain-ID-driven merge VFX system for all 9 gameplay chains, and per-residence environment presets (rain/fog/dust/leaves/smoke/embers/sparks/flicker/radio pulses/cloud shadows/foliage) plus gameplay-neutral danger presentation on existing triggers.
 
+## 2026-08-03 — Strict-quality Batch 3, part 4: per-residence environment layers
+
+### Starting commit and objective
+
+- Starting commit: `692850d` on `visual-production` (the chain-specific merge VFX batch).
+- Objective: the environment-presets half of Batch 3's last remaining piece from `docs/CLAUDE_HANDOVER_2026-08-03.md` - rain/fog/dust/leaves/smoke/embers/sparks/flicker/radio pulses/cloud shadows/foliage, mapped per residence, without a generic one-look-fits-all overlay.
+
+### A correction before starting
+
+`scripts/vfx/ambient_vfx.gd` already existed, already auto-attaches to every residence's "Background" node via `scripts/ui/ui_animation_director.gd`'s `_scan_scene()` (a global `CanvasLayer` autoload that scans the current scene on every scene change) - this was not starting from nothing, it was completing an existing system. It had 4 *exclusive* presets (`storm`/`dust`/`fog`/`industrial`), one per residence, chosen by matching substrings in the scene's file path. `industrial` already covered sparks, radio-pulse rings and a generator-vibration motif combined; cloud shadows and lantern/interior flicker were already drawn unconditionally regardless of preset.
+
+### Implementation
+
+- `scripts/vfx/ambient_vfx.gd`: replaced the exclusive `@export_enum preset` with `@export var layers: Array[String]`, so a residence can combine several named effects at once instead of picking one. Added `leaves` (tumbling triangles, faster fall + more horizontal drift than dust), `smoke` (rising, expanding, fading puffs from a low source), `embers` (smaller, brighter, flickering motes rising faster than smoke), and `foliage` (swaying grass blades near the bottom edge - a sway, not a fall/rise, so it reads distinct from leaves). Kept `rain` (renamed from `storm`), `fog`, `dust`, `sparks`, and `radio_pulse` (now its own independently placeable layer instead of bundled only into `industrial`). Cloud shadows and lantern flicker stay unconditional. Unknown layer names are silently ignored rather than erroring. Particle budget/quality-tier/visibility gating logic is unchanged in behaviour, just restructured to build a `Dictionary` of per-layer particle arrays instead of one flat array.
+- `scripts/ui/ui_animation_director.gd`: replaced `_preset_for_scene()` (one string) with `_layers_for_scene()` (an array), matching the handover's own scene-mapping list per residence: Hollow Creek (`scenes/haven/haven.tscn` - the farmhouse's actual folder name is `haven`, not `hollow_creek`, caught by a test before it ever ran for real) gets rain/foliage/dust/smoke/embers for its storm-clouds-and-chimney-fire setting; Redwater gets rain/dust/sparks/smoke for road mist, wind debris, fuel-station flicker and generator exhaust; Greybridge gets rain/leaves/radio_pulse/smoke/foliage for its radio tower and schoolyard; Saint Mercy gets fog/rain/sparks/smoke for its emergency lighting and generator; Northgate gets rain/dust/sparks for yard dust and restrained sparks. The vehicle screen keeps a generic dust/sparks combination; anything unmatched falls back to plain dust, same as before.
+
+### Tests performed
+
+- Clean headless import: zero parse/script errors.
+- New `tests/smoke_test_environment_layers.gd`/`.tscn`: asserts `_layers_for_scene()` returns the exact expected array for all 5 residence scene paths; low graphics quality produces zero particles for every particle-based layer without erroring; an unknown layer name doesn't crash the node; visibility-based processing gating (`is_processing()` on show/hide) is unchanged from before the rewrite. Caught two real bugs while writing this test, both worth knowing about: the Hollow Creek path match against `"hollow_creek"` never matched anything real, since the actual scene lives at `scenes/haven/haven.tscn` (fixed before ever running against real data, not after a failure); and two coroutine helper functions needed explicit `await` at their call sites, a GDScript static-typing requirement this project's earlier tests hadn't hit yet.
+- Full suite: 38/38 pass, including a clean run of `smoke_test_audio_presentation` this time - see Known issues below for that test's ongoing pre-existing flake, unrelated to this batch.
+- New `tests/capture_environment_layers.gd`/`.tscn`: attaches Hollow Creek's real assigned layer combination to its actual background and captures it via `xvfb-run --rendering-driver opengl3` to `docs/producer-state-captures/live_environment_layers_hollow_creek.png`. Hides the embedded `%BoardPanel` first since it otherwise covers almost the entire background these effects render onto - a real constraint of the unified-screen layout from the earlier batch, not a bug. Motion-based effects (rain fall, smoke rise, foliage sway) don't read dramatically in a single static frame by design - deliberately faint accents over final art, matching the existing cloud-shadow/flicker effects' own established restraint - so the automated per-residence assignment test above is the rigorous verification here, this capture is supplementary proof nothing crashes/renders wrong.
+
+### Known issues
+
+- `smoke_test_audio_presentation`'s pre-existing timing flake (tracked since the producer-state-artwork batch) didn't reproduce in this batch's runs. Still not chased down or fixed - noted every batch since it first appeared, still unrelated to any of these changes.
+- Effect combinations per residence are a reasonable interpretation of the handover's scene-mapping list using this project's actual available layer types, not a pixel-exact reproduction of every named detail in that list (e.g. Northgate's "fence movement", "warning lamps", "tower light" aren't generic atmosphere - they'd need bespoke object animation in that residence's own background script, which is a different, larger piece of work than this generic layer system).
+
+### Exact next phase
+
+- The last piece of Batch 3: gameplay-neutral danger presentation (warning pulse, screen-edge threat indicator, gas cloud) wired only to existing defence/scavenging/fuel/danger triggers, respecting reduced motion.
+
 ## 2026-08-03 — Strict-quality Batch 3, part 3: chain-specific merge VFX
 
 ### Starting commit and objective

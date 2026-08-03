@@ -34,6 +34,7 @@ godot4 --headless --path . tests/smoke_test_producer_states.tscn
 godot4 --headless --path . tests/smoke_test_gameplay_cash_out.tscn
 godot4 --headless --path . tests/smoke_test_chain_legend_art.tscn
 godot4 --headless --path . tests/smoke_test_merge_vfx.tscn
+godot4 --headless --path . tests/smoke_test_environment_layers.tscn
 ```
 
 All of the above are cheap to run with a `timeout` wrapper (e.g.
@@ -89,6 +90,8 @@ opt-in, point Godot at them directly as shown above.
 
 - **smoke_test_merge_vfx** - verifies `MergeVFX.burst_plan()`'s pure data (no nodes needed) for all 9 gameplay chains: each has a distinct style, level-1 standard-quality bursts have 7 particles, level-5+ bursts have 12 and set `emphasize=true`, low graphics quality reduces the count without zeroing it, and an unknown chain id falls back to a default style instead of producing nothing. Then, against a real embedded Haven board: three real merges reuse the same pooled `MergeParticle`/glow nodes (`MergeBoard._particle_pool`/`_glow_pool` sizes never change, proving nodes aren't created/freed per merge), and with `reduced_motion` on, a merge shows the glow only with zero particles made visible. `capture_merge_vfx.tscn` captures a real Electronics-chain merge mid-burst to `docs/producer-state-captures/live_merge_vfx_electronics.png`, showing its cool-blue ring/arc particles distinct from Construction's original wood-chip/dust look.
 
+- **smoke_test_environment_layers** - verifies `ui_animation_director.gd`'s `_layers_for_scene()` assigns each of the 5 residences its own distinct combination of named ambient effects (Hollow Creek: rain/foliage/dust/smoke/embers; Redwater: rain/dust/sparks/smoke; Greybridge: rain/leaves/radio_pulse/smoke/foliage; Saint Mercy: fog/rain/sparks/smoke; Northgate: rain/dust/sparks) instead of one exclusive preset per screen; low graphics quality zeroes every particle-based layer without erroring; an unknown layer name is ignored rather than crashing; and hidden/off-screen `AmbientVFX` still stops processing exactly as before this rewrite. `capture_environment_layers.tscn` renders Hollow Creek's real background (board panel hidden so the atmosphere isn't covered) to `docs/producer-state-captures/live_environment_layers_hollow_creek.png`.
+
 ## What these do NOT cover
 
 They run with Godot's headless server backend - no window, no real touch
@@ -99,15 +102,15 @@ or in the editor's running game view; an equivalent Phase 2 checklist for
 drag/merge/producer gestures hasn't been written yet (see DEVELOPMENT_LOG.md
 Known issues).
 
-Results as of the merge-VFX batch (2026-08-03, Godot 4.3.stable): all 37
-`tests/smoke_test*.tscn` scenes pass, deterministically, except
-`smoke_test_audio_presentation` which remains the same pre-existing
-timing-sensitive flake noted in the producer-state-artwork batch and in
-`docs/production-batches/21_android_export_audit.md` - it failed once even
-in isolation during this batch (a first - previously only failed in rapid
-sequential runs) but then passed 5/5 further isolated reruns immediately
-after with no code changed in between, confirming it is a pre-existing
-flake in the test itself, not a regression from any of these changes
+Results as of the environment-layers batch (2026-08-03, Godot 4.3.stable):
+all 38 `tests/smoke_test*.tscn` scenes pass, deterministically, including a
+clean run of `smoke_test_audio_presentation` this time. That test has a
+known pre-existing timing-sensitive flake (see
+`docs/production-batches/21_android_export_audit.md` and the producer-
+state-artwork/merge-VFX batches in `DEVELOPMENT_LOG.md`, where it failed
+intermittently including once in isolation) - unrelated to any of these
+presentation changes, since it exercises audio playback state, not
+merge/board/environment code.
 (see `smoke_test_northgate`'s entry above for a flakiness bug two tests had
 until Phase 12). This list of run commands and the bullets above it are not
 fully reconciled against every test file that exists in `tests/` - the
