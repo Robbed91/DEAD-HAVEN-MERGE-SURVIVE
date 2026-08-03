@@ -26,8 +26,12 @@ const CHAPTER_TITLES := {
 @onready var _chapter_label: Label = %ChapterLabel
 @onready var _defence_button: Button = %DefenceButton
 @onready var _background: HollowCreekEnvironment = $Layout/Scene/Background
+@onready var _board_panel: MergeBoard = %BoardPanel
 
 var _hotspot_visuals: Dictionary = {} # hotspot_id -> HotspotVisual
+
+func _enter_tree() -> void:
+	BoardState.activate_residence_board(RESIDENCE_ID)
 
 func _ready() -> void:
 	for label in [%ResidenceNameLabel, %ChapterLabel, %ProgressLabel]:
@@ -40,6 +44,7 @@ func _ready() -> void:
 			_build_hotspot(hotspot)
 
 	_task_panel.completed.connect(_on_task_completed)
+	_task_panel.find_requested.connect(_board_panel.highlight_chain)
 	_task_panel.visibility_changed.connect(func():
 		if not _task_panel.visible:
 			_set_selected_hotspot("")
@@ -49,6 +54,7 @@ func _ready() -> void:
 	EventBus.defence_resolved.connect(func(_outcome): _refresh_progress())
 	_refresh_progress()
 	_refresh_chapter_label()
+	_apply_board_params()
 
 	# Only auto-launch the intro when this Haven is actually the tree's
 	# active scene (i.e. reached through normal navigation) - never when
@@ -99,6 +105,7 @@ func _set_selected_hotspot(hotspot_id: String) -> void:
 		_hotspot_visuals[id].set_selected(id == hotspot_id)
 
 func _on_task_completed(hotspot_id: String) -> void:
+	_board_panel.refresh_board()
 	AudioManager.play_sfx(_repair_audio_key(hotspot_id))
 	if hotspot_id == "fireplace": AudioManager.play_ambience_layer("fire", -12.0)
 	_play_repair_camera_sequence(hotspot_id)
@@ -110,6 +117,11 @@ func _on_task_completed(hotspot_id: String) -> void:
 	AudioManager.play_sfx("repair_whoosh")
 	AudioManager.play_sfx("task_complete")
 	_refresh_progress()
+
+func _apply_board_params() -> void:
+	var params := SceneRouter.take_pending_params()
+	if params.has("highlight_chain_id"):
+		_board_panel.highlight_chain(String(params.highlight_chain_id))
 
 func _repair_audio_key(hotspot_id: String) -> String:
 	if hotspot_id == "kitchen_window": return "window_board"

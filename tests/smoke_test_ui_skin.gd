@@ -29,8 +29,9 @@ func _ready() -> void:
 	nav.active_tab = "world_map"
 	add_child(nav)
 	await get_tree().process_frame
-	for button_name in ["HavenButton", "MergeButton", "MapButton", "SurvivorsButton", "InventoryButton"]:
+	for button_name in ["HavenButton", "MapButton", "SurvivorsButton", "InventoryButton"]:
 		_assert(nav.get_node("SafeMargin/Row/%s" % button_name).icon != null, "%s final icon missing" % button_name)
+	_assert(nav.get_node_or_null("SafeMargin/Row/MergeButton") == null, "Merge remains a bottom-navigation destination")
 	_assert(nav.get_node("SafeMargin/Row/MapButton").theme_type_variation == "NavSelectedButton", "selected navigation state missing")
 	nav.queue_free()
 
@@ -47,7 +48,7 @@ func _ready() -> void:
 		push_error("SMOKE_UI_SKIN_FAIL")
 		get_tree().quit(1)
 	else:
-		print("SMOKE_UI_SKIN_OK states=8 navigation=5 emoji_markers=0")
+		print("SMOKE_UI_SKIN_OK states=8 navigation=4 embedded_merge=1 emoji_markers=0")
 		get_tree().quit()
 
 func _assert(condition: bool, message: String) -> void:

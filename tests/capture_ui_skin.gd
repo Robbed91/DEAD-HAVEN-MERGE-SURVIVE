@@ -3,7 +3,10 @@ extends Control
 
 const SCENES := {
 	"haven": "res://scenes/haven/haven.tscn",
-	"merge": "res://scenes/merge_board/merge_board.tscn",
+	"redwater": "res://scenes/redwater/redwater.tscn",
+	"greybridge": "res://scenes/greybridge/greybridge.tscn",
+	"saint_mercy": "res://scenes/saint_mercy/saint_mercy.tscn",
+	"northgate": "res://scenes/northgate/northgate.tscn",
 	"map": "res://scenes/world_map/world_map.tscn",
 	"survivors": "res://scenes/survivors/survivors.tscn",
 	"settings": "res://scenes/settings/settings.tscn",
@@ -34,7 +37,13 @@ func _ready() -> void:
 		var panel := screen.get_node_or_null("TaskPanel") as TaskPanel
 		if panel != null:
 			panel.show_for_hotspot("front_door")
-	await get_tree().create_timer(1.0).timeout
+			await get_tree().process_frame
+			var center := panel.get_node("CenterContainer") as Control
+			var card := panel.get_node("CenterContainer/Panel") as Control
+			print("UI_CAPTURE_TASK_GEOMETRY viewport=%s center_local=%s center_global=%s scale=%s card=%s" % [str(get_viewport_rect()), str(Rect2(center.position, center.size)), str(center.get_global_rect()), str(center.get_global_transform_with_canvas().get_scale()), str(card.get_global_rect())])
+	# Wait through the longest new-game announcement so evidence captures the
+	# stable screen rather than a transient banner covering the residence title.
+	await get_tree().create_timer(1.6).timeout
 
 	var filename := OS.get_environment("DEAD_HAVEN_CAPTURE_FILE")
 	if filename.is_empty():

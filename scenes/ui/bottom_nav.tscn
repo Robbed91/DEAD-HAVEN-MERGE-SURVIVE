@@ -1,8 +1,7 @@
-[gd_scene load_steps=7 format=3 uid="uid://bottom_nav"]
+[gd_scene load_steps=6 format=3 uid="uid://bottom_nav"]
 
 [ext_resource type="Script" path="res://scenes/ui/bottom_nav.gd" id="1"]
 [ext_resource type="Texture2D" path="res://assets/ui/icons/final/icon_haven.png" id="2"]
-[ext_resource type="Texture2D" path="res://assets/ui/icons/final/icon_merge.png" id="3"]
 [ext_resource type="Texture2D" path="res://assets/ui/icons/final/icon_map.png" id="4"]
 [ext_resource type="Texture2D" path="res://assets/ui/icons/final/icon_survivors.png" id="5"]
 [ext_resource type="Texture2D" path="res://assets/ui/icons/final/icon_inventory.png" id="6"]
@@ -32,17 +31,6 @@ icon = ExtResource("2")
 icon_max_width = 34
 expand_icon = true
 text = "Haven"
-
-[node name="MergeButton" type="Button" parent="SafeMargin/Row"]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(64, 72)
-layout_mode = 2
-size_flags_horizontal = 3
-toggle_mode = true
-icon = ExtResource("3")
-icon_max_width = 34
-expand_icon = true
-text = "Merge"
 
 [node name="MapButton" type="Button" parent="SafeMargin/Row"]
 unique_name_in_owner = true

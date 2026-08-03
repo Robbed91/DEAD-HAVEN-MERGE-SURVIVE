@@ -2,15 +2,17 @@ extends CanvasLayer
 class_name TaskPanel
 const MotionFXScript = preload("res://scripts/vfx/motion_fx.gd")
 ## Task popup: name, description, required item (with an owned/needed
-## count), a button that routes to the Merge Board with the right chain
-## highlighted ("Find on Board" - spec section 19), and Complete once the
+## count), a button that asks its owning screen to highlight the right chain
+## on the embedded board, and Complete once the
 ## requirement is met. Used for Haven hotspot repairs (show_for_hotspot)
 ## and, since Phase 6, survivor personal quests (show_for_quest) - both
 ## are just QuestDefinition underneath.
 
 signal completed(hotspot_id: String)
+signal find_requested(chain_id: String)
 
 @onready var _scrim: ColorRect = %Scrim
+@onready var _center: CenterContainer = $CenterContainer
 @onready var _title_label: Label = %TitleLabel
 @onready var _desc_label: Label = %DescLabel
 @onready var _icon: ItemView = %RequirementIcon
@@ -37,6 +39,23 @@ func _ready() -> void:
 	_close_button.pressed.connect(hide_panel)
 	_find_button.pressed.connect(_on_find_pressed)
 	_complete_button.pressed.connect(_on_complete_pressed)
+	get_viewport().size_changed.connect(_queue_viewport_bounds)
+	_queue_viewport_bounds()
+
+func _queue_viewport_bounds() -> void:
+	call_deferred("_apply_viewport_bounds")
+
+func _apply_viewport_bounds() -> void:
+	var viewport_size := get_viewport().get_visible_rect().size
+	for control in [_scrim, _center]:
+		control.anchor_left = 0.0
+		control.anchor_top = 0.0
+		control.anchor_right = 0.0
+		control.anchor_bottom = 0.0
+		control.offset_left = 0.0
+		control.offset_top = 0.0
+		control.offset_right = viewport_size.x
+		control.offset_bottom = viewport_size.y
 
 func show_for_hotspot(hotspot_id: String, residence_id: String = "hollow_creek_farmhouse") -> void:
 	var quest := ResidenceManager.get_active_quest_for_hotspot(hotspot_id, residence_id)
@@ -57,6 +76,7 @@ func show_for_quest(quest_id: String) -> void:
 	_show_quest(quest)
 
 func _show_quest(quest: QuestDefinition) -> void:
+	_queue_viewport_bounds()
 	_quest_id = quest.id
 
 	_title_label.text = quest.title
@@ -107,7 +127,7 @@ func _on_find_pressed() -> void:
 	var item_id: String = quest.requirements.keys()[0]
 	var def := ItemDatabase.get_item(item_id)
 	hide_panel()
-	SceneRouter.go_to("merge_board", {"highlight_chain_id": def.chain_id if def else ""})
+	find_requested.emit(def.chain_id if def else "")
 
 func _on_complete_pressed() -> void:
 	var quest := ResidenceManager.get_quest(_quest_id)

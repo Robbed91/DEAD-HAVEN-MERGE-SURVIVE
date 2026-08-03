@@ -9,16 +9,18 @@ signal drop_attempted(dragged_instance_id: String, cell: BoardCell)
 
 var grid_pos: Vector2i
 var item_view: ItemView
+var reveal_background := false
 var _feedback_until_ms := 0
 var _feedback_state := "normal"
 
-func setup(pos: Vector2i) -> void:
+func setup(pos: Vector2i, show_residence_through_cell: bool = false) -> void:
 	grid_pos = pos
+	reveal_background = show_residence_through_cell
 	custom_minimum_size = Vector2(78, 78)
 	size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	size_flags_vertical = Control.SIZE_EXPAND_FILL
 	mouse_filter = Control.MOUSE_FILTER_PASS
-	add_theme_stylebox_override("panel", ThemeFactory.board_cell_style())
+	add_theme_stylebox_override("panel", _cell_style())
 	set_process(false)
 
 ## Rebuilds the cell's child ItemView for whatever instance (if any) now
@@ -29,10 +31,10 @@ func refresh() -> ItemView:
 		item_view = null
 	var occupant_id: String = BoardState.grid.get(grid_pos, "")
 	if occupant_id == "":
-		add_theme_stylebox_override("panel", ThemeFactory.board_cell_style())
+		add_theme_stylebox_override("panel", _cell_style())
 		return null
 	var board_item: BoardItem = BoardState.items.get(occupant_id)
-	add_theme_stylebox_override("panel", ThemeFactory.board_cell_style("locked" if board_item != null and board_item.is_locked else "normal"))
+	add_theme_stylebox_override("panel", _cell_style("locked" if board_item != null and board_item.is_locked else "normal"))
 	item_view = ItemView.new()
 	item_view.instance_id = occupant_id
 	item_view.set_anchors_preset(Control.PRESET_FULL_RECT)
@@ -67,7 +69,7 @@ func _drop_data(_at_position: Vector2, data: Variant) -> void:
 func _set_drop_feedback(state: String) -> void:
 	_feedback_state = state
 	_feedback_until_ms = Time.get_ticks_msec() + 130
-	add_theme_stylebox_override("panel", ThemeFactory.board_cell_style(state))
+	add_theme_stylebox_override("panel", _cell_style(state))
 	set_process(true)
 
 func _clear_drop_feedback() -> void:
@@ -76,8 +78,15 @@ func _clear_drop_feedback() -> void:
 	modulate = Color.WHITE
 	var occupant_id: String = BoardState.grid.get(grid_pos, "")
 	var board_item: BoardItem = BoardState.items.get(occupant_id)
-	add_theme_stylebox_override("panel", ThemeFactory.board_cell_style("locked" if board_item != null and board_item.is_locked else "normal"))
+	add_theme_stylebox_override("panel", _cell_style("locked" if board_item != null and board_item.is_locked else "normal"))
 	set_process(false)
+
+func _cell_style(state: String = "normal") -> StyleBox:
+	var style := ThemeFactory.board_cell_style(state)
+	if reveal_background and style is StyleBoxTexture:
+		style = style.duplicate()
+		style.modulate_color.a = 0.52 if state == "normal" else 0.76
+	return style
 
 func _process(_delta: float) -> void:
 	if Time.get_ticks_msec() >= _feedback_until_ms or not get_viewport().gui_is_dragging():

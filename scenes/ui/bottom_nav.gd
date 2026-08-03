@@ -1,7 +1,7 @@
 extends PanelContainer
 ## BottomNav
 ##
-## Persistent bottom navigation: Haven / Merge / Map / Survivors / Inventory.
+## Persistent bottom navigation: Haven / Map / Survivors / Inventory.
 ## Instanced on every main screen with `active_tab` set to that screen's key
 ## so the current tab renders highlighted. Inventory has no screen yet, so
 ## its button surfaces an honest "coming later" toast instead of doing
@@ -11,7 +11,6 @@ extends PanelContainer
 
 @onready var _buttons: Dictionary = {
 	"haven": %HavenButton,
-	"merge_board": %MergeButton,
 	"world_map": %MapButton,
 	"survivors": %SurvivorsButton,
 	"inventory": %InventoryButton,
@@ -25,8 +24,7 @@ func _ready() -> void:
 		button.add_theme_font_size_override("font_size", 18)
 		button.theme_type_variation = "NavButton"
 	get_viewport().size_changed.connect(_apply_layout)
-	%HavenButton.pressed.connect(func(): _navigate("haven"))
-	%MergeButton.pressed.connect(func(): _navigate("merge_board"))
+	%HavenButton.pressed.connect(_navigate_home)
 	%MapButton.pressed.connect(func(): _navigate("world_map"))
 	%SurvivorsButton.pressed.connect(func(): _navigate("survivors"))
 	%InventoryButton.pressed.connect(func(): EventBus.show_toast.emit("Inventory arrives in a later development phase."))
@@ -37,6 +35,11 @@ func _navigate(key: String) -> void:
 	if key == active_tab:
 		return
 	SceneRouter.go_to(key)
+
+func _navigate_home() -> void:
+	if active_tab == "haven":
+		return
+	SceneRouter.go_to(SceneRouter.residence_scene_key(GameManager.profile.current_residence_id))
 
 func _highlight_active() -> void:
 	for key in _buttons.keys():

@@ -206,6 +206,37 @@ godot4 --headless --path /path/to/dead-haven-merge-survive \
 - Box and cobweb states use the existing shipped overlays; this batch does not author new overlay artwork or perform Android visual capture.
 - Next: embed a reusable board panel in every residence, activate the correct per-residence board before child setup, keep hotspot requirements in the same view, remove Merge as a bottom-nav destination, and update navigation tests without deleting behavioral coverage.
 
+## 2026-08-03 — Unified residence and merge home
+
+### Starting commit and objective
+
+- Starting commit: `c15b375` on `visual-production`.
+- Objective: make all five illustrated residences, their repair hotspots, and their isolated 7x9 boards one persistent Home screen, eliminating Merge as a separate player-facing destination without changing gameplay or saves.
+
+### Implementation
+
+- Added reusable `scenes/merge_board/board_panel.tscn` and embedded it in Hollow Creek, Redwater, Greybridge, Saint Mercy, and Northgate. Each residence activates its own `BoardState` payload before the embedded controller initializes.
+- Board cells use an embedded translucent presentation so the residence remains the room underneath the grid; items remain opaque and readable. Hotspots coexist above the cells while empty overlay space passes pointer input through to board gameplay.
+- Repair requirements now open in place. **Find on Board** highlights the requested chain in the local embedded board instead of navigating away.
+- Removed Merge from bottom navigation, the public scene route table, and scene-specific audio routing. Haven returns to the profile's current residence. The old standalone scene remains unreachable as an internal compatibility/test harness only.
+- Corrected the task modal's deferred viewport bounds after a real 720x1600 capture exposed an oversized CanvasLayer center container; the complete Find/Complete/Close card is now centered and accessible.
+- Assets created/rejected, animations, and audio assets: none. Six real OpenGL 720x1600 captures document all five residences and the in-place task flow under `docs/ui-skin-captures/`.
+- Files and detailed evidence: the five residence scenes/controllers, merge board/panel and cell presentation, bottom navigation/router/audio presentation, task panel, survivor task routing, updated smoke/capture tests, and `docs/production-batches/25_unified_residence_merge_home.md`.
+
+### Verification
+
+- Empty-cache Godot 4.3 rebuild completed with 1,722 imported artifacts; its long-running process exceeded the two-minute output wrapper, then an immediate verbose reconciliation import exited 0.
+- Full smoke suite: 33/33 pass.
+- Android exported-runtime resource contract: pass for both presets and all catalog totals.
+- Critical log scan found zero parser, missing-resource, invalid-call, audio-catalog, save, import, shader, or texture failure signatures.
+- Focused structural checks pass at 720x1600, reference/default portrait, and 1440x3200. Runtime captures confirm all five backgrounds, 63-cell boards, hotspots, four-tab navigation, and the in-place task modal.
+
+### Compatibility, known issues, and exact next phase
+
+- No merge rule, producer behavior, board/save payload, save key/schema, content ID, quest/hotspot gate, economy value, story outcome, character, or vehicle data changed.
+- Android device install/layout evidence remains for the packaged verification batch; these captures use the real OpenGL renderer in desktop windows at Android portrait dimensions.
+- Next: add data-driven cash-out rewards at multiple levels of the nine gameplay chains, with covered/cobwebbed items excluded and all existing task/story uses preserved.
+
 ## 2026-08-01 — Android export dependency audit checkpoint
 
 ### Starting commit and objective

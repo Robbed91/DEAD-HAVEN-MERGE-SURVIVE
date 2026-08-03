@@ -24,6 +24,9 @@ const SILHOUETTE_COLORS := {
 @onready var _task_panel: TaskPanel = %TaskPanel
 
 func _ready() -> void:
+	_task_panel.find_requested.connect(func(chain_id: String):
+		SceneRouter.go_to(SceneRouter.residence_scene_key(GameManager.profile.current_residence_id), {"highlight_chain_id": chain_id})
+	)
 	_task_panel.completed.connect(func(_hotspot_id): _rebuild())
 	_rebuild()
 

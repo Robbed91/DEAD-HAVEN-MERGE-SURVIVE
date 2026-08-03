@@ -16,7 +16,7 @@ const SCENE_AUDIO := {
 	"main_menu": ["main_menu", "wind"], "haven": ["safe_residence", "hollow_creek_storm"],
 	"redwater": ["safe_residence", "redwater_station"], "greybridge": ["safe_residence", "wind"],
 	"saint_mercy": ["safe_residence", "rain"], "northgate": ["tension", "distant_hollow"],
-	"merge_board": ["merge_board", "abandoned_building"], "world_map": ["world_map", "road"],
+	"world_map": ["world_map", "road"],
 	"scavenging": ["scavenging", "forest"], "dialogue": ["dialogue", "abandoned_building"],
 	"defence": ["defence_preparation", "distant_hollow"], "vehicle": ["world_map", "road"],
 }
@@ -243,7 +243,7 @@ func _on_node_added(node: Node) -> void:
 	button.pressed.connect(func():
 		var lower: String = String(button.name).to_lower() + " " + button.text.to_lower()
 		if "back" in lower or "close" in lower: play_sfx("modal_close")
-		elif button.name in ["HavenButton", "MergeButton", "MapButton", "SurvivorsButton", "InventoryButton"]: play_sfx("ui_navigation")
+		elif button.name in ["HavenButton", "MapButton", "SurvivorsButton", "InventoryButton"]: play_sfx("ui_navigation")
 		else: play_sfx("ui_button")
 	)
 

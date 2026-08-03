@@ -22,8 +22,12 @@ const CHAPTER_TITLES := {
 @onready var _chapter_label: Label = %ChapterLabel
 @onready var _defence_button: Button = %DefenceButton
 @onready var _background: Control = $Layout/Scene/Background
+@onready var _board_panel: MergeBoard = %BoardPanel
 
 var _hotspot_visuals: Dictionary = {} # hotspot_id -> HotspotVisual
+
+func _enter_tree() -> void:
+	BoardState.activate_residence_board(RESIDENCE_ID)
 
 func _ready() -> void:
 	var residence := ResidenceManager.get_residence(RESIDENCE_ID)
@@ -34,6 +38,7 @@ func _ready() -> void:
 			_build_hotspot(hotspot)
 
 	_task_panel.completed.connect(_on_task_completed)
+	_task_panel.find_requested.connect(_board_panel.highlight_chain)
 	_task_panel.visibility_changed.connect(func():
 		if not _task_panel.visible:
 			_set_selected_hotspot("")
@@ -43,6 +48,7 @@ func _ready() -> void:
 	EventBus.defence_resolved.connect(func(_outcome): _refresh_progress())
 	_refresh_progress()
 	_refresh_chapter_label()
+	_apply_board_params()
 
 func _build_hotspot(hotspot: ResidenceHotspot) -> void:
 	var visual := HotspotVisual.new()
@@ -73,6 +79,7 @@ func _set_selected_hotspot(hotspot_id: String) -> void:
 		_hotspot_visuals[id].set_selected(id == hotspot_id)
 
 func _on_task_completed(hotspot_id: String) -> void:
+	_board_panel.refresh_board()
 	AudioManager.play_sfx("fence_repair" if hotspot_id == "sally_port" else ("trap_deploy" if hotspot_id in ["guard_tower", "armory"] else "metal_fastening"))
 	_background.play_repair(hotspot_id)
 	if _hotspot_visuals.has(hotspot_id):
@@ -80,6 +87,11 @@ func _on_task_completed(hotspot_id: String) -> void:
 	AudioManager.play_sfx("repair_whoosh")
 	AudioManager.play_sfx("task_complete")
 	_refresh_progress()
+
+func _apply_board_params() -> void:
+	var params := SceneRouter.take_pending_params()
+	if params.has("highlight_chain_id"):
+		_board_panel.highlight_chain(String(params.highlight_chain_id))
 
 func _refresh_chapter_label() -> void:
 	var chapter_id: String = GameManager.profile.current_chapter_id

@@ -1,0 +1,95 @@
+[gd_scene load_steps=6 format=3 uid="uid://residence_board_panel"]
+
+[ext_resource type="Script" path="res://scenes/merge_board/merge_board.gd" id="1"]
+[ext_resource type="PackedScene" path="res://scenes/ui/storage_panel.tscn" id="2"]
+[ext_resource type="PackedScene" path="res://scenes/ui/item_info_panel.tscn" id="3"]
+[ext_resource type="PackedScene" path="res://scenes/ui/discovery_banner.tscn" id="4"]
+[ext_resource type="PackedScene" path="res://scenes/ui/toast.tscn" id="5"]
+
+[node name="BoardPanel" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 1
+script = ExtResource("1")
+embedded = true
+
+[node name="Backdrop" type="PanelContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+modulate = Color(1, 1, 1, 0.42)
+theme_type_variation = "CharcoalPanel"
+
+[node name="Layout" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_constants/separation = 0
+
+[node name="HeaderRow" type="HBoxContainer" parent="Layout"]
+custom_minimum_size = Vector2(0, 44)
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="Header" type="Label" parent="Layout/HeaderRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+horizontal_alignment = 1
+vertical_alignment = 1
+theme_override_font_sizes/font_size = 18
+text = "RESTORE & MERGE"
+
+[node name="StorageButton" type="Button" parent="Layout/HeaderRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(96, 44)
+layout_mode = 2
+text = "Storage"
+
+[node name="LegendScroll" type="ScrollContainer" parent="Layout"]
+custom_minimum_size = Vector2(0, 46)
+layout_mode = 2
+vertical_scroll_mode = 0
+
+[node name="ChainLegend" type="HBoxContainer" parent="Layout/LegendScroll"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="BoardMargin" type="MarginContainer" parent="Layout"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_top = 4
+theme_override_constants/margin_bottom = 6
+
+[node name="BoardGrid" type="GridContainer" parent="Layout/BoardMargin"]
+unique_name_in_owner = true
+layout_mode = 2
+columns = 7
+theme_override_constants/h_separation = 4
+theme_override_constants/v_separation = 4
+
+[node name="BurstLayer" type="Control" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+
+[node name="StoragePanel" parent="." instance=ExtResource("2")]
+unique_name_in_owner = true
+
+[node name="ItemInfoPanel" parent="." instance=ExtResource("3")]
+unique_name_in_owner = true
+
+[node name="DiscoveryBanner" parent="." instance=ExtResource("4")]
+unique_name_in_owner = true
+
+[node name="Toast" parent="." instance=ExtResource("5")]

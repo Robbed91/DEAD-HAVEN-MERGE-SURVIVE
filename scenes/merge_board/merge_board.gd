@@ -1,4 +1,5 @@
 extends Control
+class_name MergeBoard
 const MotionFXScript = preload("res://scripts/vfx/motion_fx.gd")
 ## MergeBoard
 ##
@@ -10,6 +11,8 @@ const MotionFXScript = preload("res://scripts/vfx/motion_fx.gd")
 
 const COLUMNS := BoardState.COLUMNS
 const ROWS := BoardState.ROWS
+
+@export var embedded: bool = false
 
 @onready var _grid: GridContainer = %BoardGrid
 @onready var _legend: HBoxContainer = %ChainLegend
@@ -43,9 +46,10 @@ func _ready() -> void:
 	EventBus.producer_unlocked.connect(func(_producer_item_id): refresh_board())
 	refresh_board()
 
-	var params := SceneRouter.take_pending_params()
-	if params.has("highlight_chain_id") and not String(params.highlight_chain_id).is_empty():
-		_on_legend_tapped(String(params.highlight_chain_id))
+	if not embedded:
+		var params := SceneRouter.take_pending_params()
+		if params.has("highlight_chain_id") and not String(params.highlight_chain_id).is_empty():
+			highlight_chain(String(params.highlight_chain_id))
 
 func _build_grid() -> void:
 	_grid.columns = COLUMNS
@@ -56,7 +60,9 @@ func _build_grid() -> void:
 		for x in COLUMNS:
 			var pos := Vector2i(x, y)
 			var cell := BoardCell.new()
-			cell.setup(pos)
+			cell.setup(pos, embedded)
+			if embedded:
+				cell.custom_minimum_size = Vector2(68, 68)
 			cell.drop_attempted.connect(_on_drop_attempted)
 			_grid.add_child(cell)
 			_cells[pos] = cell
@@ -74,9 +80,20 @@ func _build_legend() -> void:
 
 func _on_legend_tapped(chain_id: String) -> void:
 	_highlighted_chain_id = "" if _highlighted_chain_id == chain_id else chain_id
+	_refresh_legend_selection()
+	_apply_highlight()
+
+func highlight_chain(chain_id: String) -> void:
+	_highlighted_chain_id = chain_id if chain_id in ItemDatabase.get_all_chain_ids() else ""
+	_refresh_legend_selection()
+	_apply_highlight()
+
+func get_highlighted_chain_id() -> String:
+	return _highlighted_chain_id
+
+func _refresh_legend_selection() -> void:
 	for icon in _legend.get_children():
 		icon.set_selected(icon.chain_id == _highlighted_chain_id)
-	_apply_highlight()
 
 func _apply_highlight() -> void:
 	for pos in _cells:

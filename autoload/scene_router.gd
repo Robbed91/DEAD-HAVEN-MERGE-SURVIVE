@@ -18,11 +18,18 @@ const SCENE_PATHS: Dictionary = {
 	"scavenging": "res://scenes/scavenging/scavenging.tscn",
 	"vehicle": "res://scenes/vehicle/vehicle.tscn",
 	"defence": "res://scenes/defence/defence.tscn",
-	"merge_board": "res://scenes/merge_board/merge_board.tscn",
 	"world_map": "res://scenes/world_map/world_map.tscn",
 	"survivors": "res://scenes/survivors/survivors.tscn",
 	"settings": "res://scenes/settings/settings.tscn",
 	"dev_diagnostics": "res://scenes/dev_diagnostics/dev_diagnostics.tscn",
+}
+
+const RESIDENCE_SCENE_KEYS := {
+	"hollow_creek_farmhouse": "haven",
+	"redwater_service_station": "redwater",
+	"greybridge_school": "greybridge",
+	"saint_mercy_hospital": "saint_mercy",
+	"northgate_prison": "northgate",
 }
 
 const FADE_DURATION := 0.18
@@ -68,6 +75,9 @@ func take_pending_params() -> Dictionary:
 	var params := pending_params
 	pending_params = {}
 	return params
+
+func residence_scene_key(residence_id: String) -> String:
+	return String(RESIDENCE_SCENE_KEYS.get(residence_id, "haven"))
 
 func _transition_to(path: String, key: String) -> void:
 	_is_transitioning = true

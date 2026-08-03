@@ -24,8 +24,12 @@ const CHAPTER_TITLES := {
 @onready var _chapter_label: Label = %ChapterLabel
 @onready var _defence_button: Button = %DefenceButton
 @onready var _background: Control = $Layout/Scene/Background
+@onready var _board_panel: MergeBoard = %BoardPanel
 
 var _hotspot_visuals: Dictionary = {} # hotspot_id -> HotspotVisual
+
+func _enter_tree() -> void:
+	BoardState.activate_residence_board(RESIDENCE_ID)
 
 func _ready() -> void:
 	var residence := ResidenceManager.get_residence(RESIDENCE_ID)
@@ -36,11 +40,13 @@ func _ready() -> void:
 			_build_hotspot(hotspot)
 
 	_task_panel.completed.connect(_on_task_completed)
+	_task_panel.find_requested.connect(_board_panel.highlight_chain)
 	_defence_button.pressed.connect(func(): SceneRouter.go_to("defence", {"event_id": DEFENCE_EVENT_ID, "return_scene_key": "greybridge"}))
 	EventBus.chapter_changed.connect(func(_id): _refresh_chapter_label())
 	EventBus.defence_resolved.connect(func(_outcome): _refresh_progress())
 	_refresh_progress()
 	_refresh_chapter_label()
+	_apply_board_params()
 
 func _build_hotspot(hotspot: ResidenceHotspot) -> void:
 	var visual := HotspotVisual.new()
@@ -66,6 +72,7 @@ func _on_hotspot_tapped(hotspot_id: String) -> void:
 	_task_panel.show_for_hotspot(hotspot_id, RESIDENCE_ID)
 
 func _on_task_completed(hotspot_id: String) -> void:
+	_board_panel.refresh_board()
 	AudioManager.play_sfx("radio_pulse" if hotspot_id == "radio_tower" else ("generator_start" if hotspot_id == "boiler_room" else "metal_fastening"))
 	_background.play_repair(hotspot_id)
 	if _hotspot_visuals.has(hotspot_id):
@@ -73,6 +80,11 @@ func _on_task_completed(hotspot_id: String) -> void:
 	AudioManager.play_sfx("repair_whoosh")
 	AudioManager.play_sfx("task_complete")
 	_refresh_progress()
+
+func _apply_board_params() -> void:
+	var params := SceneRouter.take_pending_params()
+	if params.has("highlight_chain_id"):
+		_board_panel.highlight_chain(String(params.highlight_chain_id))
 
 func _refresh_chapter_label() -> void:
 	var chapter_id: String = GameManager.profile.current_chapter_id
