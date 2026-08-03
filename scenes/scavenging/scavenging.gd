@@ -59,6 +59,7 @@ const LOCATION_AMBIENCE := {
 var _mission_id := ""
 var _selected_survivor_id := ""
 var _shared_group: ButtonGroup
+var _danger_overlay: DangerOverlay
 var _state_tween: Tween
 var _ambient_tween: Tween
 
@@ -73,6 +74,8 @@ func _ready() -> void:
 			SceneRouter.go_to("world_map", {}, false)
 		return
 
+	_danger_overlay = DangerOverlay.new()
+	add_child(_danger_overlay)
 	_configure_location(mission)
 	_title_label.text = mission.location_name
 	_flavor_label.text = "Danger %d/5  •  Hollow threat %d  •  Human threat %d  •  Noise %d  •  Energy %d" % [
@@ -101,6 +104,19 @@ func _ready() -> void:
 	visibility_changed.connect(_on_visibility_changed)
 	call_deferred("_begin_ambient_motion")
 
+## Danger presentation only - reads the mission's own existing
+## danger_rating/human_threat rather than inventing a new signal, and only
+## shows a gas cloud for the one real fuel/petrol location in the current
+## roster. Never changes danger_rating, human_threat, or resolve odds.
+func _apply_danger_presentation(mission) -> void:
+	var intensity := 0.0
+	if mission.danger_rating >= 3:
+		intensity = maxf(intensity, float(mission.danger_rating) / 5.0)
+	if mission.human_threat > 0:
+		intensity = maxf(intensity, 0.35 + float(mission.human_threat) / 10.0)
+	var gas_cloud := _mission_id == "petrol_station"
+	_danger_overlay.set_danger(intensity, gas_cloud)
+
 func _configure_location(mission) -> void:
 	var art_path := LOCATION_ART_ROOT + _mission_id + ".png"
 	if ResourceLoader.exists(art_path):
@@ -113,6 +129,7 @@ func _configure_location(mission) -> void:
 	var ambience: Array = LOCATION_AMBIENCE.get(_mission_id, ["forest", "wind"])
 	AudioManager.play_ambience(String(ambience[0]))
 	AudioManager.play_ambience_layer(String(ambience[1]), -18.0)
+	_apply_danger_presentation(mission)
 
 func _survivor_group() -> ButtonGroup:
 	if _shared_group == null:

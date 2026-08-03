@@ -35,6 +35,7 @@ godot4 --headless --path . tests/smoke_test_gameplay_cash_out.tscn
 godot4 --headless --path . tests/smoke_test_chain_legend_art.tscn
 godot4 --headless --path . tests/smoke_test_merge_vfx.tscn
 godot4 --headless --path . tests/smoke_test_environment_layers.tscn
+godot4 --headless --path . tests/smoke_test_danger_presentation.tscn
 ```
 
 All of the above are cheap to run with a `timeout` wrapper (e.g.
@@ -92,6 +93,8 @@ opt-in, point Godot at them directly as shown above.
 
 - **smoke_test_environment_layers** - verifies `ui_animation_director.gd`'s `_layers_for_scene()` assigns each of the 5 residences its own distinct combination of named ambient effects (Hollow Creek: rain/foliage/dust/smoke/embers; Redwater: rain/dust/sparks/smoke; Greybridge: rain/leaves/radio_pulse/smoke/foliage; Saint Mercy: fog/rain/sparks/smoke; Northgate: rain/dust/sparks) instead of one exclusive preset per screen; low graphics quality zeroes every particle-based layer without erroring; an unknown layer name is ignored rather than crashing; and hidden/off-screen `AmbientVFX` still stops processing exactly as before this rewrite. `capture_environment_layers.tscn` renders Hollow Creek's real background (board panel hidden so the atmosphere isn't covered) to `docs/producer-state-captures/live_environment_layers_hollow_creek.png`.
 
+- **smoke_test_danger_presentation** - verifies the gameplay-neutral danger overlay: its pulse's documented angular speed (`DangerOverlay.PULSE_ANGULAR_SPEED`) is 0.25 Hz, far under the ~3 Hz photosensitivity-risk threshold; its maximum edge-glow width can never exceed 5% of a 720px-wide screen even at full intensity, so it stays a border effect rather than becoming a full-screen filter; reduced motion keeps `intensity > 0` (the warning information) while stopping `is_processing()` (the animation); a real `petrol_station` mission shows the gas cloud and non-zero intensity while a real low-threat mission (`abandoned_grocery_store`) shows neither, both read from the mission's own existing `danger_rating`/`human_threat` rather than an invented signal; a real defence event raises the overlay on launch (defence warning/start), keeps it raised through a forced failure, and clears it on a forced success; and none of this ever touches `GameManager.resources`. `capture_danger_presentation.tscn` renders a real high-threat location (Police Checkpoint) and the fuel-context location (Petrol Station) to `docs/producer-state-captures/live_danger_*.png`.
+
 ## What these do NOT cover
 
 They run with Godot's headless server backend - no window, no real touch
@@ -102,15 +105,14 @@ or in the editor's running game view; an equivalent Phase 2 checklist for
 drag/merge/producer gestures hasn't been written yet (see DEVELOPMENT_LOG.md
 Known issues).
 
-Results as of the environment-layers batch (2026-08-03, Godot 4.3.stable):
-all 38 `tests/smoke_test*.tscn` scenes pass, deterministically, including a
-clean run of `smoke_test_audio_presentation` this time. That test has a
-known pre-existing timing-sensitive flake (see
-`docs/production-batches/21_android_export_audit.md` and the producer-
-state-artwork/merge-VFX batches in `DEVELOPMENT_LOG.md`, where it failed
-intermittently including once in isolation) - unrelated to any of these
-presentation changes, since it exercises audio playback state, not
-merge/board/environment code.
+Results as of the danger-presentation batch (2026-08-03, Godot 4.3.stable):
+all 39 `tests/smoke_test*.tscn` scenes pass, deterministically, with the
+sole exception of `smoke_test_audio_presentation`'s well-established
+pre-existing timing flake (see `docs/production-batches/21_android_export_
+audit.md` and every batch since the producer-state-artwork one in
+`DEVELOPMENT_LOG.md`) - reconfirmed unrelated again this batch (2/3 pass in
+isolated reruns with zero code changes in between), since it exercises
+audio playback state, not merge/board/environment/danger code.
 (see `smoke_test_northgate`'s entry above for a flakiness bug two tests had
 until Phase 12). This list of run commands and the bullets above it are not
 fully reconciled against every test file that exists in `tests/` - the

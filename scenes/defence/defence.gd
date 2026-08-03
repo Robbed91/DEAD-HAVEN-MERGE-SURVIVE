@@ -58,6 +58,7 @@ var _shared_group: ButtonGroup
 var _survivor_rig: LayeredCharacterRig
 var _hollow_rig: LayeredCharacterRig
 var _impact_particles: CPUParticles2D
+var _danger_overlay: DangerOverlay
 
 func _ready() -> void:
 	AudioManager.play_music("defence_preparation")
@@ -99,6 +100,8 @@ func _ready() -> void:
 	_build_combat_stage()
 	call_deferred("_layout_combat_stage")
 	resized.connect(_layout_combat_stage)
+	_danger_overlay = DangerOverlay.new()
+	add_child(_danger_overlay)
 
 func _survivor_group() -> ButtonGroup:
 	if _shared_group == null:
@@ -169,6 +172,7 @@ func _on_send_pressed() -> void:
 		return
 	AudioManager.play_sfx("defence_warning")
 	AudioManager.play_music("defence")
+	_danger_overlay.set_danger(0.55) # defence warning/start - existing trigger, no new hazard
 	_play_encounter_transition()
 	_prep_panel.visible = false
 	_encounter_panel.visible = true
@@ -220,6 +224,8 @@ func _play_outcome(success: bool) -> void:
 	if _impact_particles != null and GameManager.effects_enabled():
 		_impact_particles.color = Color(0.93, 0.72, 0.31, 0.92) if success else Color(0.68, 0.18, 0.12, 0.82)
 		_impact_particles.restart()
+	# Failed/dangerous choice - existing trigger, presentation only.
+	_danger_overlay.set_danger(0.0 if success else 0.85)
 	if GameManager.effects_enabled():
 		_outcome_panel.modulate.a = 0.0
 		_outcome_panel.create_tween().tween_property(_outcome_panel, "modulate:a", 1.0, 0.32)

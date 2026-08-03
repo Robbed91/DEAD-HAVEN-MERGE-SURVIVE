@@ -1,7 +1,7 @@
 # Release Presentation Gap Report
 
-Updated: 2026-08-03
-Branch audited: `visual-production` at `64f94c2`
+Updated: 2026-08-03 (Batch 3 complete)
+Branch audited: `visual-production` at the danger-presentation batch tip
 
 ## Verified complete in the running project
 
@@ -18,7 +18,10 @@ Branch audited: `visual-production` at `64f94c2`
 | UI skin | `SMOKE_UI_SKIN_OK states=8 navigation=4 embedded_merge=1 emoji_markers=0` | Final global controls, top bar, four navigation destinations (Merge is embedded, not a destination), and map markers are active. |
 | Main menu | `SMOKE_MAIN_MENU_PRESENTATION_OK final_art=1 runtime=720x1280 controls=4 ambient_layers=4 reduced_motion=pass primitives=0` | Final painterly interactive menu is integrated. |
 | Splash | `SMOKE_SPLASH_PRESENTATION_OK final_art=1 live_title=1 legacy_svg=0 reduced_motion=pass` | Final illustrated boot presentation is integrated. |
-| Animation/effects | `SMOKE_ANIMATION_LAYER_OK reduced_motion=pass offscreen=pass state_neutral=pass` | Shared motion is accessibility-gated, off-screen suspended and gameplay-neutral. Chain-specific merge VFX, environment presets, and danger presentation are not yet built - see blockers below. |
+| Animation/effects | `SMOKE_ANIMATION_LAYER_OK reduced_motion=pass offscreen=pass state_neutral=pass` | Shared motion is accessibility-gated, off-screen suspended and gameplay-neutral. |
+| Merge VFX | `SMOKE_MERGE_VFX_OK chains=9` | Chain-specific pooled particle bursts (procedural shapes, not new art - see Known scope note below) replace the old single hardcoded wood/dust look for every chain. |
+| Environment layers | `SMOKE_ENVIRONMENT_LAYERS_OK` | Each of the 5 residences combines its own named ambient effects (rain/fog/dust/leaves/smoke/embers/sparks/radio_pulse/foliage) instead of one exclusive preset per screen. |
+| Danger presentation | `SMOKE_DANGER_PRESENTATION_OK` | Gameplay-neutral warning pulse/threat indicator/gas cloud wired to real defence-launch/failure and scavenging danger_rating/human_threat/fuel-context data; pulse rate and max edge width are directly-tested safety properties, not eyeballed. |
 | Audio | `SMOKE_AUDIO_PRESENTATION_OK buses=7 cues=61 music=12 ambience=14 assets=250` | Implemented audio catalogue and routing are complete. |
 | Save compatibility | `SMOKE_SAVE_TEST_OK` | Current save/reload and corrupt-primary backup recovery pass, including the version-1-to-version-2 per-residence-board migration. |
 | Producer state art | `SMOKE_PRODUCER_STATES_OK producers=9 states=5` | All nine producers (not just Construction) resolve authored selected/active/low-charge/empty/recharge art live through `item_view.gd`. |
@@ -39,11 +42,14 @@ These files must not be deleted merely because a text search finds `draw_*`; rem
 
 ## Genuine remaining release blockers
 
-1. **Android device optimisation and APK verification — High.** Not started. Import-size/VRAM audit, ETC2/ASTC verification, narrow/large/gesture-safe layout testing, representative Android frame time and memory measurement, a signed installable APK, then clean install, upgrade install, pause/resume, and save persistence testing. This is `docs/CLAUDE_HANDOVER_2026-08-03.md`'s Batch 4 and the actual remaining finish line - the debug toolchain/baseline exist (see `docs/production-batches/20_android_debug_baseline.md`), the export-size audit does not.
-2. **Chain-specific merge VFX, environment presets, and danger presentation — Medium/High.** Not started. `smoke_test_animation_layer` only proves shared motion is accessibility-gated and gameplay-neutral, not that per-chain merge particles, per-residence environment effects (rain/fog/dust/leaves/smoke/embers/sparks/flicker/radio pulses/cloud shadows/foliage), or gameplay-neutral danger presentation exist yet. Still generic. `docs/CLAUDE_HANDOVER_2026-08-03.md`'s remaining Batch 3 work.
-3. **Verified obsolete-placeholder cleanup — Medium.** Remove only assets proven unreachable in an exported build. Defensive error/future fallbacks (listed above) should remain until the export dependency audit in blocker 1 is complete.
+1. **Android device optimisation and APK verification — High.** Not started, and cannot be started from this environment - it has no Android SDK, no Godot export templates, and the outbound network proxy explicitly policy-denies both `dl.google.com` and `github.com/godotengine` (confirmed via the proxy's own status endpoint, not just a failed attempt). Import-size/VRAM audit, ETC2/ASTC verification, narrow/large/gesture-safe layout testing, representative Android frame time and memory measurement, a signed installable APK, then clean install, upgrade install, pause/resume, and save persistence testing. This is `docs/CLAUDE_HANDOVER_2026-08-03.md`'s Batch 4 and the actual remaining finish line - the debug toolchain/baseline exist (see `docs/production-batches/20_android_debug_baseline.md`), the export-size audit does not. Needs a machine with those tools installed.
+2. **Verified obsolete-placeholder cleanup — Medium.** Remove only assets proven unreachable in an exported build. Defensive error/future fallbacks (listed above) should remain until the export dependency audit in blocker 1 is complete.
 
-Resolved since the previous version of this report: the Android launcher/adaptive icon is final and integrated (`docs/production-batches/19_android_launcher_identity.md`); manifest reconciliation is this update.
+Resolved since the previous version of this report: the Android launcher/adaptive icon is final and integrated (`docs/production-batches/19_android_launcher_identity.md`); manifest reconciliation was the prior update; chain-specific merge VFX, per-residence environment layers, and gameplay-neutral danger presentation (the whole of Batch 3) are this update. Batch 3 from `docs/CLAUDE_HANDOVER_2026-08-03.md` is complete - Batch 4 (this report's remaining blocker 1) is the only work left from that handover.
+
+## Known scope note carried from the merge-VFX batch
+
+The 9 chain-specific merge particle "materials" (wood shards, metal fragments, crumbs, a medical cross, cord strands, droplets, chunks, radio-pulse rings, fabric fibres) are procedural shapes drawn in code, not illustrated sprites - this environment has no image-generation tool, the same constraint noted throughout this whole project's art history. Natural candidates for a future illustrated pass if that tool becomes available; `scripts/vfx/merge_vfx.gd`'s interface wouldn't need to change.
 
 ## Implemented scope clarification
 
@@ -51,10 +57,9 @@ The audit lists Screecher, Breaker, Lurker, Runner and Bloater as future/missing
 
 ## Git branch consolidation status
 
-As of this update:
+As of this update (measured directly against local `HEAD`, not copied forward from the prior version of this report):
 
-- `origin/main` is **47 commits behind** `visual-production`.
-- `origin/claude/dead-haven-repo-setup-gvbesn` is **32 commits behind** `visual-production`.
-- `origin/visual-production` matches this branch at `64f94c2`.
+- `origin/main` is **50 commits behind** this branch.
+- `origin/claude/dead-haven-repo-setup-gvbesn` is **35 commits behind** this branch.
 
 This proves all currently published branch work is already contained in `visual-production`. The same fetch and left/right ancestry check is mandatory immediately before APK creation so later branch changes are not missed. Per `docs/CLAUDE_HANDOVER_2026-08-03.md`, consolidating `visual-production` back into `claude/dead-haven-repo-setup-gvbesn` is the user's own step, not something to do from this branch.

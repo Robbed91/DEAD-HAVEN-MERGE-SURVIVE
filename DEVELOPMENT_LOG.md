@@ -129,6 +129,40 @@ godot4 --headless --path /path/to/dead-haven-merge-survive \
 
 - Continue Batch 3: the two remaining, larger pieces - a pooled chain-ID-driven merge VFX system for all 9 gameplay chains, and per-residence environment presets (rain/fog/dust/leaves/smoke/embers/sparks/flicker/radio pulses/cloud shadows/foliage) plus gameplay-neutral danger presentation on existing triggers.
 
+## 2026-08-03 — Strict-quality Batch 3, part 5: danger presentation (Batch 3 complete)
+
+### Starting commit and objective
+
+- Starting commit: `2cd9a79` on `visual-production` (the environment-layers batch).
+- Objective: the last piece of Batch 3 from `docs/CLAUDE_HANDOVER_2026-08-03.md` - gameplay-neutral danger presentation (warning pulse, screen-edge threat indicator, gas cloud) wired only to existing defence/scavenging/fuel triggers, with the safety restrictions (no flashing, no full-screen filter, no photosensitivity risk, reduced motion keeps static information) treated as hard requirements, not suggestions.
+
+### Implementation
+
+- New `scripts/vfx/danger_overlay.gd` (`DangerOverlay`, extends Control): three effects, `set_danger(intensity, gas_cloud)` / `clear_danger()` as its only API.
+  - Warning pulse: a slow single-colour glow confined to the four screen edges. Its angular speed is a named constant (`PULSE_ANGULAR_SPEED := 1.6`, ≈0.25 Hz - one cycle every ~3.9 seconds) specifically so the "not a strobe" property is a directly testable fact, not something eyeballed from a screenshot.
+  - Screen-edge threat indicator: a small static (non-pulsing) corner glyph, present identically whether or not reduced motion is on - the actual "there is danger here" information survives even when the pulse's motion is suppressed.
+  - Gas cloud: soft drifting vapour, only ever drawn when a caller explicitly passes `gas_cloud=true` - restricted by the calling scenes (see below) to the one real fuel/petrol context in the current roster, not offered as a free-standing option.
+  - Edge width is bounded by named constants (`EDGE_BASE`/`EDGE_PER_INTENSITY`) that keep it under 5% of a narrow screen's width even at maximum intensity - a border accent, never a full-screen filter, structurally rather than by convention.
+  - Reduced motion: `set_process()` turns off (no animation) but `intensity` stays wherever it was set - the warning tint remains visible, static, at the pulse's resting value.
+- `scenes/scavenging/scavenging.gd`: reads each mission's own already-existing `danger_rating`/`human_threat` in `_apply_danger_presentation()`, called from `_configure_location()` - no new data, no new signal. `danger_rating >= 3` or `human_threat > 0` raises the overlay; `mission_id == "petrol_station"` is the only case that also requests the gas cloud, since it's the only real fuel/petrol location in the current 10-location roster.
+- `scenes/defence/defence.gd`: `_on_send_pressed()` raises the overlay right where the existing `"defence_warning"` SFX already plays (the actual defence warning/start moment); `_play_outcome()` keeps it raised on a failed/dangerous choice and clears it on success. Neither `DefenceManager.launch()`/`resolve_choice()` nor their odds/results changed.
+
+### Tests performed
+
+- Clean headless import: zero parse/script errors.
+- New `tests/smoke_test_danger_presentation.gd`/`.tscn`: asserts the pulse's Hz is below the photosensitivity threshold and the max edge width is below 5% of a narrow screen, both directly from the named constants rather than rendering and measuring pixels; reduced motion leaves `intensity > 0` while `is_processing()` becomes false; a real Petrol Station mission produces a non-zero intensity and the gas cloud, a real low-threat mission produces neither; a real defence event's launch/failure/success sequence raises, holds, and clears the overlay correctly; and none of it touches `GameManager.resources`. Caught a real ordering bug while writing this test, not caught by hand-reading the diff: `_danger_overlay` was constructed at the very end of `scavenging.gd`'s `_ready()`, but `_configure_location()` (which uses it) is called much earlier in the same function - every mission threw "Invalid call: Nonexistent function 'set_danger' in base 'Nil'" until the overlay's construction was moved before that call.
+- Full suite: 39/39 pass. `smoke_test_audio_presentation` reconfirmed as the same pre-existing flake (2/3 in isolated reruns, no code changed in between) tracked since the producer-state-artwork batch - still not this batch's doing.
+- New `tests/capture_danger_presentation.gd`/`.tscn`: captures a real Police Checkpoint (danger_rating=3, human_threat=3) and Petrol Station encounter to `docs/producer-state-captures/live_danger_*.png`. The overlay is intentionally subtle against dark scavenging-location art at normal viewing scale - consistent with "restrained, not full-screen" being the actual requirement - so as with the environment-layers batch, the automated constant/data checks above are the rigorous verification; the captures are supplementary proof nothing crashes or renders incorrectly, not a demonstration of dramatic visual impact.
+
+### Known issues
+
+- `smoke_test_audio_presentation`'s pre-existing timing flake continues to appear intermittently, unrelated to any batch since it was first noted. Still not fixed.
+- The `_bind_button` deferred-call error from `ui_animation_director.gd` (first seen and diagnosed as harmless in the merge-VFX batch) appeared again in this batch's test output when freeing scavenging/defence scene instances - same known, non-fatal, self-inflicted-by-rapid-instantiation pattern, not a new issue.
+
+### Batch 3 complete
+
+All five pieces of Batch 3 from `docs/CLAUDE_HANDOVER_2026-08-03.md` are done: chain-legend final art, status-doc reconciliation, chain-specific merge VFX, per-residence environment layers, and this danger presentation. Batch 4 (Android device optimisation, export-size audit, and signed-build verification) is the only remaining item from that handover, and it requires an Android SDK, Godot export templates, and a real or emulated device - none of which are available in this remote environment (no network path to `dl.google.com` or `github.com/godotengine` releases, confirmed by the proxy's own status endpoint returning a policy denial, and no export templates or SDK present locally). That work needs to happen on a machine with those installed.
+
 ## 2026-08-03 — Strict-quality Batch 3, part 4: per-residence environment layers
 
 ### Starting commit and objective
