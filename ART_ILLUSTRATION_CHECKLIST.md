@@ -162,14 +162,16 @@ Tool Crate as the template).
 - [x] **Salvaged Tool Crate** - final runtime producer states integrated:
   `assets/concepts/vertical_slice/items/salvaged_tool_crate_states_concept.png`;
   visual states and feedback are described in `docs/MERGE_BOARD_FINAL_TREATMENT.md`
-- [ ] Damaged Workshop Bench (construction producer)
-- [ ] Abandoned Pantry (food producer)
-- [ ] Field Medical Bag (medical producer)
-- [ ] Security Locker (trap producer)
-- [ ] Fuel Shed (fuel producer)
-- [ ] Mechanic's Trolley (vehicle parts producer)
-- [ ] Broken Radio Desk (electronics producer)
-- [ ] Abandoned Wardrobe (clothing producer)
+- [x] **Damaged Workshop Bench** (tool producer) - approved normal plus selected/active/low-charge/empty/recharge at `assets/items/tool/producer*.png`; source master at `assets/concepts/producer_states/tool_states_master.png`
+- [x] **Abandoned Pantry** (food producer) - approved normal plus selected/active/low-charge/empty/recharge at `assets/items/food/producer*.png`; source master at `assets/concepts/producer_states/food_states_master.png`
+- [x] **Field Medical Bag** (medical producer) - approved normal plus selected/active/low-charge/empty/recharge at `assets/items/medical/producer*.png`; source master at `assets/concepts/producer_states/medical_states_master.png`
+- [x] **Security Locker** (trap producer) - approved normal plus selected/active/low-charge/empty/recharge at `assets/items/trap/producer*.png`; source master at `assets/concepts/producer_states/trap_states_master.png`
+- [x] **Fuel Shed** (fuel producer) - approved normal plus selected/active/low-charge/empty/recharge at `assets/items/fuel/producer*.png`; source master at `assets/concepts/producer_states/fuel_states_master.png`
+- [x] **Mechanic's Trolley** (vehicle-parts producer) - approved normal plus selected/active/low-charge/empty/recharge at `assets/items/vehicle_parts/producer*.png`; source master at `assets/concepts/producer_states/vehicle_parts_states_master.png`
+- [x] **Broken Radio Desk** (electronics producer) - approved normal plus selected/active/low-charge/empty/recharge at `assets/items/electronics/producer*.png`; source master at `assets/concepts/producer_states/electronics_states_master.png`
+- [x] **Abandoned Wardrobe** (clothing producer) - approved normal plus selected/active/low-charge/empty/recharge at `assets/items/clothing/producer*.png`; source master at `assets/concepts/producer_states/clothing_states_master.png`
+
+The eight sets are artwork-complete but await generalized runtime texture resolution in `scripts/merge/item_view.gd`. Review evidence: `docs/producer-state-captures/producer_states_contact_sheet.png` and `producer_states_board_scale_68px.png`.
 
 ## 10. Vehicle - delivery van (9 upgrade stages)
 

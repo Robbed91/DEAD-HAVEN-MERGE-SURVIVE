@@ -206,6 +206,34 @@ godot4 --headless --path /path/to/dead-haven-merge-survive \
 - Box and cobweb states use the existing shipped overlays; this batch does not author new overlay artwork or perform Android visual capture.
 - Next: embed a reusable board panel in every residence, activate the correct per-residence board before child setup, keep hotspot requirements in the same view, remove Merge as a bottom-nav destination, and update navigation tests without deleting behavioral coverage.
 
+## 2026-08-03 — Remaining producer state artwork
+
+### Starting commit and objective
+
+- Starting commit: `a96f0b5` on `visual-production`.
+- Objective: complete the illustration-only portion of the eight remaining producer state sets, then stop coding and provide a full Claude handover.
+
+### Artwork
+
+- Preserved all eight approved normal producer images unchanged.
+- Added 40 transparent 256x256 runtime illustrations: selected, active, low-charge, empty, and recharge for Tool, Food, Medical, Trap, Fuel, Vehicle Parts, Electronics, and Clothing.
+- Added eight high-resolution five-state source masters under `assets/concepts/producer_states/`.
+- Selected images are pixel-faithful normal-state derivatives with restrained amber/olive rim emphasis. Other states use visible physical operation, depletion, empty storage, and restocking/repair rather than tint-only feedback.
+- One standalone Workshop Bench selected attempt was rejected for changing tool placement and was not retained.
+- Alpha and full-resolution review: `docs/producer-state-captures/producer_states_contact_sheet.png`; actual 68px board-scale review: `producer_states_board_scale_68px.png`.
+
+### Validation and compatibility
+
+- All 40 files validate as RGBA 256x256 with transparent corners and controlled subject coverage. Chroma-edge fragments were removed before approval.
+- Empty-cache Godot 4.3 rebuilt 1,818 artifacts, then exited with Windows access-violation code `-1073741819` during shutdown; immediate verbose reconciliation exited 0 with zero critical import/resource signatures. All 33 smoke scenes pass and the aggregate critical-log scan is clean.
+- No gameplay or integration code, item/producer data, balance, IDs, saves, navigation, animation timing, or audio changed.
+- Artwork remains deliberately unintegrated: `scripts/merge/item_view.gd` still special-cases Construction states. Integration and all remaining coding are specified in `docs/CLAUDE_HANDOVER_2026-08-03.md`.
+- Detailed batch evidence: `docs/production-batches/26_remaining_producer_state_artwork.md`.
+
+### Exact next phase
+
+- Claude should generalize producer state texture resolution, add focused all-producer state tests, run clean import and all 33 smoke scenes, capture live states, document, commit separately, and push to `origin/visual-production`.
+
 ## 2026-08-03 — Unified residence and merge home
 
 ### Starting commit and objective
