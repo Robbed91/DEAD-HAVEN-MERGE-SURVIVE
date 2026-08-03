@@ -1,6 +1,7 @@
 extends Control
 class_name MergeBoard
 const MotionFXScript = preload("res://scripts/vfx/motion_fx.gd")
+const MergeParticleScript = preload("res://scripts/vfx/merge_particle.gd")
 ## MergeBoard
 ##
 ## Phase 2: the real, playable merge board - grid drag-and-drop, merge
@@ -27,6 +28,15 @@ var _highlighted_chain_id: String = ""
 var _selected_instance_id: String = ""
 var _interaction_busy := false
 
+## Pooled merge-burst particles - sized for one burst's worth (max 12 at
+## level >= 5) with headroom; reused via prime()/release() instead of
+## instantiated and freed per merge. _on_drop_attempted() already refuses a
+## new merge while one is animating (_interaction_busy), so one burst's
+## capacity is all any single MergeBoard instance ever needs at once.
+const PARTICLE_POOL_SIZE := 16
+var _particle_pool: Array[MergeParticle] = []
+var _glow_pool: Array[TextureRect] = []
+
 func _ready() -> void:
 	$Layout/HeaderRow/Header.add_theme_font_override("font", ThemeFactory.display_font())
 	_storage_button.add_theme_font_size_override("font_size", 18)
@@ -34,6 +44,7 @@ func _ready() -> void:
 	_storage_button.add_theme_stylebox_override("pressed", ThemeFactory.compact_button_style(Color(0.72, 0.72, 0.72, 1)))
 	_build_grid()
 	_build_legend()
+	_build_vfx_pools()
 	_storage_button.pressed.connect(func():
 		if _storage_panel.visible:
 			_storage_panel.hide_panel()
@@ -184,7 +195,7 @@ func _on_drop_attempted(dragged_id: String, cell: BoardCell) -> void:
 		refresh_board()
 		var result_def := ItemDatabase.get_item(result.resulting_item_id)
 		var level := result_def.level if result_def != null else 1
-		_play_merge_reward(target_pos, level)
+		_play_merge_reward(target_pos, level, result_def.chain_id if result_def != null else "")
 		_play_result_expansion(result.resulting_instance_id)
 		AudioManager.play_sfx("merge_high" if level >= 5 else _merge_audio_key(result_def.chain_id if result_def != null else ""))
 		if result.is_discovery:
@@ -257,43 +268,81 @@ func _play_result_expansion(instance_id: String) -> void:
 	tween.tween_property(view, "scale", Vector2(0.94, 0.94), 0.08).set_trans(Tween.TRANS_QUAD)
 	tween.tween_property(view, "scale", Vector2.ONE, 0.08)
 
-func _play_merge_reward(grid_pos: Vector2i, level: int) -> void:
-	if _effects_disabled():
-		return
+## Preallocates the pooled glow/particle nodes once, as children of
+## _burst_layer, hidden until a burst primes and shows them. Never freed -
+## repeated merges reuse the same nodes instead of churning new ones.
+func _build_vfx_pools() -> void:
+	for i in 2: # one for a normal burst, one spare so a fast repeat merge never waits
+		var glow := TextureRect.new()
+		glow.texture = load("res://assets/ui/merge_board/reward_glow.png")
+		glow.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		glow.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		glow.visible = false
+		_burst_layer.add_child(glow)
+		_glow_pool.append(glow)
+	for i in PARTICLE_POOL_SIZE:
+		var particle := MergeParticleScript.new()
+		_burst_layer.add_child(particle)
+		_particle_pool.append(particle)
+
+func _acquire_glow() -> TextureRect:
+	for glow in _glow_pool:
+		if not glow.visible:
+			return glow
+	return _glow_pool[0] # pool exhausted (shouldn't happen) - reuse the oldest rather than grow unbounded
+
+func _acquire_particle() -> MergeParticle:
+	for particle in _particle_pool:
+		if not particle.visible:
+			return particle
+	return null # pool exhausted - burst_plan() never asks for more than PARTICLE_POOL_SIZE, so this just quietly draws fewer
+
+## Reduced motion always gets a short fade/glow (never skipped entirely,
+## unlike the old blanket _effects_disabled() gate) but no flying
+## particles. Low graphics quality keeps the full sequence but with fewer
+## particles (see MergeVFX.burst_plan). There is no separate "fully off"
+## case distinct from those two settings for a one-shot burst like this.
+func _play_merge_reward(grid_pos: Vector2i, level: int, chain_id: String) -> void:
+	var reduced_motion: bool = GameManager.settings.get("reduced_motion", false)
+	var quality := String(GameManager.settings.get("graphics_quality", "standard"))
 	var cell: BoardCell = _cells.get(grid_pos)
 	if cell == null:
 		return
 	var center := cell.global_position + cell.size * 0.5
-	var glow := TextureRect.new()
-	glow.texture = load("res://assets/ui/merge_board/reward_glow.png")
-	glow.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+
+	var glow := _acquire_glow()
 	glow.size = cell.size * (1.9 if level >= 5 else 1.45)
 	glow.global_position = center - glow.size * 0.5
 	glow.pivot_offset = glow.size * 0.5
-	glow.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	glow.scale = Vector2(0.45, 0.45)
-	_burst_layer.add_child(glow)
+	glow.modulate.a = 1.0
+	glow.visible = true
+	var glow_duration := 0.18 if reduced_motion else 0.40
 	var glow_tween := create_tween()
-	glow_tween.tween_property(glow, "scale", Vector2(1.35, 1.35), 0.34).set_trans(Tween.TRANS_CUBIC)
-	glow_tween.parallel().tween_property(glow, "modulate:a", 0.0, 0.40)
-	glow_tween.tween_callback(glow.queue_free)
+	glow_tween.tween_property(glow, "scale", Vector2(1.1 if reduced_motion else 1.35, 1.1 if reduced_motion else 1.35), glow_duration * 0.85).set_trans(Tween.TRANS_CUBIC)
+	glow_tween.parallel().tween_property(glow, "modulate:a", 0.0, glow_duration)
+	glow_tween.tween_callback(func(): glow.visible = false)
 
-	var count := 12 if level >= 5 else 7
+	if reduced_motion:
+		return # reduced motion: short fade/glow only, no flying particles
+
+	var plan := MergeVFX.burst_plan(chain_id, level, quality)
+	var particles: Array = plan.particles
+	var count: int = particles.size()
 	for i in count:
-		var particle := TextureRect.new()
-		particle.texture = load("res://assets/ui/merge_board/wood_chip.png" if i % 3 != 0 else "res://assets/ui/merge_board/dust_soft.png")
-		particle.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-		particle.size = Vector2(16, 16) if i % 3 != 0 else Vector2(28, 28)
+		var particle := _acquire_particle()
+		if particle == null:
+			break
+		var spec: Dictionary = particles[i]
+		particle.prime(String(spec.shape), spec.color, spec.particle_size)
 		particle.global_position = center - particle.size * 0.5
-		particle.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		_burst_layer.add_child(particle)
 		var angle := TAU * float(i) / float(count) + randf_range(-0.14, 0.14)
 		var distance := randf_range(30.0, 54.0) * (1.25 if level >= 5 else 1.0)
 		var particle_tween := create_tween().set_parallel(true)
 		particle_tween.tween_property(particle, "global_position", particle.global_position + Vector2.from_angle(angle) * distance, 0.42).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
 		particle_tween.tween_property(particle, "rotation", randf_range(-2.4, 2.4), 0.42)
 		particle_tween.tween_property(particle, "modulate:a", 0.0, 0.42).set_delay(0.12)
-		particle_tween.chain().tween_callback(particle.queue_free)
+		particle_tween.chain().tween_callback(particle.release)
 
 func _play_producer_activation(instance_id: String) -> void:
 	var view := _find_item_view(instance_id)

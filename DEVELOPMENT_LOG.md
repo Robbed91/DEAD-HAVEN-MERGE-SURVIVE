@@ -129,6 +129,35 @@ godot4 --headless --path /path/to/dead-haven-merge-survive \
 
 - Continue Batch 3: the two remaining, larger pieces - a pooled chain-ID-driven merge VFX system for all 9 gameplay chains, and per-residence environment presets (rain/fog/dust/leaves/smoke/embers/sparks/flicker/radio pulses/cloud shadows/foliage) plus gameplay-neutral danger presentation on existing triggers.
 
+## 2026-08-03 — Strict-quality Batch 3, part 3: chain-specific merge VFX
+
+### Starting commit and objective
+
+- Starting commit: `798bfdf` on `visual-production` (the doc-reconciliation batch).
+- Objective: the first of Batch 3's two remaining larger pieces from `docs/CLAUDE_HANDOVER_2026-08-03.md` - replace the single hardcoded wood-chip/dust burst every chain's merge shared with one pooled, chain-ID-driven system, without changing merge timing or results.
+
+### Implementation
+
+- New `scripts/vfx/merge_particle.gd` (`MergeParticle`, extends Control): one reusable, poolable particle that draws a small procedural shape (shard/fragment/crumb/cross/glint/cord/droplet/chunk/ring/zigzag/fiber/puff) via `_draw()`, colored and sized per use through `prime()`. Procedural shapes, not raster sprites, because this environment still has no image-generation tool - the same constraint that's shaped every other visual choice in this project; this is the established fallback technique (see `ItemIconRenderer`), applied here deliberately rather than as a placeholder.
+- New `scripts/vfx/merge_vfx.gd` (`MergeVFX`, pure data/static functions, no node state - same shape as the existing `MotionFXScript` helper): a `STYLES` table maps each of the 9 gameplay chains to a primary/secondary shape+color pair matching the brief's material descriptions (Construction keeps its original wood/dust look exactly, since that was already chain-correct; Tool gets grey fragments + sparks; Food gets crumbs + leaf flecks; Medical gets a soft cross + glints; Trap gets fragments + cord strands; Fuel gets droplets + amber glints; Vehicle Parts gets heavier chunks + sparks; Electronics gets cool-blue rings + zigzag arcs; Clothing gets soft fibres). `burst_plan(chain_id, level, quality)` returns the exact particle count/shape/color list for a burst - reduced under `"low"` graphics quality, unchanged at `"standard"`/`"high"`, unknown chain ids fall back to Construction's style rather than producing nothing.
+- `scenes/merge_board/merge_board.gd`: `_play_merge_reward()` rewritten to use a pre-built pool (`_particle_pool`: 16 `MergeParticle`s, `_glow_pool`: 2 glows, built once in `_build_vfx_pools()` from `_ready()`) instead of instantiating and `queue_free()`-ing new `TextureRect`s every merge. `reduced_motion` now gets a real short fade/glow (glow only, shorter duration) instead of the old blanket `_effects_disabled()` gate skipping the whole function - previously reduced motion showed literally nothing for a successful merge. Low graphics quality keeps the full glow-plus-particle sequence but with `MergeVFX.burst_plan()`'s reduced count. The pull/compression/expansion/bounce steps around it (`_play_merge_pull`, `_play_result_expansion`) are unchanged and stay chain-agnostic, matching the brief's own sequence description - only the "material-specific particles" step needed chain variety. `_on_drop_attempted()` now passes the resulting item's `chain_id` through to the reward call.
+
+### Tests performed
+
+- Clean headless import: zero parse/script errors.
+- New `tests/smoke_test_merge_vfx.gd`/`.tscn`: `MergeVFX.burst_plan()` is correct for all 9 chains as pure data (7 particles at level 1, 12 with `emphasize=true` at level 5+, no empty shapes); low quality reduces count without zeroing it; an unknown chain id falls back instead of failing; three real merges against a live embedded Haven board leave `_particle_pool`/`_glow_pool` at their exact pre-built sizes (proving reuse, not per-merge node churn); `reduced_motion` shows the glow with zero particles made visible. Caught two real issues while writing this test, both in the test itself, not the feature: instantiating and freeing two separate `Haven` scenes in the same run produced a noisy (but harmless) deferred-call error in the unrelated nav-bar animation code, fixed by reusing one instance across checks; and the reduced-motion check initially raced the previous check's still-in-flight particle tweens in real time, fixed by explicitly resetting pool state instead of relying on timing.
+- Full suite: 37/37 pass. `smoke_test_audio_presentation` failed once even in isolation during this batch (previously only ever failed in rapid sequential runs, not alone) but passed 5/5 further isolated reruns immediately after with no code changed in between - still the same pre-existing flake, just a visibly wider one than previously observed; not touched by this batch.
+- New `tests/capture_merge_vfx.gd`/`.tscn`: triggers a real Electronics-chain merge on the embedded Haven board and captures it mid-burst via `xvfb-run --rendering-driver opengl3` to `docs/producer-state-captures/live_merge_vfx_electronics.png` - visibly shows cool-blue ring/arc particles, not the old wood-chip/dust look.
+
+### Known issues
+
+- All 9 particle "materials" are procedural shape+color combinations, not illustrated sprites, for the reason stated above. If a future session gets an image-generation tool, these are natural candidates to replace with authored art without changing `MergeVFX`'s interface.
+- `smoke_test_audio_presentation`'s flake widened slightly (now occasionally fails alone, not just in rapid sequences) - still not chased down, same as every batch since it was first noted.
+
+### Exact next phase
+
+- The last piece of Batch 3: per-residence environment presets (rain/fog/dust/leaves/smoke/embers/sparks/flicker/radio pulses/cloud shadows/foliage) and gameplay-neutral danger presentation on existing triggers. Note `scripts/vfx/ambient_vfx.gd` already exists with 4 presets (storm/dust/fog/industrial) covering some of this list (rain-like streaks, dust motes, fog, sparks, radio pulse rings, a generator-vibration motif, lantern flicker) - that work is extending/completing it, not starting from nothing.
+
 ## 2026-08-03 — Strict-quality Batch 3, part 1: chain-legend final art
 
 ### Starting commit and objective
