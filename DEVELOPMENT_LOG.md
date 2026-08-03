@@ -106,6 +106,34 @@ godot4 --headless --path /path/to/dead-haven-merge-survive \
 
 ---
 
+## 2026-08-03 — Producer state artwork integration
+
+### Starting commit and objective
+
+- Starting commit: `65ddd9b` on `visual-production`, picked up directly from `docs/CLAUDE_HANDOVER_2026-08-03.md` (Batch 1 of the required coding batches).
+- Objective: generalize producer state texture resolution beyond Construction's old special case, so all nine producer chains resolve their authored `producer_<state>.png` art, then add focused tests and push.
+
+### Implementation
+
+- `scripts/merge/item_view.gd`: replaced the `def.chain_id == "construction"` special case in `_refresh_final_texture()` with a chain-agnostic `_resolve_producer_state_path()` that checks `res://assets/items/<chain_id>/producer_<state>.png` for every producer, in the same priority order the Construction-only code already used (transient visual-state override, then empty, then recharge/cooldown, then low-charge, then selected). A chain with no authored file for the state that would apply falls back to the existing tint-only presentation instead of a broken texture load, so an incomplete future chain stays readable.
+- Did not touch producer IDs, charges, cooldowns, energy costs, outputs, unlock rules, spawn probabilities, or any save data - this is presentation-only, matching the handover's compatibility requirement.
+
+### Tests performed
+
+- Clean headless import: zero parse/script errors.
+- New `tests/smoke_test_producer_states.gd`/`.tscn`: for all 9 producers in `BoardState.PRODUCER_UNLOCK_RULES`, asserts `_resolve_producer_state_path()` returns the correct authored file for selected/active/low-charge/empty/recharge and returns no override for the idle state; asserts a locked producer's `BoardState.is_item_blocked()` stays true and `_get_drag_data()` stays null regardless of which visual state is showing; asserts `set_selected_visual()`/`play_producer_visual_state()` never mutate the underlying `BoardItem`'s charge/cooldown/lock fields. All 9 chains' low-charge/empty/recharge paths are exercised directly against manually-constructed `BoardItem`s rather than through real gameplay, since every current producer has unlimited charges (`producer_charges = -1`) and wouldn't naturally reach those states yet - the resolver logic itself is proven correct independent of that.
+- Full suite: 34/34 (33 existing + the new one).
+- New `tests/capture_producer_states.gd`/`.tscn`: instantiates the real embedded Haven screen (not a standalone board), finds the live `tool_producer` `ItemView`, and captures its active/empty/recharge states to `docs/producer-state-captures/live_embedded_tool_*.png`. This container's plain `--headless` run uses Godot's dummy renderer, which returns a null viewport texture and can't actually save a screenshot (confirmed by trying it first, not assumed) - `xvfb-run -a godot4 --path . --rendering-driver opengl3` works in this container via its installed `Xvfb`/Mesa llvmpipe software rasterizer and produces real captures. This is the first real in-engine screenshot taken from inside this remote environment across the whole project; every prior phase's "not visually confirmed" caveat assumed it wasn't possible here at all.
+
+### Known issues
+
+- `tests/README.md`'s test-by-test bullet list and run-command block were only updated for the one new test added here, not fully reconciled against every test file that already exists - same tracked staleness `docs/RELEASE_PRESENTATION_GAP_REPORT.md` already calls out project-wide. Not fixed here; still Batch 3's job per the handover.
+- The `xvfb-run` capture path discovered here is new and only used for this batch's evidence; it hasn't been applied retroactively to any earlier phase's unverified visual claims.
+
+### Exact next phase
+
+- Batch 2 from `docs/CLAUDE_HANDOVER_2026-08-03.md`: gameplay-chain cash-out - add tap-to-collect at several data-driven levels on the nine gameplay chains (not just the four reward chains), excluding box-covered/cobwebbed/task-reserved items, with reward metadata stored additively so no item ID or save key changes.
+
 ## 2026-08-01 — Progression gating fixes
 
 ### Starting commit and objective

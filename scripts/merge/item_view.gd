@@ -185,22 +185,20 @@ func _refresh_final_texture(def: ItemDefinition, board_item: BoardItem) -> void:
 	if _final_art == null:
 		return
 	var path := def.icon_path
-	if def.is_producer and def.chain_id == "construction":
-		if not _producer_visual_state.is_empty():
-			path = "res://assets/items/construction/producer_%s.png" % _producer_visual_state
-		elif board_item != null and board_item.charge_count == 0:
-			path = "res://assets/items/construction/producer_empty.png"
-		elif board_item != null and board_item.is_on_cooldown():
-			path = "res://assets/items/construction/producer_recharge.png"
-		elif board_item != null and def.producer_charges > 0 and board_item.charge_count <= maxi(1, int(ceil(def.producer_charges * 0.25))):
-			path = "res://assets/items/construction/producer_low_charge.png"
-		elif _selected_visual:
-			path = "res://assets/items/construction/producer_selected.png"
+	var used_state_art := false
+	if def.is_producer:
+		var state_path := _resolve_producer_state_path(def, board_item)
+		if not state_path.is_empty():
+			path = state_path
+			used_state_art = true
 	_final_art.texture = load(path)
 	var tint := Color.WHITE
 	if board_item != null and board_item.is_locked:
 		tint = Color(0.58, 0.58, 0.58, 0.9)
-	elif def.is_producer and def.chain_id != "construction" and board_item != null:
+	elif def.is_producer and board_item != null and not used_state_art:
+		# Legacy tint-only fallback, only reached for a producer chain with no
+		# authored state art at all - keeps future/incomplete chains readable
+		# instead of looking inert.
 		if board_item.charge_count == 0:
 			tint = Color(0.46, 0.46, 0.46, 0.88)
 		elif board_item.is_on_cooldown():
@@ -208,6 +206,27 @@ func _refresh_final_texture(def: ItemDefinition, board_item: BoardItem) -> void:
 		elif _selected_visual or _producer_visual_state == "active":
 			tint = Color(1.14, 1.08, 0.82, 1.0)
 	_final_art.modulate = tint
+
+## Resolves which producer_<state>.png (if any) applies right now, checking
+## the transient visual-state override first, then live board state, in the
+## same priority every chain uses. Returns "" if no state file should
+## override the normal producer.png (idle/full-charge/off-cooldown/
+## unselected, or the chain has no art for the state that would apply).
+func _resolve_producer_state_path(def: ItemDefinition, board_item: BoardItem) -> String:
+	var state := _producer_visual_state
+	if state.is_empty() and board_item != null:
+		if board_item.charge_count == 0:
+			state = "empty"
+		elif board_item.is_on_cooldown():
+			state = "recharge"
+		elif def.producer_charges > 0 and board_item.charge_count <= maxi(1, int(ceil(def.producer_charges * 0.25))):
+			state = "low_charge"
+	if state.is_empty() and _selected_visual:
+		state = "selected"
+	if state.is_empty():
+		return ""
+	var candidate := "res://assets/items/%s/producer_%s.png" % [def.chain_id, state]
+	return candidate if ResourceLoader.exists(candidate) else ""
 
 func _refresh_state_overlays() -> void:
 	var board_item := _get_board_item()

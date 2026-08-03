@@ -30,6 +30,7 @@ godot4 --headless --path . tests/smoke_test_greybridge.tscn
 godot4 --headless --path . tests/smoke_test_saint_mercy.tscn
 godot4 --headless --path . tests/smoke_test_northgate.tscn
 godot4 --headless --path . tests/smoke_test_main_story.tscn
+godot4 --headless --path . tests/smoke_test_producer_states.tscn
 ```
 
 All of the above are cheap to run with a `timeout` wrapper (e.g.
@@ -78,6 +79,7 @@ opt-in, point Godot at them directly as shown above.
 - **smoke_test_saint_mercy** (Phase 11) - same shape again for Saint Mercy Hospital's 8 hotspots and the Imogen-rescue quest (unlocks `imogen_shaw`, advances to `chapter_7_do_no_harm`, `dialogue_trigger_id` is `imogen_01`); the deliberate mirror-image assertion to smoke_test_greybridge's - checks `saint_mercy_defence`'s `skill_tags` are the standard `["trap", "defence"]` set AND that they do NOT overlap Imogen's real medical skills, making that design choice (a doctor's skills don't help hold a barricade) a checked fact instead of an assumption; a forced success spends the event's own energy cost, marks only itself survived, and sets `northgate_unlocked`; a save/reload round trip preserves all of it.
 - **smoke_test_northgate** (Phase 12) - same shape again for Northgate Prison's 8 hotspots and the Caleb-rescue quest (unlocks `caleb_rusk`, advances to `chapter_8_old_debts`, `dialogue_trigger_id` is `caleb_01`); the payoff test - directly asserts Caleb's real skills (`trap`/`defence`/`combat`) overlap the `skill_tags` of all four standard-tag defence events (`hollow_creek_first_wave`, `redwater_defence`, `saint_mercy_defence`, `northgate_defence`) at once, not just his own, closing the "skill bonus mechanism real but nobody currently unlocked matches it" situation every phase since 6 has carried. Writing this test caught a real flakiness bug (see DEVELOPMENT_LOG.md Phase 12): forcing `success_chance = 1.0` while resolving with a matching-skill survivor triggers the actual skill-bonus math (`minf(1.0 + 0.15, 0.95)`), which *reduces* an intended certainty to 95% - a ~1-in-20 chance of spurious failure. Fixed here (and retroactively in `smoke_test_greybridge.gd`, which had the same latent issue) by resolving with a non-matching survivor for the deterministic forced-outcome checks, while the skill-match itself is proven separately via a direct assertion that never touches `randf()`.
 - **smoke_test_main_story** (Phase 13) - marks every hotspot on all 5 residences COMPLETED directly (bypassing the merge-board flow those residences' own tests already cover) so it can focus on the cross-residence capstone logic: `DefenceManager.all_events_survived()` is checked after each of the 5 events is individually forced to succeed, asserting it stays false until the very last one (not just "eventually true") to guard against an off-by-one; the `signal_keeper_01`-`05` dialogue chain's `next_id` links are verified end to end via `DialogueManager` directly (not by simulating Haven actually becoming the active scene - see the test's own docstring for why no test in this project does that) and its final entry's branching choice is confirmed real; the capstone's chapter advance and one-time trigger flag both persist through a save/reload round trip.
+- **smoke_test_producer_states** - verifies all nine producer definitions from `BoardState.PRODUCER_UNLOCK_RULES` resolve `res://assets/items/<chain_id>/producer_<state>.png` for normal/selected/active/low-charge/empty/recharge through `ItemView._resolve_producer_state_path()`, not just Construction's old special case; asserts a locked producer's `BoardState.is_item_blocked()` and `_get_drag_data()` stay blocked regardless of which visual state is showing; and asserts `set_selected_visual()`/`play_producer_visual_state()` never mutate the underlying `BoardItem`'s charge/cooldown/lock fields. `capture_producer_states.tscn` separately renders the real embedded Haven board's `tool_producer` cell through active/empty/recharge to `docs/producer-state-captures/` - this project's headless `--headless` runs use Godot's dummy renderer and cannot produce real screenshots (`get_viewport().get_texture()` is null), but `xvfb-run godot4 --rendering-driver opengl3` works in this container and does, which every prior phase's capture work had assumed wasn't possible here.
 
 ## What these do NOT cover
 
@@ -89,14 +91,16 @@ or in the editor's running game view; an equivalent Phase 2 checklist for
 drag/merge/producer gestures hasn't been written yet (see DEVELOPMENT_LOG.md
 Known issues).
 
-Results as of Phase 13 (Godot 4.3.stable, downloaded fresh into this
-development container - see DEVELOPMENT_LOG.md Known issues about it not
-persisting between sessions): all fourteen pass, deterministically (see
-`smoke_test_northgate`'s entry above for a flakiness bug two tests had
-until Phase 12). Run each with a `timeout`
-wrapper if you're scripting this - both `smoke_test.tscn` (Phase 4) and
-the one-off `generate_scavenging.gd` content script (Phase 5) genuinely
-hung from real bugs during development (see DEVELOPMENT_LOG.md for both),
-and while those specific bugs are fixed, a `timeout` around any headless
-run here is cheap insurance against a future regression doing the same
-thing.
+Results as of the producer-state-artwork batch (2026-08-03, Godot
+4.3.stable): all 34 `tests/smoke_test*.tscn` scenes pass, deterministically
+(see `smoke_test_northgate`'s entry above for a flakiness bug two tests had
+until Phase 12). This list of run commands and the bullets above it are not
+fully reconciled against every test file that exists in `tests/` - the
+producer-state-artwork batch added its own entry but did not audit the rest;
+see `docs/RELEASE_PRESENTATION_GAP_REPORT.md` for the same known staleness
+tracked project-wide. Run each with a `timeout` wrapper if you're scripting
+this - both `smoke_test.tscn` (Phase 4) and the one-off
+`generate_scavenging.gd` content script (Phase 5) genuinely hung from real
+bugs during development (see DEVELOPMENT_LOG.md for both), and while those
+specific bugs are fixed, a `timeout` around any headless run here is cheap
+insurance against a future regression doing the same thing.
