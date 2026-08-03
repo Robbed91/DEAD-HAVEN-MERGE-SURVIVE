@@ -106,6 +106,29 @@ godot4 --headless --path /path/to/dead-haven-merge-survive \
 
 ---
 
+## 2026-08-03 — Strict-quality Batch 3, part 1: chain-legend final art
+
+### Starting commit and objective
+
+- Starting commit: `d084c08` on `visual-production` (the gameplay-chain cash-out batch).
+- Objective: the first piece of Batch 3 from `docs/CLAUDE_HANDOVER_2026-08-03.md` - replace the merge board's procedural chain-legend swatches with existing final illustrated art, keeping the defensive procedural renderer as a fallback only.
+
+### Implementation
+
+- `scripts/merge/chain_legend_icon.gd`: each swatch now looks up its own chain's `producer_item_id` through `ItemDatabase.get_chain()`/`get_item()` and shows that producer's real `icon_path` texture (added as a child `TextureRect`, `MOUSE_FILTER_IGNORE` so the swatch's own tap handling is unaffected) instead of calling `ItemIconRenderer.draw_chain_swatch()` unconditionally. `_draw()` only falls back to the procedural swatch when no final art resolves, and the selection highlight border is unchanged. `ItemIconRenderer.draw_chain_swatch()` itself is untouched and remains available for that fallback case.
+- No merge rule, chain data, highlight/selection behaviour, or save data changed - this is presentation-only, reusing each chain's producer art exactly as already used elsewhere on the board.
+
+### Tests performed
+
+- Clean headless import: zero parse/script errors.
+- New `tests/smoke_test_chain_legend_art.gd`/`.tscn`: confirms all 9 gameplay chains (the reward chains correctly have no legend entry at all) resolve `has_final_illustration() == true`.
+- Full suite: 36/36 pass (35 existing + this one), except `smoke_test_audio_presentation`'s pre-existing timing flake in the rapid sequential run - reconfirmed unrelated by rerunning it alone.
+- New `tests/capture_chain_legend.gd`/`.tscn`: renders the real embedded Haven board to `docs/producer-state-captures/live_chain_legend.png` via the same `xvfb-run --rendering-driver opengl3` path established in the producer-artwork batch - the legend row visibly shows 9 distinct illustrated icons instead of flat colour swatches.
+
+### Exact next phase
+
+- Continue Batch 3: reconcile the stale `docs/RELEASE_PRESENTATION_GAP_REPORT.md`/`assets/manifests/asset_manifest.json`/`docs/FINAL_ASSET_MANIFEST.csv` against runtime truth, then the larger remaining pieces - pooled chain-VFX, environment presets, and gameplay-neutral danger presentation.
+
 ## 2026-08-03 — Gameplay-chain cash-out
 
 ### Starting commit and objective

@@ -32,6 +32,7 @@ godot4 --headless --path . tests/smoke_test_northgate.tscn
 godot4 --headless --path . tests/smoke_test_main_story.tscn
 godot4 --headless --path . tests/smoke_test_producer_states.tscn
 godot4 --headless --path . tests/smoke_test_gameplay_cash_out.tscn
+godot4 --headless --path . tests/smoke_test_chain_legend_art.tscn
 ```
 
 All of the above are cheap to run with a `timeout` wrapper (e.g.
@@ -83,6 +84,8 @@ opt-in, point Godot at them directly as shown above.
 - **smoke_test_producer_states** - verifies all nine producer definitions from `BoardState.PRODUCER_UNLOCK_RULES` resolve `res://assets/items/<chain_id>/producer_<state>.png` for normal/selected/active/low-charge/empty/recharge through `ItemView._resolve_producer_state_path()`, not just Construction's old special case; asserts a locked producer's `BoardState.is_item_blocked()` and `_get_drag_data()` stay blocked regardless of which visual state is showing; and asserts `set_selected_visual()`/`play_producer_visual_state()` never mutate the underlying `BoardItem`'s charge/cooldown/lock fields. `capture_producer_states.tscn` separately renders the real embedded Haven board's `tool_producer` cell through active/empty/recharge to `docs/producer-state-captures/` - this project's headless `--headless` runs use Godot's dummy renderer and cannot produce real screenshots (`get_viewport().get_texture()` is null), but `xvfb-run godot4 --rendering-driver opengl3` works in this container and does, which every prior phase's capture work had assumed wasn't possible here.
 - **smoke_test_gameplay_cash_out** - verifies the merge-chain cash-out feature: a gameplay-chain item (not just the four reward chains) is collectible for exactly its already-authored `ItemDefinition.sell_value` in coins via `BoardState.can_collect_reward()`/`collect_reward()`; a producer, a box-covered item, a cobwebbed item, and a bubbled item (`BoardItem.is_in_bubble`) are all refused with a distinct reason and none of their state is mutated by a refused attempt; an item currently at exactly the count an active Hollow Creek task still needs is refused as `task_reserved` via the new `ResidenceManager.is_item_reserved_for_active_task()`, and becomes collectible again once a surplus copy exists above that requirement; the existing reward-chain formula (`level * per_level_value`) is unchanged; and a collected item's removal plus the coins it granted both survive a save/reload round trip. `capture_gameplay_cash_out.tscn` renders the real item info panel showing a live "Collect (+N coins)" button for a level-1 Tool item on the embedded Haven board to `docs/producer-state-captures/live_gameplay_chain_collect_button.png`.
 
+- **smoke_test_chain_legend_art** - verifies all 9 gameplay-chain legend swatches (`ChainLegendIcon`) resolve their chain's real final producer art via `has_final_illustration()`, rather than falling back to the old procedural `ItemIconRenderer.draw_chain_swatch()`. `capture_chain_legend.tscn` renders the real embedded Haven board's legend row to `docs/producer-state-captures/live_chain_legend.png`.
+
 ## What these do NOT cover
 
 They run with Godot's headless server backend - no window, no real touch
@@ -93,13 +96,13 @@ or in the editor's running game view; an equivalent Phase 2 checklist for
 drag/merge/producer gestures hasn't been written yet (see DEVELOPMENT_LOG.md
 Known issues).
 
-Results as of the gameplay-chain cash-out batch (2026-08-03, Godot
-4.3.stable): all 35 `tests/smoke_test*.tscn` scenes pass, deterministically,
-except `smoke_test_audio_presentation` which remains the same pre-existing
+Results as of the chain-legend-art batch (2026-08-03, Godot 4.3.stable): all
+36 `tests/smoke_test*.tscn` scenes pass, deterministically, except
+`smoke_test_audio_presentation` which remains the same pre-existing
 timing-sensitive flake noted in the producer-state-artwork batch and in
-`docs/production-batches/21_android_export_audit.md` - it passed 3/3 in
-isolated reruns during this batch, confirming it is not a regression from
-these changes
+`docs/production-batches/21_android_export_audit.md` - it keeps passing in
+isolated reruns during every batch since, confirming it is not a regression
+from any of these changes
 (see `smoke_test_northgate`'s entry above for a flakiness bug two tests had
 until Phase 12). This list of run commands and the bullets above it are not
 fully reconciled against every test file that exists in `tests/` - the
