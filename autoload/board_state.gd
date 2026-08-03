@@ -563,23 +563,55 @@ func consume_item(item_id: String, count: int) -> bool:
 		EventBus.board_item_removed.emit(instance_id)
 	return true
 
-# -- Reward-chain collection ---------------------------------------------
+# -- Reward-chain collection / gameplay-chain cash-out --------------------
 
-## Reward-chain items (energy/coin/xp/token) are collected instead of used
-## in a task: this consumes the item and grants the scaled resource amount.
-func collect_reward(instance_id: String) -> bool:
+## Whether instance_id can be tapped-to-collect right now, and for what.
+## Reward-chain items (energy/coin/xp/token) always qualify per their
+## existing per-level formula. Gameplay-chain items qualify wherever their
+## already-authored ItemDefinition.sell_value is > 0 (every real level in
+## every chain already has one, balanced by whoever set the economy - this
+## reuses that data rather than inventing a second, parallel reward table).
+## Producer, box-covered, cobwebbed, bubbled, and task-reserved items are
+## never collectible, regardless of the above.
+func can_collect_reward(instance_id: String) -> Dictionary:
 	var def := get_item_def(instance_id)
-	if def == null or is_item_blocked(instance_id):
-		return false
+	if def == null:
+		return {"allowed": false, "reason": "invalid_item"}
+	if def.is_producer:
+		return {"allowed": false, "reason": "producer"}
+	if is_item_blocked(instance_id):
+		return {"allowed": false, "reason": "blocked"}
+	var board_item: BoardItem = items.get(instance_id)
+	if board_item != null and board_item.is_in_bubble:
+		return {"allowed": false, "reason": "bubbled"}
 	var chain := ItemDatabase.get_chain(def.chain_id)
-	if not chain.get("is_reward_chain", false):
+	var reward := _resolve_cash_out_reward(def, chain)
+	if reward.is_empty():
+		return {"allowed": false, "reason": "not_collectible"}
+	if ResidenceManager.is_item_reserved_for_active_task(def.id, active_residence_id, 1):
+		return {"allowed": false, "reason": "task_reserved"}
+	return {"allowed": true, "reason": "", "resource": reward.get("resource"), "amount": reward.get("amount")}
+
+func _resolve_cash_out_reward(def: ItemDefinition, chain: Dictionary) -> Dictionary:
+	if bool(chain.get("is_reward_chain", false)):
+		var amount: int = def.level * int(chain.get("per_level_value", 0))
+		return {"resource": String(chain.get("resource", "")), "amount": amount} if amount > 0 else {}
+	if def.sell_value > 0:
+		return {"resource": "coins", "amount": def.sell_value}
+	return {}
+
+## Consumes instance_id and grants the resource can_collect_reward() said it
+## was worth. Returns false (no mutation at all) if it isn't collectible
+## right now for any reason.
+func collect_reward(instance_id: String) -> bool:
+	var check := can_collect_reward(instance_id)
+	if not bool(check.get("allowed", false)):
 		return false
-	var amount: int = def.level * int(chain.get("per_level_value", 0))
-	match String(chain.get("resource", "")):
-		"energy": GameManager.add_energy(amount)
-		"coins": GameManager.add_coins(amount)
-		"xp": GameManager.add_xp(amount)
-		"haven_tokens": GameManager.add_haven_tokens(amount)
+	match String(check.get("resource", "")):
+		"energy": GameManager.add_energy(int(check.get("amount", 0)))
+		"coins": GameManager.add_coins(int(check.get("amount", 0)))
+		"xp": GameManager.add_xp(int(check.get("amount", 0)))
+		"haven_tokens": GameManager.add_haven_tokens(int(check.get("amount", 0)))
 		_: return false
 	_remove_instance(instance_id)
 	EventBus.board_item_removed.emit(instance_id)

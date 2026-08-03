@@ -117,6 +117,27 @@ func requirements_met(quest_id: String) -> bool:
 			return false
 	return true
 
+## True if removing `count` more of item_id from the given residence's board
+## (via the merge-chain cash-out collect action) would drop the player below
+## what an active, not-yet-complete hotspot task there still needs. Used to
+## stop cash-out from letting a player accidentally give away an item a task
+## is still waiting on - it does not affect normal merging or task
+## completion, which already consume items directly against their own
+## requirement check.
+func is_item_reserved_for_active_task(item_id: String, residence_id: String, count: int = 1) -> bool:
+	var residence := get_residence(residence_id)
+	if residence == null:
+		return false
+	var on_hand := BoardState.count_item(item_id)
+	for hotspot in residence.hotspots:
+		var quest := get_active_quest_for_hotspot(hotspot.id, residence_id)
+		if quest == null or not quest.requirements.has(item_id):
+			continue
+		var required := int(quest.requirements[item_id])
+		if on_hand - count < required:
+			return true
+	return false
+
 ## Verifies requirements, consumes items, grants rewards (including the
 ## "unlock_survivor" and "set_story_flag" special-case reward keys),
 ## advances the linked hotspot, and persists. Returns a result dict rather

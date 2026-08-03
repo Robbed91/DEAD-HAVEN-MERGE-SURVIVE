@@ -106,6 +106,36 @@ godot4 --headless --path /path/to/dead-haven-merge-survive \
 
 ---
 
+## 2026-08-03 — Gameplay-chain cash-out
+
+### Starting commit and objective
+
+- Starting commit: `4fb95bd` on `visual-production` (the producer-state-artwork integration batch).
+- Objective: Batch 2 from `docs/CLAUDE_HANDOVER_2026-08-03.md` - add tap-to-collect on the nine gameplay chains, not only the four reward chains, without changing chain order, merge results, item IDs, or save keys.
+
+### Implementation
+
+- `autoload/board_state.gd`: generalized `collect_reward()` behind a new `can_collect_reward(instance_id) -> Dictionary` that returns `{allowed, reason}` (plus `resource`/`amount` when allowed). Reward chains keep their exact original `level * per_level_value` formula. Gameplay-chain items become collectible wherever `ItemDefinition.sell_value > 0` - every real level in every chain already has one, authored and balanced when the items were created (5/20/45/80/125/180/245 coins for Tool's 7 levels, for example); this reuses that existing additive field instead of inventing a second, parallel reward table or touching any item ID or save key. `_resolve_cash_out_reward()` holds the resource/amount formula for both cases.
+- Added explicit refusal reasons ahead of the reward lookup: `producer` (never collectible, matching the handover's restriction even though producers also have `sell_value = 0` and would be refused by the formula anyway), `blocked` (covers box-covered/`is_locked` and cobwebbed/`has_cobweb` via the existing `is_item_blocked()`), and `bubbled` (`BoardItem.is_in_bubble` - not previously checked by anything, since nothing needed to block on it before this).
+- `autoload/residence_manager.gd`: added `is_item_reserved_for_active_task(item_id, residence_id, count)`, the new `task_reserved` guard - refuses collecting the last copy(ies) of an item an active, not-yet-complete hotspot task on that residence still needs, so the new cash-out button can't let a player accidentally give away task progress. Does not affect normal merging, task completion's own requirement check, or anything outside the collect path.
+- `scenes/ui/item_info_panel.gd`: the Collect button's visibility and label now come from `can_collect_reward()` instead of an `is_reward_chain` check, so it appears for both categories under the same real gating; added a failure toast ("Can't collect that right now.") where there previously was silent no-op on refusal.
+
+### Tests performed
+
+- Clean headless import: zero parse/script errors.
+- New `tests/smoke_test_gameplay_cash_out.gd`/`.tscn`: a freely-collectible gameplay item (dynamically chosen - not currently reserved by an active Hollow Creek task, since which items are mid-task at a fresh `new_game()` is itself data, not something safe to hardcode) collects for exactly its `sell_value` in coins and leaves the board; a producer, a box-covered item, a cobwebbed item, and a bubbled item are each refused with the correct distinct reason; an item topped up to exactly an active task's requirement is refused as `task_reserved`, and a surplus copy above that requirement is collectible; the existing reward-chain formula is confirmed unchanged; a collected item's removal and its granted coins both survive a `to_save_data()`/`apply_save_data()` round trip. Discovered and fixed a real test bug during development, not a product bug: an initial version hardcoded `tool_3` as "obviously safe to collect" and failed immediately because Hollow Creek's starting quests really do reserve it at a fresh game - the task-reserved guard was correctly refusing it. Fixed by picking a target dynamically instead of assuming.
+- Full suite: 35/35 pass (33 existing + `smoke_test_producer_states` + this one), except `smoke_test_audio_presentation`'s pre-existing timing flake in the rapid sequential run - confirmed unrelated by rerunning it alone 3/3 times successfully; not touched by this batch.
+- New `tests/capture_gameplay_cash_out.gd`/`.tscn`: instantiates the real embedded Haven screen, spawns a freely-collectible item, opens the real `ItemInfoPanel` through the embedded board's own `_info_panel`, and captures it to `docs/producer-state-captures/live_gameplay_chain_collect_button.png` via the same `xvfb-run --rendering-driver opengl3` path the producer-artwork batch established. Shows a real "Bent Nail" (Tool level 1) with a live "Collect (+5 coins)" button, matching `tool_1.tres`'s authored `sell_value` exactly.
+
+### Known issues
+
+- `sell_value` values were authored earlier in the project as descriptive/informational text only ("Sell N coins" in the info panel) and were never balance-tested against an actual working cash-out action before now. They read as reasonable relative to the ~250-600 coin range a fresh game starts with, but haven't been played through a full economy pass.
+- `tests/README.md`'s bullet list and run-command block are updated only for the two tests this and the prior batch added, same tracked staleness as before - full reconciliation is still Batch 3's job.
+
+### Exact next phase
+
+- Batch 3 from `docs/CLAUDE_HANDOVER_2026-08-03.md`: remaining strict-quality presentation - pooled chain-ID-driven merge VFX, environment presets, gameplay-neutral danger presentation, replacing the procedural chain-legend swatches with final art, and reconciling the stale gap report/manifests against runtime truth.
+
 ## 2026-08-03 — Producer state artwork integration
 
 ### Starting commit and objective

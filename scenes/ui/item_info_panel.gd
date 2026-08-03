@@ -66,11 +66,11 @@ func show_for(instance_id: String, detailed: bool) -> void:
 
 	var chain := ItemDatabase.get_chain(def.chain_id)
 	var is_reward: bool = chain.get("is_reward_chain", false)
+	var collect_check := BoardState.can_collect_reward(instance_id)
 
-	_collect_button.visible = detailed and is_reward
+	_collect_button.visible = detailed and bool(collect_check.get("allowed", false))
 	if _collect_button.visible:
-		var amount: int = def.level * int(chain.get("per_level_value", 0))
-		_collect_button.text = "Collect (+%d %s)" % [amount, String(chain.get("resource", ""))]
+		_collect_button.text = "Collect (+%d %s)" % [int(collect_check.get("amount", 0)), String(collect_check.get("resource", ""))]
 
 	_storage_button.visible = detailed and not def.is_producer and not is_reward and not BoardState.is_item_blocked(instance_id)
 	if _storage_button.visible:
@@ -96,11 +96,13 @@ func _chain_category(chain_id: String) -> String:
 
 func _on_collect_pressed() -> void:
 	var def := BoardState.get_item_def(_instance_id)
-	var resource := String(ItemDatabase.get_chain(def.chain_id).get("resource", "")) if def != null else ""
+	var resource := String(BoardState.can_collect_reward(_instance_id).get("resource", ""))
 	if BoardState.collect_reward(_instance_id):
 		if def != null and def.id == "coin_reward_7": AudioManager.play_sfx("chest_open")
 		AudioManager.play_sfx("coin_collect" if resource == "coins" else ("energy_collect" if resource == "energy" else "reward"))
 		EventBus.show_toast.emit("Collected.")
+	else:
+		EventBus.show_toast.emit("Can't collect that right now.")
 	hide_panel()
 	changed.emit()
 
