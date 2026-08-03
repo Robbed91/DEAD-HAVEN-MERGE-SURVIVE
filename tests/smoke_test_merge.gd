@@ -16,11 +16,11 @@ func _fail(msg: String) -> void:
 func _ready() -> void:
 	GameManager.new_game()
 
-	# -- Starting layout: every producer retained, one active at first ------
+	# -- Starting layout: junk-filled with four usable work cells ------------
 	var producer_count := ItemDatabase.get_producer_ids().size()
-	var expected_items := producer_count + 2
-	if BoardState.items.size() != expected_items:
-		_fail("expected %d starting items, got %d" % [expected_items, BoardState.items.size()])
+	var expected_occupied := BoardState.COLUMNS * BoardState.ROWS - 4
+	if BoardState.items.size() != expected_occupied or BoardState.grid.size() != expected_occupied:
+		_fail("expected %d occupied starting cells, got %d" % [expected_occupied, BoardState.items.size()])
 		return
 	var producer_instance_ids: Array[String] = []
 	var construction_producer_id := ""
@@ -31,6 +31,26 @@ func _ready() -> void:
 			producer_instance_ids.append(id)
 			if def.chain_id == "construction": construction_producer_id = id
 			if def.chain_id == "tool": tool_producer_id = id
+	var covered_ids: Array[String] = []
+	var cobweb_ids: Array[String] = []
+	for id in BoardState.items:
+		var board_item: BoardItem = BoardState.items[id]
+		var item_def := BoardState.get_item_def(id)
+		if item_def != null and not item_def.is_producer and board_item.is_locked:
+			covered_ids.append(id)
+		elif item_def != null and not item_def.is_producer and board_item.has_cobweb:
+			cobweb_ids.append(id)
+	if covered_ids.size() != 42 or cobweb_ids.size() != 6 or BoardState.find_empty_cell().x < 0:
+		_fail("starting board should contain 42 boxes, 6 cobwebs and 4 work cells")
+		return
+	var blocked_id := covered_ids[0]
+	var blocked_pos: Vector2i = BoardState.items[blocked_id].grid_position
+	if BoardState.move_to_storage(blocked_id) or BoardState.move_to_cell(blocked_id, BoardState.find_empty_cell()) or BoardState.can_delete(blocked_id):
+		_fail("box-covered item must not move, enter storage, or delete")
+		return
+	if BoardState.items[blocked_id].grid_position != blocked_pos:
+		_fail("blocked interaction changed a covered item's position")
+		return
 	if _active_producer_count() != 1 or BoardState.items[construction_producer_id].is_locked:
 		_fail("new board should activate only the construction producer")
 		return
@@ -39,12 +59,12 @@ func _ready() -> void:
 	if locked_tap.success or locked_tap.reason != "producer_locked" or GameManager.resources.energy != energy_before_locked_tap:
 		_fail("locked tool producer should reject without spending energy, got %s" % str(locked_tap))
 		return
-	print("SMOKE_MERGE: starting layout OK (%d items, 1/%d producers active)" % [BoardState.items.size(), producer_count])
+	print("SMOKE_MERGE: starting layout OK (%d occupied, 42 boxes, 6 cobwebs, 1/%d producers active)" % [BoardState.items.size(), producer_count])
 
 	# -- Valid merge + discovery reward -------------------------------------
 	var construction_ids: Array[String] = []
 	for id in BoardState.items:
-		if BoardState.items[id].item_id == "construction_1":
+		if BoardState.items[id].item_id == "construction_1" and not BoardState.is_item_blocked(id):
 			construction_ids.append(id)
 	if construction_ids.size() != 2:
 		_fail("expected 2 starter construction_1 items, found %d" % construction_ids.size())
@@ -63,7 +83,21 @@ func _ready() -> void:
 	if BoardState.items.has(construction_ids[0]) or BoardState.items.has(construction_ids[1]):
 		_fail("source instances should be gone after merging")
 		return
-	print("SMOKE_MERGE: valid merge + discovery reward OK")
+	var revealed_ids: Array = merge_result.get("revealed_instance_ids", [])
+	if revealed_ids.is_empty():
+		_fail("starter merge should reveal at least one adjacent box")
+		return
+	var revealed_id: String = String(revealed_ids[0])
+	if not BoardState.items[revealed_id].has_cobweb or BoardState.items[revealed_id].is_locked:
+		_fail("revealed box should become a cobwebbed underlying item")
+		return
+	var revealed_item_id: String = BoardState.items[revealed_id].item_id
+	var free_match := BoardState.spawn_item(revealed_item_id, BoardState.find_empty_cell())
+	var cobweb_merge := BoardState.try_merge(free_match.instance_id, revealed_id)
+	if not cobweb_merge.success or BoardState.items.has(revealed_id):
+		_fail("matching free item should merge into and clear a cobwebbed item")
+		return
+	print("SMOKE_MERGE: valid merge reveals box and matching merge clears cobweb OK")
 
 	# -- Progressive producer milestones -----------------------------------
 	var repair_result := ResidenceManager.try_complete_quest("q_secure_front_door")
@@ -121,6 +155,9 @@ func _ready() -> void:
 	var max_result := BoardState.try_merge(max_a.instance_id, max_b.instance_id)
 	if max_result.success or not max_result.get("is_max_level", false):
 		_fail("merging two max-level items should fail as max_level, got %s" % str(max_result))
+		return
+	if not BoardState.soft_delete(max_a.instance_id):
+		_fail("could not free a work cell after max-level rejection")
 		return
 	print("SMOKE_MERGE: max-level merge correctly rejected OK")
 
@@ -216,7 +253,7 @@ func _ready() -> void:
 	if not BoardState.activate_residence_board("redwater_service_station"):
 		_fail("could not activate Redwater board")
 		return
-	if BoardState.active_residence_id != "redwater_service_station" or BoardState.items.size() != expected_items:
+	if BoardState.active_residence_id != "redwater_service_station" or BoardState.items.size() != expected_occupied:
 		_fail("Redwater should activate its own untouched starting board")
 		return
 	var redwater_marker := BoardState.spawn_item("food_2", BoardState.find_empty_cell())

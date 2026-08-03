@@ -57,6 +57,10 @@ func show_for(instance_id: String, detailed: bool) -> void:
 	var rarity_name: String = ["Common", "Uncommon", "Rare", "Story"][def.rarity]
 	if def.is_producer:
 		_meta_label.text = "%s producer - %s" % [rarity_name, _chain_category(def.chain_id)]
+	elif board_item.is_locked:
+		_meta_label.text = "Covered junk - clear it with an adjacent merge."
+	elif board_item.has_cobweb:
+		_meta_label.text = "Cobwebbed - merge a matching free item into it."
 	else:
 		_meta_label.text = "%s - Level %d of %d - Sell %d coins" % [rarity_name, def.level, def.max_level_in_chain, def.sell_value]
 
@@ -68,7 +72,7 @@ func show_for(instance_id: String, detailed: bool) -> void:
 		var amount: int = def.level * int(chain.get("per_level_value", 0))
 		_collect_button.text = "Collect (+%d %s)" % [amount, String(chain.get("resource", ""))]
 
-	_storage_button.visible = detailed and not def.is_producer and not is_reward
+	_storage_button.visible = detailed and not def.is_producer and not is_reward and not BoardState.is_item_blocked(instance_id)
 	if _storage_button.visible:
 		if board_item.is_on_board():
 			_storage_button.text = "Move to Storage"

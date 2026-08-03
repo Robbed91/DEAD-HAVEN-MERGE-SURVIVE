@@ -176,6 +176,36 @@ godot4 --headless --path /path/to/dead-haven-merge-survive \
 
 - All five boards intentionally retain the old sparse starting layout in this schema-only batch.
 - Next: authored per-residence box/cobweb layouts plus covered/cobweb interaction and task-count restrictions.
+
+## 2026-08-03 — Residence junk and cobweb layouts
+
+### Starting commit and objective
+
+- Starting commit: `14a07ec0a8eb5c88b92a304931759b17bb479a4a` on `visual-production`.
+- Objective: turn all five isolated residence boards into dense rooms to excavate by activating the saved box/cobweb state, without changing normal merge outcomes, gameplay data, or the version-2 save envelope.
+
+### Implementation
+
+- Added five deterministic runtime manifests under `data/boards/`. Every new 7x9 residence board has 59 occupied cells: nine established producers, two free Construction level-1 starters, six authored cobwebbed items, 42 box-covered items, and four usable work cells.
+- Successful merges reveal orthogonally adjacent boxes into cobwebbed underlying items. A cobwebbed target is freed only by merging a matching non-cobwebbed item of the same existing chain/level; the result remains the chain's normal next-level item.
+- Covered/cobwebbed items cannot move, enter storage, delete, collect, count toward tasks, be consumed by tasks, or act as dragged merge sources. Producer locks retain their independent progressive story/repair behavior.
+- Existing version-2 boards preserve every item and coordinate, then fill eligible empty cells once using `layout_version = 1`. Version-1 migration remains single-assignment and receives the same one-time backfill. Authored junk grants no account discovery rewards.
+- Both Android presets explicitly include dynamically loaded `data/boards/*.json`; the focused export contract parses and structurally validates every manifest.
+- Assets created/rejected: none. Existing final item art and existing lock/cobweb overlays are now used by live gameplay. No new animation or audio assets; no economy, quest, story, producer-output, content-ID, or merge-result changes.
+- Files and detailed evidence: `autoload/board_state.gd`, the merge/item UI scripts, `export_presets.cfg`, five `data/boards/*.json` manifests, focused tests, and `docs/production-batches/24_residence_junk_cobweb_layouts.md`.
+
+### Verification
+
+- Focused merge and save tests pass: dense counts, blocked interactions, adjacency reveal, matching cobweb clear, 1-to-9 producer progression, five-board isolation, exact-position legacy migration, save/reload, and backup recovery.
+- Android export-resource contract passes for both presets and all five manifests.
+- Empty-cache Godot 4.3 import rebuilt 1,722 artifacts but returned exit 1 without diagnostics at cleanup; the immediate verbose reconciliation import exited 0 with no parser/import/resource/shader/texture failure.
+- Full smoke suite: 33/33 pass. Only established ObjectDB shutdown warnings and intentional save-corruption recovery warnings were emitted.
+
+### Known issues and exact next phase
+
+- Box and cobweb states use the existing shipped overlays; this batch does not author new overlay artwork or perform Android visual capture.
+- Next: embed a reusable board panel in every residence, activate the correct per-residence board before child setup, keep hotspot requirements in the same view, remove Merge as a bottom-nav destination, and update navigation tests without deleting behavioral coverage.
+
 ## 2026-08-01 — Android export dependency audit checkpoint
 
 ### Starting commit and objective

@@ -318,6 +318,7 @@ func _play_invalid_shake(cell: BoardCell) -> void:
 func _toast_for_merge_failure(reason: String) -> void:
 	var messages := {
 		"not_matching": "Those items don't match.",
+		"item_blocked": "Clear the box or match the cobwebbed item first.",
 		"max_level": "Already at maximum level.",
 		"producers_do_not_merge": "Producers can't be merged.",
 		"no_space": "No space for the result.",

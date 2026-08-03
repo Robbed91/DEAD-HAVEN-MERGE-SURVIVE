@@ -12,6 +12,8 @@ const PRODUCER_ENERGY_COST := 1
 const DEFAULT_STORAGE_CAPACITY := 30
 const DELETE_UNDO_WINDOW_SECONDS := 5.0
 const BOARD_FORMAT_VERSION := 2
+const BOARD_LAYOUT_VERSION := 1
+const BOARD_LAYOUT_ROOT := "res://data/boards/"
 const DEFAULT_RESIDENCE_ID := "hollow_creek_farmhouse"
 const RESIDENCE_IDS := [
 	"hollow_creek_farmhouse",
@@ -49,6 +51,7 @@ var active_residence_id: String = DEFAULT_RESIDENCE_ID
 ## The existing public items/grid/storage API always represents the active
 ## residence so merge and quest callers do not need gameplay-facing changes.
 var _residence_board_data: Dictionary = {}
+var _layout_version: int = BOARD_LAYOUT_VERSION
 
 ## instance_id -> {item_id, grid_position, expires_at_unix}. Soft-deleted
 ## items are already off the board/out of storage but can still be restored
@@ -82,6 +85,7 @@ func _reset_active_board() -> void:
 	_pending_deletions.clear()
 	storage_capacity = DEFAULT_STORAGE_CAPACITY
 	_next_instance_num = 0
+	_layout_version = BOARD_LAYOUT_VERSION
 	_place_starting_layout()
 	refresh_producer_locks(false)
 
@@ -109,13 +113,26 @@ func has_residence_board(residence_id: String) -> bool:
 func _materialize_missing_boards() -> void:
 	var original_residence_id := active_residence_id
 	for residence_id in RESIDENCE_IDS:
-		if not has_residence_board(residence_id):
-			activate_residence_board(residence_id)
+		activate_residence_board(residence_id)
 	activate_residence_board(original_residence_id)
 ## Every producer remains in its established board position for legacy-save
 ## compatibility; refresh_producer_locks() activates them progressively.
 ## Two loose level-1 items make a first construction merge immediately viable.
 func _place_starting_layout() -> void:
+	var layout := _load_active_layout()
+	if layout.is_empty():
+		_place_legacy_starting_layout()
+		return
+	var producer_ids := ItemDatabase.get_producer_ids()
+	producer_ids.sort()
+	var producer_positions: Array = layout.get("producer_positions", [])
+	for index in mini(producer_ids.size(), producer_positions.size()):
+		spawn_item(producer_ids[index], _layout_position(producer_positions[index]))
+	for raw_starter in layout.get("starter_items", []):
+		spawn_item(String(raw_starter.get("item_id", "")), _layout_position(raw_starter.get("position", [])))
+	_fill_layout_junk(layout)
+
+func _place_legacy_starting_layout() -> void:
 	var producer_ids := ItemDatabase.get_producer_ids()
 	producer_ids.sort()
 	var pos := Vector2i.ZERO
@@ -125,11 +142,56 @@ func _place_starting_layout() -> void:
 		if pos.x >= COLUMNS:
 			pos.x = 0
 			pos.y += 1
-
 	var starter_row := pos.y + 2
 	spawn_item("construction_1", Vector2i(3, starter_row))
 	spawn_item("construction_1", Vector2i(4, starter_row))
 
+func _load_active_layout() -> Dictionary:
+	var path := "%s%s.json" % [BOARD_LAYOUT_ROOT, active_residence_id]
+	if not FileAccess.file_exists(path):
+		push_error("BoardState: missing layout %s" % path)
+		return {}
+	var parsed: Variant = JSON.parse_string(FileAccess.get_file_as_string(path))
+	if not parsed is Dictionary:
+		push_error("BoardState: invalid layout JSON %s" % path)
+		return {}
+	return parsed
+
+func _layout_position(raw: Variant) -> Vector2i:
+	if raw is Array and raw.size() >= 2:
+		return Vector2i(int(raw[0]), int(raw[1]))
+	return Vector2i(-1, -1)
+
+func _fill_layout_junk(layout: Dictionary) -> void:
+	var empty_cells: Dictionary = {}
+	for raw_pos in layout.get("empty_cells", []):
+		empty_cells[_layout_position(raw_pos)] = true
+	for raw_cobweb in layout.get("cobweb_items", []):
+		var pos := _layout_position(raw_cobweb.get("position", []))
+		if is_cell_free(pos) and not empty_cells.has(pos):
+			var cobwebbed := spawn_item(String(raw_cobweb.get("item_id", "")), pos, false)
+			if cobwebbed != null:
+				cobwebbed.has_cobweb = true
+	var pool: Array = layout.get("covered_item_pool", [])
+	if pool.is_empty():
+		return
+	var seed := int(layout.get("seed", 0))
+	for y in ROWS:
+		for x in COLUMNS:
+			var pos := Vector2i(x, y)
+			if not is_cell_free(pos) or empty_cells.has(pos):
+				continue
+			var item_id := String(pool[(y * COLUMNS + x + seed) % pool.size()])
+			var covered := spawn_item(item_id, pos, false)
+			if covered != null:
+				covered.is_locked = true
+
+func _backfill_active_layout() -> void:
+	var layout := _load_active_layout()
+	if layout.is_empty():
+		return
+	_fill_layout_junk(layout)
+	_layout_version = BOARD_LAYOUT_VERSION
 func is_producer_unlocked(producer_item_id: String) -> bool:
 	var rule: Dictionary = PRODUCER_UNLOCK_RULES.get(producer_item_id, {})
 	match String(rule.get("kind", "")):
@@ -186,6 +248,12 @@ func get_item_def(instance_id: String) -> ItemDefinition:
 		return null
 	return ItemDatabase.get_item(items[instance_id].item_id)
 
+func is_item_blocked(instance_id: String) -> bool:
+	if not items.has(instance_id):
+		return true
+	var board_item: BoardItem = items[instance_id]
+	return board_item.is_locked or board_item.has_cobweb
+
 func is_cell_free(pos: Vector2i) -> bool:
 	return pos.x >= 0 and pos.x < COLUMNS and pos.y >= 0 and pos.y < ROWS and not grid.has(pos)
 
@@ -200,7 +268,7 @@ func find_empty_cell() -> Vector2i:
 ## Spawns a new BoardItem for item_id at grid_pos (or into storage if
 ## grid_pos is (-1,-1) or already occupied). Returns null if placement is
 ## impossible (board and storage both full).
-func spawn_item(item_id: String, grid_pos: Vector2i = Vector2i(-1, -1)) -> BoardItem:
+func spawn_item(item_id: String, grid_pos: Vector2i = Vector2i(-1, -1), grant_discovery: bool = true) -> BoardItem:
 	if not ItemDatabase.has_item(item_id):
 		return null
 	var def := ItemDatabase.get_item(item_id)
@@ -218,7 +286,8 @@ func spawn_item(item_id: String, grid_pos: Vector2i = Vector2i(-1, -1)) -> Board
 		items.erase(board_item.instance_id)
 		return null
 
-	_maybe_grant_discovery(def)
+	if grant_discovery:
+		_maybe_grant_discovery(def)
 	EventBus.board_item_added.emit(board_item.instance_id)
 	return board_item
 
@@ -256,6 +325,8 @@ func move_to_cell(instance_id: String, to_pos: Vector2i) -> bool:
 	if not items.has(instance_id) or not is_cell_free(to_pos):
 		return false
 	var board_item: BoardItem = items[instance_id]
+	if is_item_blocked(instance_id):
+		return false
 	if board_item.is_on_board():
 		grid.erase(board_item.grid_position)
 	else:
@@ -269,6 +340,8 @@ func move_to_storage(instance_id: String) -> bool:
 	if not items.has(instance_id):
 		return false
 	var board_item: BoardItem = items[instance_id]
+	if is_item_blocked(instance_id):
+		return false
 	if not board_item.is_on_board():
 		return true
 	if storage_order.size() >= storage_capacity:
@@ -293,6 +366,10 @@ func try_merge(dragged_id: String, target_id: String) -> Dictionary:
 	var target_def := get_item_def(target_id)
 	if dragged_def == null or target_def == null:
 		return {"success": false, "reason": "invalid_instances"}
+	var dragged_item: BoardItem = items[dragged_id]
+	var target_item: BoardItem = items[target_id]
+	if dragged_item.is_locked or dragged_item.has_cobweb or target_item.is_locked:
+		return {"success": false, "reason": "item_blocked"}
 
 	if dragged_def.is_producer or target_def.is_producer:
 		return {"success": false, "reason": "producers_do_not_merge"}
@@ -317,6 +394,7 @@ func try_merge(dragged_id: String, target_id: String) -> Dictionary:
 		# rather than silently dropping the merged item.
 		return {"success": false, "reason": "no_space"}
 
+	var revealed_instance_ids := _reveal_adjacent_boxes(target_pos)
 	EventBus.items_merged.emit(dragged_id, target_id, result_item.instance_id)
 	return {
 		"success": true,
@@ -324,8 +402,23 @@ func try_merge(dragged_id: String, target_id: String) -> Dictionary:
 		"resulting_item_id": next_def.id,
 		"is_discovery": not was_discovered_before,
 		"was_on_board": was_dragged_on_board or target_pos.x >= 0,
+		"revealed_instance_ids": revealed_instance_ids,
 	}
 
+func _reveal_adjacent_boxes(center: Vector2i) -> Array[String]:
+	var revealed: Array[String] = []
+	for direction in [Vector2i.LEFT, Vector2i.RIGHT, Vector2i.UP, Vector2i.DOWN]:
+		var pos: Vector2i = center + Vector2i(direction)
+		var instance_id: String = grid.get(pos, "")
+		if instance_id.is_empty() or not items.has(instance_id):
+			continue
+		var board_item: BoardItem = items[instance_id]
+		var def := get_item_def(instance_id)
+		if board_item.is_locked and def != null and not def.is_producer:
+			board_item.is_locked = false
+			board_item.has_cobweb = true
+			revealed.append(instance_id)
+	return revealed
 func _remove_instance(instance_id: String) -> void:
 	if not items.has(instance_id):
 		return
@@ -347,6 +440,8 @@ func tap_producer(instance_id: String) -> Dictionary:
 	var def := get_item_def(instance_id)
 	if def == null or not def.is_producer:
 		return {"success": false, "reason": "not_a_producer"}
+	if board_item.has_cobweb:
+		return {"success": false, "reason": "item_blocked"}
 	board_item.is_locked = not is_producer_unlocked(def.id)
 	if board_item.is_locked:
 		return {"success": false, "reason": "producer_locked", "unlock_label": get_producer_unlock_label(def.id)}
@@ -384,7 +479,7 @@ func debug_reset_all_cooldowns() -> void:
 # -- Deletion with undo -----------------------------------------------------
 
 func can_delete(instance_id: String) -> bool:
-	return items.has(instance_id) and not get_item_def(instance_id).is_producer
+	return items.has(instance_id) and not is_item_blocked(instance_id) and not get_item_def(instance_id).is_producer
 
 ## True if the UI must show a confirmation dialog before calling
 ## soft_delete() for this item (spec: "confirmation before deleting rare or
@@ -440,7 +535,7 @@ func purge_expired_deletions() -> void:
 func count_item(item_id: String) -> int:
 	var total := 0
 	for instance_id in items:
-		if items[instance_id].item_id == item_id:
+		if items[instance_id].item_id == item_id and not is_item_blocked(instance_id):
 			total += 1
 	return total
 
@@ -455,13 +550,13 @@ func consume_item(item_id: String, count: int) -> bool:
 	for instance_id in storage_order:
 		if to_remove.size() >= count:
 			break
-		if items[instance_id].item_id == item_id:
+		if items[instance_id].item_id == item_id and not is_item_blocked(instance_id):
 			to_remove.append(instance_id)
 	if to_remove.size() < count:
 		for instance_id in grid.values():
 			if to_remove.size() >= count:
 				break
-			if items[instance_id].item_id == item_id:
+			if items[instance_id].item_id == item_id and not is_item_blocked(instance_id):
 				to_remove.append(instance_id)
 	for instance_id in to_remove:
 		_remove_instance(instance_id)
@@ -474,7 +569,7 @@ func consume_item(item_id: String, count: int) -> bool:
 ## in a task: this consumes the item and grants the scaled resource amount.
 func collect_reward(instance_id: String) -> bool:
 	var def := get_item_def(instance_id)
-	if def == null:
+	if def == null or is_item_blocked(instance_id):
 		return false
 	var chain := ItemDatabase.get_chain(def.chain_id)
 	if not chain.get("is_reward_chain", false):
@@ -507,6 +602,7 @@ func _active_board_to_data() -> Dictionary:
 			"is_in_bubble": board_item.is_in_bubble,
 		}
 	return {
+		"layout_version": _layout_version,
 		"items": items_data,
 		"storage_order": storage_order.duplicate(),
 		"storage_capacity": storage_capacity,
@@ -563,6 +659,7 @@ func _apply_active_board_data(data: Dictionary) -> void:
 	grid.clear()
 	storage_order.clear()
 	_pending_deletions.clear()
+	_layout_version = int(data.get("layout_version", 0))
 
 	if data.is_empty():
 		_reset_active_board()
@@ -595,3 +692,5 @@ func _apply_active_board_data(data: Dictionary) -> void:
 
 	if items.is_empty():
 		_reset_active_board()
+	elif _layout_version < BOARD_LAYOUT_VERSION:
+		_backfill_active_layout()

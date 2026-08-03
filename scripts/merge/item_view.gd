@@ -261,6 +261,8 @@ func _gui_input(event: InputEvent) -> void:
 func _get_drag_data(_at_position: Vector2) -> Variant:
 	if not interactive or instance_id.is_empty():
 		return null
+	if BoardState.is_item_blocked(instance_id):
+		return null
 	var def := _get_def()
 	if def == null:
 		return null

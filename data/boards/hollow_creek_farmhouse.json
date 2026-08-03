@@ -1,0 +1,19 @@
+{
+  "layout_version": 1,
+  "seed": 0,
+  "producer_positions": [[0, 0], [1, 0], [2, 0], [3, 0], [4, 0], [5, 0], [6, 0], [0, 7], [6, 7]],
+  "starter_items": [
+    {"item_id": "construction_1", "position": [3, 6]},
+    {"item_id": "construction_1", "position": [4, 6]}
+  ],
+  "empty_cells": [[2, 6], [5, 6], [3, 7], [4, 7]],
+  "cobweb_items": [
+    {"item_id": "construction_1", "position": [1, 6]},
+    {"item_id": "tool_1", "position": [2, 7]},
+    {"item_id": "food_1", "position": [5, 7]},
+    {"item_id": "medical_1", "position": [1, 8]},
+    {"item_id": "clothing_1", "position": [3, 8]},
+    {"item_id": "electronics_1", "position": [5, 8]}
+  ],
+  "covered_item_pool": ["construction_1", "tool_1", "food_1", "medical_1", "clothing_1", "trap_1", "fuel_1", "vehicle_parts_1", "electronics_1"]
+}

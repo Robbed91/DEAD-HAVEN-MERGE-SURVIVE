@@ -15,6 +15,14 @@ const EXPECTED_COUNTS := {
 const REQUIRED_INCLUDES := [
 	"assets/audio/audio_catalog.json",
 	"data/chains/*.json",
+	"data/boards/*.json",
+]
+const BOARD_LAYOUT_IDS := [
+	"hollow_creek_farmhouse",
+	"redwater_service_station",
+	"greybridge_school",
+	"saint_mercy_hospital",
+	"northgate_prison",
 ]
 const REQUIRED_EXCLUDES := [
 	"docs/*",
@@ -55,6 +63,16 @@ func _ready() -> void:
 	_check(ResidenceManager.get_hotspot_quest_link_count() == 41, "packed hotspot task-link count changed")
 	_check(ResidenceManager.validate_hotspot_quest_links().is_empty(), "packed hotspot task links are invalid")
 	_check(VehicleManager.get_vehicle("delivery_van") != null, "vehicle catalog incomplete")
+	for residence_id in BOARD_LAYOUT_IDS:
+		var path := "res://data/boards/%s.json" % residence_id
+		_check(FileAccess.file_exists(path), "missing runtime board layout %s" % path)
+		var parsed: Variant = JSON.parse_string(FileAccess.get_file_as_string(path))
+		_check(parsed is Dictionary, "invalid board layout JSON %s" % path)
+		if parsed is Dictionary:
+			_check(int(parsed.get("layout_version", 0)) == 1, "layout version mismatch for %s" % residence_id)
+			_check(parsed.get("producer_positions", []).size() == 9, "producer layout count mismatch for %s" % residence_id)
+			_check(parsed.get("cobweb_items", []).size() == 6, "cobweb layout count mismatch for %s" % residence_id)
+			_check(parsed.get("empty_cells", []).size() == 4, "work-cell count mismatch for %s" % residence_id)
 
 	if _failures.is_empty():
 		print("ANDROID_EXPORT_RESOURCE_TEST_OK presets=2 version_code=2 shipping_abis=arm64 verification_abis=arm64,x86_64 catalogs=%s" % str(EXPECTED_COUNTS))
