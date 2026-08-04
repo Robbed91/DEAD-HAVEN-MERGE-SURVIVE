@@ -129,6 +129,40 @@ godot4 --headless --path /path/to/dead-haven-merge-survive \
 
 - Continue Batch 3: the two remaining, larger pieces - a pooled chain-ID-driven merge VFX system for all 9 gameplay chains, and per-residence environment presets (rain/fog/dust/leaves/smoke/embers/sparks/flicker/radio pulses/cloud shadows/foliage) plus gameplay-neutral danger presentation on existing triggers.
 
+## 2026-08-03 — Export-size audit and desktop layout verification
+
+### Starting commit and objective
+
+- Starting commit: `b9a3a42` on `visual-production` (Batch 3 complete).
+- Objective: do as much of Batch 4 as is genuinely possible without an Android SDK, export templates, or a device/emulator - none of which exist in this environment - rather than skip it entirely. The user's Codex budget is nearly exhausted, so anything provable from here should be done here.
+
+### Export filter correctness: verified empirically, not assumed
+
+A first attempt at simulating `export_presets.cfg`'s exclude filter in Python assumed `*` in a glob pattern doesn't cross `/` (standard shell/fnmatch behaviour) and got a badly wrong answer - it implied `docs/*` only excludes direct children of `docs/`, leaving tens of MB of `.avi` captures and screenshot PNGs looking like they'd ship. Rather than report that, it was checked against Godot's actual matcher directly: `tests/verify_export_filter_semantics.gd`, a one-off headless script calling `String.matchn()` (the same function the exporter uses) on real repo paths. Confirmed: Godot's `*` matches any run of characters *including* `/`, so the existing exclude filter is correct as written - `docs/*`, `tests/*`, `assets/concepts/*`, `assets/**/source/*` etc. all correctly catch everything nested under them, and real runtime assets under `assets/items/<chain>/*.png` are correctly not caught. No fix needed here; the filter config itself was never the problem.
+
+### Export size measurement: a real, actionable finding
+
+With the verified-correct semantics, re-measured what would actually ship: **212.4 MB source weight** (2009 files: 183.6 MB PNG, 20.1 MB WAV, 6.2 MB JPG) against the release plan's own 200 MB target - and every PNG/WAV import currently uses the least space-efficient setting available (`compress/mode=0` on every `.import` sidecar checked - fully lossless PNG, uncompressed PCM WAV). Full findings and a priority-ordered fix list in new `docs/EXPORT_SIZE_AUDIT.md`. Headline: the "texture/audio compression" step in the release plan isn't optional polish, it's required to hit budget at all, based on this measurement.
+
+### Desktop layout verification
+
+Godot's dummy `--headless` renderer can't produce screenshots (established in the producer-artwork batch), but `xvfb-run --rendering-driver opengl3` can, and doesn't need Android anything - just a real GPU-less software rasterizer, which this container has. New `tests/capture_layout_haven.gd`/`.tscn` and `tests/capture_layout_scavenging.gd`/`.tscn` render those two screens at 720×1600 (narrow), 1080×2400 (Pixel reference), and 1440×3200 (large) to `docs/layout-captures/`. All clean - no clipping or overlap on the top bar, merge board, chain legend, nav bar, hero panel, threat badge, or action buttons at any of the three widths. One minor observation, not a functional bug: the danger overlay's screen-corner threat indicator (added this session, see the danger-presentation batch) sits at the same on-screen position as the global top status bar and may render underneath it depending on CanvasLayer ordering - worth a real-device check, but the underlying data (which mission/event raises it, at what intensity) is already proven correct by `smoke_test_danger_presentation`.
+
+### Tests performed
+
+- Clean headless import: zero parse/script errors.
+- Full suite: 39/39 pass (no `.gd` outside `tests/` changed in this session's audit work).
+- `tests/verify_export_filter_semantics.gd` is a one-off verification script (run via `godot4 --headless --script`, not part of the smoke suite), kept for anyone who wants to re-verify filter semantics after future `export_presets.cfg` changes.
+
+### Known issues
+
+- Actual packed/compressed APK size, on-device frame time/memory, and whether ETC2 visibly degrades any specific texture all still require the real toolchain and are explicitly out of `docs/EXPORT_SIZE_AUDIT.md`'s scope.
+- The danger-overlay corner-indicator layering question above needs a real-device or at least a full-app (not isolated-scene) capture to resolve conclusively.
+
+### Exact next phase
+
+Whoever has the Android SDK/export templates/device (Codex, on the user's own machine): read `docs/EXPORT_SIZE_AUDIT.md` first - it names the exact two changes (ETC2 on large opaque backgrounds, WAV compress/mode 0→1) most likely to close the size gap, so the remaining Batch 4 work is applying and verifying those rather than rediscovering the problem from scratch.
+
 ## 2026-08-03 — Strict-quality Batch 3, part 5: danger presentation (Batch 3 complete)
 
 ### Starting commit and objective

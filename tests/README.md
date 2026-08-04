@@ -95,6 +95,27 @@ opt-in, point Godot at them directly as shown above.
 
 - **smoke_test_danger_presentation** - verifies the gameplay-neutral danger overlay: its pulse's documented angular speed (`DangerOverlay.PULSE_ANGULAR_SPEED`) is 0.25 Hz, far under the ~3 Hz photosensitivity-risk threshold; its maximum edge-glow width can never exceed 5% of a 720px-wide screen even at full intensity, so it stays a border effect rather than becoming a full-screen filter; reduced motion keeps `intensity > 0` (the warning information) while stopping `is_processing()` (the animation); a real `petrol_station` mission shows the gas cloud and non-zero intensity while a real low-threat mission (`abandoned_grocery_store`) shows neither, both read from the mission's own existing `danger_rating`/`human_threat` rather than an invented signal; a real defence event raises the overlay on launch (defence warning/start), keeps it raised through a forced failure, and clears it on a forced success; and none of this ever touches `GameManager.resources`. `capture_danger_presentation.tscn` renders a real high-threat location (Police Checkpoint) and the fuel-context location (Petrol Station) to `docs/producer-state-captures/live_danger_*.png`.
 
+## Non-suite verification scripts
+
+Not part of the regular pass/fail battery above (no `SMOKE_*_OK` line, not
+named `smoke_test_*`), but kept for anyone re-running this project's own
+verification work later:
+
+- **`verify_export_filter_semantics.gd`** - a one-off script (run via
+  `godot4 --headless --script tests/verify_export_filter_semantics.gd`,
+  not `--path . tests/x.tscn`) that calls Godot's own `String.matchn()`
+  directly to confirm `export_presets.cfg`'s exclude-filter glob semantics
+  before trusting any hand-simulation of them. See
+  `docs/EXPORT_SIZE_AUDIT.md` for why this mattered - a naive simulation
+  assuming `*` doesn't cross `/` gave a badly wrong answer.
+- **`capture_layout_haven.gd`/`.tscn`** and
+  **`capture_layout_scavenging.gd`/`.tscn`** - run once per target
+  resolution via `xvfb-run -a godot4 --path . --rendering-driver opengl3
+  --resolution WxH tests/capture_layout_*.tscn`, writing to
+  `docs/layout-captures/<scene>_<w>x<h>.png`. Desktop-rendered layout
+  evidence at 720x1600/1080x2400/1440x3200, standing in for on-device
+  layout testing where no Android device/emulator is available.
+
 ## What these do NOT cover
 
 They run with Godot's headless server backend - no window, no real touch
