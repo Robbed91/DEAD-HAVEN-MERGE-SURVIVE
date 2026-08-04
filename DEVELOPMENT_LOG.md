@@ -7,6 +7,73 @@ each one.
 
 ---
 
+## 2026-08-04 — Android import optimisation and debug device verification
+
+### Starting commit and objective
+
+- Starting commit: `b138e83` on `visual-production`.
+- Objective: apply the two exact fixes from `docs/EXPORT_SIZE_AUDIT.md`,
+  remeasure actual APK size, then run the signed-debug Pixel 9 upgrade,
+  lifecycle, save, memory, and frame-time checks.
+
+### Changes
+
+- Changed exactly 46 large background import sidecars to ETC2/VRAM
+  (`compress/mode=2`): world map, residence runtime backgrounds, five requested
+  weather layers, scavenging runtime backgrounds, and the dialogue approach
+  background. Items, producers, portraits, hotspots, navigation, and UI remain
+  lossless.
+- Changed all 26 music/ambience WAV import sidecars to IMA-ADPCM
+  (`compress/mode=1`). Short SFX remain PCM/lossless.
+- Added `editor/export/convert_text_resources_to_binary=false` to
+  `project.godot`. During real APK verification, Godot 4.3's default converter
+  reproducibly erased all 41 exported residence-hotspot task arrays, yielding
+  `hotspot_links=0 link_errors=41` and a blank boot frame. A clean exported
+  pack after the setting reports `hotspot_links=41 link_errors=0`; the rebuilt
+  APK renders and loads the upgraded game normally.
+
+### Measurements and artifacts
+
+- Selected ETC2 Android payload: 22.74 MiB. Imported ADPCM loops: 3.48 MiB
+  (previous imported PCM set: 13.89 MiB).
+- Universal debug APK: 315,345,644 → 283,128,596 bytes, a 32,217,048-byte
+  reduction (10.22%).
+- arm64 debug APK: 205,710,503 bytes (196.18 MiB), below 200 MiB but 5.71 MB
+  above a strict decimal 200 MB limit.
+- Artifact hashes, certificate, paths, and ABI reports are recorded in
+  `docs/production-batches/27_android_import_optimisation_and_device_verification.md`.
+- Pixel 9 emulator: 201,211 KB steady PSS, 319,864 KB RSS; 62-frame
+  SurfaceFlinger sample median 16.63 ms, p95 18.50 ms, max 20.61 ms; cold start
+  1.14–1.28 seconds.
+
+### Tests performed
+
+- Clean Godot 4.3 `--headless --import`: exit 0.
+- All 39 current smoke scenes executed and printed `_OK`; 37 were completely
+  clean. The save test's deliberate corrupt-primary step prints an expected
+  JSON parse diagnostic. The danger test still prints the already-documented
+  deferred freed-Button binding error seven times, so the strict no-error gate
+  is not claimed.
+- Android launcher focused test: pass.
+- Android export-resource focused test: pass.
+- Version-code-1 → version-code-2 debug-signed install: package upgrade pass;
+  certificate identity pass; pause/resume and force-stop/relaunch pass.
+- Save fixture retained chapter/residence/board/survivor/token/settings state.
+  Offline energy regen behaved as designed. Migration exposed a pre-existing
+  +200 coin discovery-reward side effect while materialising four new boards.
+
+### Known issues and exact next phase
+
+- Strict release acceptance remains blocked by the migration coin mutation,
+  deferred UI binding errors, decimal size interpretation, Godot 4.3's lack of
+  16 KB native-library alignment, and manual ETC2/audio review on the user's
+  physical device.
+- Exact coding fixes and evidence are in production batch 27. No gameplay IDs,
+  rules, outcomes, quest data, producer economy, or save keys were changed by
+  this optimisation batch.
+
+---
+
 ## Phase 1: Foundation - complete
 
 ### Files created

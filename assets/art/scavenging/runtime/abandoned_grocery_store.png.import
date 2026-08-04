@@ -3,19 +3,21 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://dawftib1b6hm7"
-path="res://.godot/imported/abandoned_grocery_store.png-13a6202af42dd25a128ca27a834f8876.ctex"
+path.s3tc="res://.godot/imported/abandoned_grocery_store.png-13a6202af42dd25a128ca27a834f8876.s3tc.ctex"
+path.etc2="res://.godot/imported/abandoned_grocery_store.png-13a6202af42dd25a128ca27a834f8876.etc2.ctex"
 metadata={
-"vram_texture": false
+"imported_formats": ["s3tc_bptc", "etc2_astc"],
+"vram_texture": true
 }
 
 [deps]
 
 source_file="res://assets/art/scavenging/runtime/abandoned_grocery_store.png"
-dest_files=["res://.godot/imported/abandoned_grocery_store.png-13a6202af42dd25a128ca27a834f8876.ctex"]
+dest_files=["res://.godot/imported/abandoned_grocery_store.png-13a6202af42dd25a128ca27a834f8876.s3tc.ctex", "res://.godot/imported/abandoned_grocery_store.png-13a6202af42dd25a128ca27a834f8876.etc2.ctex"]
 
 [params]
 
-compress/mode=0
+compress/mode=2
 compress/high_quality=false
 compress/lossy_quality=0.7
 compress/hdr_compression=1

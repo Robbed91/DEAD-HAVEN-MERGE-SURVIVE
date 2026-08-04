@@ -3,19 +3,21 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://ckun4jkgqph85"
-path="res://.godot/imported/weather.png-d2bc6348cfc7bbe98dd8ed3f98ac0665.ctex"
+path.s3tc="res://.godot/imported/weather.png-d2bc6348cfc7bbe98dd8ed3f98ac0665.s3tc.ctex"
+path.etc2="res://.godot/imported/weather.png-d2bc6348cfc7bbe98dd8ed3f98ac0665.etc2.ctex"
 metadata={
-"vram_texture": false
+"imported_formats": ["s3tc_bptc", "etc2_astc"],
+"vram_texture": true
 }
 
 [deps]
 
 source_file="res://assets/art/greybridge/layers/weather.png"
-dest_files=["res://.godot/imported/weather.png-d2bc6348cfc7bbe98dd8ed3f98ac0665.ctex"]
+dest_files=["res://.godot/imported/weather.png-d2bc6348cfc7bbe98dd8ed3f98ac0665.s3tc.ctex", "res://.godot/imported/weather.png-d2bc6348cfc7bbe98dd8ed3f98ac0665.etc2.ctex"]
 
 [params]
 
-compress/mode=0
+compress/mode=2
 compress/high_quality=false
 compress/lossy_quality=0.7
 compress/hdr_compression=1

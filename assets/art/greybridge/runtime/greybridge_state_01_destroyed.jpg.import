@@ -3,19 +3,21 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://bmwyeosw3jlmt"
-path="res://.godot/imported/greybridge_state_01_destroyed.jpg-7a851ed7e1a9d1b5cf548fb6139aa656.ctex"
+path.s3tc="res://.godot/imported/greybridge_state_01_destroyed.jpg-7a851ed7e1a9d1b5cf548fb6139aa656.s3tc.ctex"
+path.etc2="res://.godot/imported/greybridge_state_01_destroyed.jpg-7a851ed7e1a9d1b5cf548fb6139aa656.etc2.ctex"
 metadata={
-"vram_texture": false
+"imported_formats": ["s3tc_bptc", "etc2_astc"],
+"vram_texture": true
 }
 
 [deps]
 
 source_file="res://assets/art/greybridge/runtime/greybridge_state_01_destroyed.jpg"
-dest_files=["res://.godot/imported/greybridge_state_01_destroyed.jpg-7a851ed7e1a9d1b5cf548fb6139aa656.ctex"]
+dest_files=["res://.godot/imported/greybridge_state_01_destroyed.jpg-7a851ed7e1a9d1b5cf548fb6139aa656.s3tc.ctex", "res://.godot/imported/greybridge_state_01_destroyed.jpg-7a851ed7e1a9d1b5cf548fb6139aa656.etc2.ctex"]
 
 [params]
 
-compress/mode=0
+compress/mode=2
 compress/high_quality=false
 compress/lossy_quality=0.7
 compress/hdr_compression=1
