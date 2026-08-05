@@ -93,6 +93,57 @@ optional polish - based on this measurement, it's required to hit the
    packed APK (not source weight) lands under 200 MB before spending
    further effort - steps 1-2 may already be enough.
 
+## 2026-08-04 measured result
+
+The two recommended changes were applied on Windows with Godot 4.3.stable,
+the matching 4.3 Android templates, Android SDK build-tools 37.0.0, OpenJDK
+17, and the Pixel 9 x86_64 emulator:
+
+- 46 selected background imports now use ETC2/VRAM compression
+  (`compress/mode=2`): the world map, five requested residence weather
+  layers, every residence state background, all ten scavenging backgrounds,
+  and the dialogue approach background. Item, producer, portrait, hotspot,
+  navigation, and other UI imports remain lossless.
+- All 26 music/ambience loop imports now use IMA-ADPCM
+  (`compress/mode=1`). Short SFX remain unchanged.
+- Android's ETC2 variants for the 46 selected textures total **23,840,440
+  bytes (22.74 MiB)**. The 26 imported ADPCM streams total **3,648,096 bytes
+  (3.48 MiB)**, down from 13.89 MiB in the previous imported PCM set.
+
+Actual debug APK measurements:
+
+| Artifact | Before | After | Change |
+|---|---:|---:|---:|
+| arm64 + x86_64 verification APK | 315,345,644 bytes | 283,128,596 bytes | -32,217,048 bytes (-10.22%) |
+| arm64-only APK | not previously available for this audit | 205,710,503 bytes (196.18 MiB) | measured shipping ABI result |
+
+The arm64 APK is below **200 MiB**, but it is **5,710,503 bytes above a
+strict decimal 200,000,000-byte cap**. The plan's wording says “200 MB”; this
+report records both interpretations rather than calling the target an
+unqualified pass.
+
+During verification, Godot 4.3's default text-resource-to-binary conversion
+was found to drop the `PackedStringArray` task links from every exported
+residence hotspot. `project.godot` now sets
+`editor/export/convert_text_resources_to_binary=false`. A clean exported PCK
+then loaded all 41 hotspot links with zero link errors, and the corrected APK
+rendered the main menu and the upgraded Hollow Creek board normally.
+
+The installed build measured 201,211 KB steady PSS and 319,864 KB RSS on the
+emulator. A 62-frame SurfaceFlinger steady-state sample measured 16.63 ms
+median and 18.50 ms p95 actual-present interval. Cold starts measured
+1.14-1.28 seconds after the first shader-cache warm-up.
+
+Upgrade persistence is mostly, but not completely, accepted. The version-1
+fixture retained chapter, residence completion, board items and positions,
+survivor unlocks, Haven Tokens, and settings through package upgrade,
+pause/resume, save-as-version-2, and force-stop/relaunch. Energy correctly
+regenerated to its cap based on elapsed time. A pre-existing migration side
+effect remains: materialising the four missing residence boards grants
+discovery rewards and raises coins from 1,250 to 1,450. That economy mutation
+must be fixed before the release plan's strict save-compatibility gate can be
+called complete.
+
 ## What this audit did not and could not verify
 
 - Actual packed/compressed APK size (needs a real export).

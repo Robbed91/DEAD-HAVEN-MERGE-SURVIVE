@@ -3,19 +3,21 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://3u1tuud5nrch"
-path="res://.godot/imported/redwater_state_04_habitable.jpg-5ff24d8d9d4485d4e76ebab6c9cb4831.ctex"
+path.s3tc="res://.godot/imported/redwater_state_04_habitable.jpg-5ff24d8d9d4485d4e76ebab6c9cb4831.s3tc.ctex"
+path.etc2="res://.godot/imported/redwater_state_04_habitable.jpg-5ff24d8d9d4485d4e76ebab6c9cb4831.etc2.ctex"
 metadata={
-"vram_texture": false
+"imported_formats": ["s3tc_bptc", "etc2_astc"],
+"vram_texture": true
 }
 
 [deps]
 
 source_file="res://assets/art/redwater/runtime/redwater_state_04_habitable.jpg"
-dest_files=["res://.godot/imported/redwater_state_04_habitable.jpg-5ff24d8d9d4485d4e76ebab6c9cb4831.ctex"]
+dest_files=["res://.godot/imported/redwater_state_04_habitable.jpg-5ff24d8d9d4485d4e76ebab6c9cb4831.s3tc.ctex", "res://.godot/imported/redwater_state_04_habitable.jpg-5ff24d8d9d4485d4e76ebab6c9cb4831.etc2.ctex"]
 
 [params]
 
-compress/mode=0
+compress/mode=2
 compress/high_quality=false
 compress/lossy_quality=0.7
 compress/hdr_compression=1

@@ -3,19 +3,21 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://b758hsxluf1h2"
-path="res://.godot/imported/greybridge_state_06_upgraded.jpg-8bcf7a573e06e71e0b013f2174506806.ctex"
+path.s3tc="res://.godot/imported/greybridge_state_06_upgraded.jpg-8bcf7a573e06e71e0b013f2174506806.s3tc.ctex"
+path.etc2="res://.godot/imported/greybridge_state_06_upgraded.jpg-8bcf7a573e06e71e0b013f2174506806.etc2.ctex"
 metadata={
-"vram_texture": false
+"imported_formats": ["s3tc_bptc", "etc2_astc"],
+"vram_texture": true
 }
 
 [deps]
 
 source_file="res://assets/art/greybridge/runtime/greybridge_state_06_upgraded.jpg"
-dest_files=["res://.godot/imported/greybridge_state_06_upgraded.jpg-8bcf7a573e06e71e0b013f2174506806.ctex"]
+dest_files=["res://.godot/imported/greybridge_state_06_upgraded.jpg-8bcf7a573e06e71e0b013f2174506806.s3tc.ctex", "res://.godot/imported/greybridge_state_06_upgraded.jpg-8bcf7a573e06e71e0b013f2174506806.etc2.ctex"]
 
 [params]
 
-compress/mode=0
+compress/mode=2
 compress/high_quality=false
 compress/lossy_quality=0.7
 compress/hdr_compression=1

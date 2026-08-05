@@ -3,19 +3,21 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://bka0url12mpv1"
-path="res://.godot/imported/hollow_creek_state_05_upgraded.png-c53bd7681d871ef3f1585f5b3e21e265.ctex"
+path.s3tc="res://.godot/imported/hollow_creek_state_05_upgraded.png-c53bd7681d871ef3f1585f5b3e21e265.s3tc.ctex"
+path.etc2="res://.godot/imported/hollow_creek_state_05_upgraded.png-c53bd7681d871ef3f1585f5b3e21e265.etc2.ctex"
 metadata={
-"vram_texture": false
+"imported_formats": ["s3tc_bptc", "etc2_astc"],
+"vram_texture": true
 }
 
 [deps]
 
 source_file="res://assets/art/hollow_creek/environments/runtime/hollow_creek_state_05_upgraded.png"
-dest_files=["res://.godot/imported/hollow_creek_state_05_upgraded.png-c53bd7681d871ef3f1585f5b3e21e265.ctex"]
+dest_files=["res://.godot/imported/hollow_creek_state_05_upgraded.png-c53bd7681d871ef3f1585f5b3e21e265.s3tc.ctex", "res://.godot/imported/hollow_creek_state_05_upgraded.png-c53bd7681d871ef3f1585f5b3e21e265.etc2.ctex"]
 
 [params]
 
-compress/mode=0
+compress/mode=2
 compress/high_quality=false
 compress/lossy_quality=0.7
 compress/hdr_compression=1
