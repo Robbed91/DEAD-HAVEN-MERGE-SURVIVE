@@ -55,6 +55,10 @@ const LOCATION_AMBIENCE := {
 @onready var _phase_badge: Label = %PhaseBadge
 @onready var _threat_badge: Label = %ThreatBadge
 @onready var _hero_caption: Label = %HeroCaption
+@onready var _challenge_panel: VBoxContainer = %MergeChallengePanel
+@onready var _challenge_label: Label = %ChallengeLabel
+@onready var _challenge_grid: GridContainer = %ChallengeGrid
+@onready var _retreat_button: Button = %RetreatButton
 
 var _mission_id := ""
 var _selected_survivor_id := ""
@@ -62,6 +66,9 @@ var _shared_group: ButtonGroup
 var _danger_overlay: DangerOverlay
 var _state_tween: Tween
 var _ambient_tween: Tween
+var _challenge_state: ScavengeMergeState
+var _challenge_cells: Dictionary = {} # Vector2i -> ScavengeCell
+var _pending_choice_index := -1
 
 func _ready() -> void:
 	AudioManager.play_music("scavenging")
@@ -100,6 +107,7 @@ func _ready() -> void:
 	if not _selected_survivor_id.is_empty():
 		_update_survivor_portrait(_selected_survivor_id, false)
 	_send_button.pressed.connect(_on_send_pressed)
+	_retreat_button.pressed.connect(func(): _resolve_challenge(false))
 	_return_button.pressed.connect(func(): SceneRouter.go_to("world_map", {}, false))
 	visibility_changed.connect(_on_visibility_changed)
 	call_deferred("_begin_ambient_motion")
@@ -186,10 +194,72 @@ func _show_encounter() -> void:
 		_choices_box.add_child(btn)
 	_set_visual_phase("ENCOUNTER", Color(0.09, 0.13, 0.16, 0.24), "The route is committed. Noise and timing now decide the outcome.", %EncounterPanel)
 
+## Success is no longer an instant dice roll - the player has to win a
+## merge challenge to actually secure the location (see
+## DEVELOPMENT_LOG.md 2026-08-05 "scavenging becomes a merge challenge").
+## The chosen approach's own success_chance still matters - it sets how
+## many moves the challenge allows via ScavengingManager.compute_challenge_params().
 func _on_choice_pressed(choice_index: int) -> void:
 	AudioManager.play_sfx("scavenge_search")
-	var result := ScavengingManager.resolve_choice(_mission_id, choice_index, _selected_survivor_id)
+	_pending_choice_index = choice_index
+	_begin_merge_challenge(choice_index)
+
+func _begin_merge_challenge(choice_index: int) -> void:
+	var params := ScavengingManager.compute_challenge_params(_mission_id, choice_index, _selected_survivor_id)
+	var chain_ids: Array[String] = params.get("chain_ids", [])
+	_challenge_state = ScavengeMergeState.new()
+	_challenge_state.setup(chain_ids, int(params.get("moves", 6)), int(params.get("target_level", 3)))
+	_build_challenge_grid()
+	_refresh_challenge_label()
 	%EncounterPanel.visible = false
+	%OutcomePanel.visible = false
+	_challenge_panel.visible = true
+	_set_visual_phase("SALVAGE RUN", Color(0.15, 0.14, 0.11, 0.22), "Merge what you can find before the noise draws attention.", _challenge_panel)
+
+func _build_challenge_grid() -> void:
+	for child in _challenge_grid.get_children():
+		child.queue_free()
+	_challenge_cells.clear()
+	for y in ScavengeMergeState.ROWS:
+		for x in ScavengeMergeState.COLUMNS:
+			var pos := Vector2i(x, y)
+			var cell := ScavengeCell.new()
+			cell.setup(pos)
+			cell.drop_attempted.connect(_on_challenge_drop_attempted)
+			_challenge_grid.add_child(cell)
+			_challenge_cells[pos] = cell
+	_refresh_challenge_cells()
+
+func _refresh_challenge_cells() -> void:
+	for pos in _challenge_cells:
+		(_challenge_cells[pos] as ScavengeCell).refresh(_challenge_state.item_id_at(pos))
+
+func _refresh_challenge_label() -> void:
+	_challenge_label.text = "Merge up to level %d before you run out of moves - %d moves left" % [_challenge_state.target_level, _challenge_state.moves_left]
+
+func _on_challenge_drop_attempted(from_pos: Vector2i, to_pos: Vector2i) -> void:
+	if _challenge_state == null:
+		return
+	if _challenge_state.is_cell_free(to_pos):
+		_challenge_state.move(from_pos, to_pos)
+	else:
+		var result := _challenge_state.try_merge(from_pos, to_pos)
+		if result.get("success", false):
+			AudioManager.play_sfx("merge_pull")
+	_refresh_challenge_cells()
+	_refresh_challenge_label()
+	if _challenge_state.is_won():
+		_resolve_challenge(true)
+	elif _challenge_state.is_lost():
+		_resolve_challenge(false)
+
+func _resolve_challenge(succeeded: bool) -> void:
+	if _pending_choice_index < 0:
+		return
+	var result := ScavengingManager.resolve_choice_with_outcome(_mission_id, _pending_choice_index, succeeded)
+	_pending_choice_index = -1
+	_challenge_state = null
+	_challenge_panel.visible = false
 	%OutcomePanel.visible = true
 	var prefix: String = "Success. " if result.outcome_success else "It went sideways. "
 	_outcome_label.text = prefix + String(result.text)

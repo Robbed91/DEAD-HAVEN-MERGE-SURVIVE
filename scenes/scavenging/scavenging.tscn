@@ -221,6 +221,35 @@ unique_name_in_owner = true
 layout_mode = 2
 theme_override_constants/separation = 8
 
+[node name="MergeChallengePanel" type="VBoxContainer" parent="Layout/Margin/Content"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="ChallengeLabel" type="Label" parent="Layout/Margin/Content/MergeChallengePanel"]
+unique_name_in_owner = true
+layout_mode = 2
+autowrap_mode = 3
+theme_override_colors/font_color = Color(0.92, 0.86, 0.73, 1)
+theme_override_font_sizes/font_size = 15
+text = "Merge up to level 3 before you run out of moves."
+
+[node name="ChallengeGrid" type="GridContainer" parent="Layout/Margin/Content/MergeChallengePanel"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/h_separation = 4
+theme_override_constants/v_separation = 4
+columns = 5
+
+[node name="RetreatButton" type="Button" parent="Layout/Margin/Content/MergeChallengePanel"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 48)
+layout_mode = 2
+theme_type_variation = "DangerButton"
+text = "Retreat"
+
 [node name="OutcomePanel" type="VBoxContainer" parent="Layout/Margin/Content"]
 unique_name_in_owner = true
 visible = false

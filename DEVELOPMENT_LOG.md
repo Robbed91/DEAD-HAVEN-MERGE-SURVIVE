@@ -7,6 +7,38 @@ each one.
 
 ---
 
+## 2026-08-05 — Scavenging becomes a merge challenge
+
+### Starting commit and objective
+
+- Starting commit: `47e0024` on `visual-production`.
+- Objective: the user's follow-up to the hotspot-strip fix was specific and structural, not another bug report: scavenging currently has "no relation to the game" - launching a mission just rolls a dice-based encounter choice, with no merge gameplay involved at all - and per the user's own words, the correct design is "when you go scavenge a location you should need to complete a merge game to successfully progress." This is a real feature, not a fix, so it's documented with its own design rationale rather than folded into the bug-fix entries above.
+
+### Design: reuse every existing authored balance value, change only how the outcome is determined
+
+- Scavenging missions already have rich per-location content (`loot_table`, `encounter_choices` each with `success_chance`/`success_loot`/`failure_penalty`/`success_text`/`failure_text`) across all ten locations. Rewriting that content was explicitly out of scope - the goal was to change *how success is decided* (a merge puzzle instead of `randf() < chance`) while keeping every location's authored numbers and text meaningful.
+- New `scripts/scavenge_merge/`: `ScavengeMergeState` (a `RefCounted` grid, `Vector2i -> item_id`), `ScavengeTileView` (a stripped-down sibling of `scripts/merge/item_view.gd` - drag-and-drop only, no producer/cooldown/lock/cobweb presentation it has no use for), `ScavengeCell` (a stripped-down sibling of `scenes/merge_board/board_cell.gd`). Deliberately **not** built on `BoardState`/`BoardItem` - that singleton owns the player's real, saved residence boards, and a scavenging attempt needs a throwaway grid that's generated fresh and discarded on win/lose/retreat with zero save-schema footprint.
+- `ScavengeMergeState.try_merge()` uses the identical chain+level rule as `BoardState.try_merge()` (verified against it directly in the new test, not just self-consistently), just without any of the producer/lock/cobweb/storage checks that rule also has to make, since none of those concepts exist on this board.
+- Board seeding guarantees solvability: `_seed_board()` always places at least `2^(target_level-1)` level-1 tiles of the mission's primary chain (enough to reach target_level through repeated pairwise merges alone), plus secondary-chain tiles as real, mergeable alternative material - not decoration.
+- The chosen encounter approach's own `success_chance` (plus the existing survivor skill-match bonus from `_survivor_has_matching_skill()`) now sets the merge challenge's **difficulty** - `ScavengingManager.compute_challenge_params()` maps a higher chance to more moves (a generous approach was already meant to be the safer one; now that safety is expressed as "more room to work the puzzle" instead of "better dice odds"). `chain_ids_for_mission()` is deterministic per `mission_id` (hashed, not random) so the same location always salvages the same two material types on repeat visits - a small thing, but it's part of what "the map has no relation to the game" was pointing at: the loot at a location should feel like it comes from that location.
+- `ScavengingManager.resolve_choice()` (the old dice-roll path) was refactored to share its reward/penalty/text logic with a new `resolve_choice_with_outcome(mission_id, choice_index, succeeded)` via a common `_apply_choice_outcome()`. `resolve_choice()` itself is unchanged in behavior and signature - existing tests that force outcomes by mutating `success_chance` to 0.0/1.0 and calling it still work exactly as before, untouched. `resolve_choice_with_outcome()` is what the real UI calls now, fed a `succeeded` boolean earned by actually winning or losing the merge puzzle instead of computing one internally.
+- `scenes/scavenging/scavenging.gd`/`.tscn`: new `MergeChallengePanel` (label showing target level/moves remaining, a 5x5 `GridContainer` of `ScavengeCell`s, a Retreat button to concede early) slotted between the existing `EncounterPanel` and `OutcomePanel`. Picking an encounter choice now opens this panel instead of resolving instantly; winning or losing it (or hitting Retreat, which counts as a loss) calls `resolve_choice_with_outcome()` and proceeds into the same outcome presentation as before.
+
+### Tests performed
+
+- New `tests/smoke_test_scavenge_merge.gd`/`.tscn`: seeded-board solvability, `try_merge()` parity with `BoardState`'s rule (including that it refuses to merge against an empty cell and spends exactly one move per successful merge), win-on-target-level and lose-on-moves-exhausted, difficulty scaling with `success_chance`, and that `resolve_choice_with_outcome()` grants byte-for-byte the same rewards/penalty/text as `resolve_choice()` for a known outcome (checked against real mission data, not a mock).
+- New `tests/capture_scavenge_merge.gd`/`.tscn`: drives the real `scavenging.tscn` scene (not just the isolated state class) through send -> pick a choice, and captures the actual merge grid it opens into - confirms the wiring works end to end, not only in isolated logic tests.
+- Full regression pass: `smoke_test` (all residences/scenes including scavenging still instantiate cleanly), `smoke_test_scavenging` (all pre-existing dice-based assertions pass unchanged - `resolve_choice()`'s public behavior is untouched), `smoke_test_scavenging_presentation`, `smoke_test_vehicle_survivors` (its own skill-matching-bonus assertion against `resolve_choice()` also unaffected), `smoke_test_main_story`, `smoke_test_save` - all pass.
+
+### Known issues and exact next phase
+
+- Desktop-verified only; needs a fresh APK to confirm the drag-and-drop feel of the new compact grid on a real touchscreen.
+- The merge-challenge grid currently has no hover/drop visual feedback (`board_cell.gd`'s pulse-on-valid-drop presentation wasn't ported) and no merge burst VFX - functionally complete, visually plainer than the main board. Worth a follow-up pass once the core mechanic itself is confirmed to be what the user wanted.
+- `target_level` (3) and the moves-per-`success_chance` curve (4-8 moves) are first-pass numbers, not playtested for real difficulty feel - likely to need tuning once played on a real device rather than verified only for internal consistency.
+- This is a new gameplay system, not a bug fix - it should be treated as a first draft to react to, not a finished feature, given how much of this whole thread has been about matching a specific vision the user has and I don't have full visibility into.
+
+---
+
 ## 2026-08-05 — Follow-up: repair tasks off the board grid entirely
 
 ### Starting commit and objective

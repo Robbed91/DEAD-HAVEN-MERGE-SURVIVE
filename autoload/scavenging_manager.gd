@@ -83,6 +83,45 @@ func resolve_choice(mission_id: String, choice_index: int, survivor_id: String =
 	if _survivor_has_matching_skill(survivor_id, mission.recommended_equipment):
 		chance = minf(chance + SKILL_SUCCESS_BONUS, 0.95)
 	var succeeded: bool = randf() < chance
+	return _apply_choice_outcome(mission_id, choice_index, succeeded)
+
+## Used by the real scavenging UI: success is determined by winning a merge
+## challenge (scripts/scavenge_merge/) rather than an internal dice roll.
+## Grants the exact same rewards/penalty/text as resolve_choice() for a
+## known outcome, so none of the ten missions' authored loot/penalty/text
+## data needed to change for this.
+func resolve_choice_with_outcome(mission_id: String, choice_index: int, succeeded: bool) -> Dictionary:
+	return _apply_choice_outcome(mission_id, choice_index, succeeded)
+
+## The chosen encounter's own success_chance (plus the existing survivor
+## skill-match bonus) becomes the merge challenge's difficulty instead of a
+## dice-roll probability - a more generous chance/skill match means more
+## moves to work with, preserving every location's authored balance without
+## rewriting any of it.
+const CHALLENGE_TARGET_LEVEL := 3
+const CHALLENGE_MIN_MOVES := 4
+const CHALLENGE_MAX_MOVES := 8
+
+func compute_challenge_params(mission_id: String, choice_index: int, survivor_id: String = "") -> Dictionary:
+	var mission := get_mission(mission_id)
+	if mission == null or choice_index < 0 or choice_index >= mission.encounter_choices.size():
+		return {}
+	var choice: Dictionary = mission.encounter_choices[choice_index]
+	var chance: float = float(choice.get("success_chance", 0.5))
+	if _survivor_has_matching_skill(survivor_id, mission.recommended_equipment):
+		chance = minf(chance + SKILL_SUCCESS_BONUS, 0.95)
+	var moves := int(round(lerpf(CHALLENGE_MIN_MOVES, CHALLENGE_MAX_MOVES, chance)))
+	return {
+		"moves": moves,
+		"target_level": CHALLENGE_TARGET_LEVEL,
+		"chain_ids": ScavengeMergeState.chain_ids_for_mission(mission_id),
+	}
+
+func _apply_choice_outcome(mission_id: String, choice_index: int, succeeded: bool) -> Dictionary:
+	var mission := get_mission(mission_id)
+	if mission == null or choice_index < 0 or choice_index >= mission.encounter_choices.size():
+		return {"success": false, "reason": "invalid_choice"}
+	var choice: Dictionary = mission.encounter_choices[choice_index]
 
 	_grant_rewards(mission.loot_table)
 	var outcome_text: String
