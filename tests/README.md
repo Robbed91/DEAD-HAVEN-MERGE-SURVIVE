@@ -115,6 +115,11 @@ verification work later:
   `docs/layout-captures/<scene>_<w>x<h>.png`. Desktop-rendered layout
   evidence at 720x1600/1080x2400/1440x3200, standing in for on-device
   layout testing where no Android device/emulator is available.
+- **`capture_overwrite_dialog.gd`/`.tscn`** - same `xvfb-run` pattern,
+  drives the real main menu to a save-exists state and pops the New Game
+  overwrite dialog, confirming `AppConfirmDialog` (see 2026-08-05 in
+  `DEVELOPMENT_LOG.md`) renders fully on-screen instead of overflowing
+  like the native `ConfirmationDialog` it replaced.
 
 ## What these do NOT cover
 

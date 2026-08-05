@@ -8,7 +8,10 @@ extends Control
 
 const RESIDENCE_ID := "northgate_prison"
 const DEFENCE_EVENT_ID := "northgate_defence"
-const HOTSPOT_SIZE := Vector2(76, 76)
+## Shrunk from a full board-cell-sized 76x76 to a corner badge - see haven.gd
+## for why (repair markers were fully obscuring/input-blocking board items).
+const HOTSPOT_SIZE := Vector2(40, 40)
+const HOTSPOT_CORNER_BIAS := Vector2(20.0, -20.0)
 
 const CHAPTER_TITLES := {
 	"chapter_7_do_no_harm": "Chapter 7: Do No Harm",
@@ -61,10 +64,10 @@ func _build_hotspot(hotspot: ResidenceHotspot) -> void:
 	visual.anchor_right = hotspot.area_position.x
 	visual.anchor_top = hotspot.area_position.y
 	visual.anchor_bottom = hotspot.area_position.y
-	visual.offset_left = -HOTSPOT_SIZE.x * 0.5
-	visual.offset_right = HOTSPOT_SIZE.x * 0.5
-	visual.offset_top = -HOTSPOT_SIZE.y * 0.5
-	visual.offset_bottom = HOTSPOT_SIZE.y * 0.5
+	visual.offset_left = HOTSPOT_CORNER_BIAS.x - HOTSPOT_SIZE.x * 0.5
+	visual.offset_right = HOTSPOT_CORNER_BIAS.x + HOTSPOT_SIZE.x * 0.5
+	visual.offset_top = HOTSPOT_CORNER_BIAS.y - HOTSPOT_SIZE.y * 0.5
+	visual.offset_bottom = HOTSPOT_CORNER_BIAS.y + HOTSPOT_SIZE.y * 0.5
 	visual.tooltip_text = hotspot.display_name
 	visual.tapped.connect(_on_hotspot_tapped)
 	_hotspots_layer.add_child(visual)

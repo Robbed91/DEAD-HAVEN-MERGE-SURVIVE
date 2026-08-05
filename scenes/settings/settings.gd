@@ -6,7 +6,7 @@ extends Control
 ## SaveManager and fires EventBus.settings_changed for anything else
 ## listening (e.g. AudioManager, ThemeFactory consumers).
 
-@onready var _reset_dialog: ConfirmationDialog = %ResetDialog
+@onready var _reset_dialog: AppConfirmDialog = %ResetDialog
 
 func _ready() -> void:
 	var s: Dictionary = GameManager.settings

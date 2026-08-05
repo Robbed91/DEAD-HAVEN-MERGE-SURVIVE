@@ -1,8 +1,9 @@
-[gd_scene load_steps=6 format=3 uid="uid://main_menu_scene"]
+[gd_scene load_steps=7 format=3 uid="uid://main_menu_scene"]
 
 [ext_resource type="Script" path="res://scenes/main_menu/main_menu.gd" id="1"]
 [ext_resource type="Script" path="res://scenes/main_menu/main_menu_background.gd" id="2"]
 [ext_resource type="Texture2D" path="res://assets/art/main_menu/runtime/main_menu_safe_haven.png" id="3"]
+[ext_resource type="PackedScene" path="res://scenes/ui/app_confirm_dialog.tscn" id="4"]
 [sub_resource type="StyleBoxFlat" id="MenuPlate"]
 bg_color = Color(0.055, 0.064, 0.067, 0.88)
 border_width_left = 2
@@ -170,9 +171,9 @@ horizontal_alignment = 2
 theme_override_font_sizes/font_size = 13
 text = "v0.1.0  •  FOUNDATION"
 
-[node name="OverwriteDialog" type="ConfirmationDialog" parent="."]
+[node name="OverwriteDialog" parent="." instance=ExtResource("4")]
 unique_name_in_owner = true
-title = "Overwrite existing progress?"
+dialog_title = "Overwrite existing progress?"
 dialog_text = "Starting a new game will permanently replace your saved progress. This cannot be undone."
 ok_button_text = "Start New Game"
 cancel_button_text = "Cancel"

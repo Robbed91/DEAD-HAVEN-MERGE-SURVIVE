@@ -1,6 +1,7 @@
-[gd_scene load_steps=2 format=3 uid="uid://settings_scene"]
+[gd_scene load_steps=3 format=3 uid="uid://settings_scene"]
 
 [ext_resource type="Script" path="res://scenes/settings/settings.gd" id="1"]
+[ext_resource type="PackedScene" path="res://scenes/ui/app_confirm_dialog.tscn" id="2"]
 
 [node name="Settings" type="Control"]
 layout_mode = 3
@@ -283,9 +284,9 @@ layout_mode = 2
 text = "Back"
 theme_type_variation = "NavButton"
 
-[node name="ResetDialog" type="ConfirmationDialog" parent="."]
+[node name="ResetDialog" parent="." instance=ExtResource("2")]
 unique_name_in_owner = true
-title = "Reset all progress?"
+dialog_title = "Reset all progress?"
 dialog_text = "This permanently deletes your save and starts a brand new game. This cannot be undone."
 ok_button_text = "Reset"
 cancel_button_text = "Cancel"

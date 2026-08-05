@@ -15,7 +15,7 @@ signal changed()
 @onready var _storage_button: Button = %StorageButton
 @onready var _delete_button: Button = %DeleteButton
 @onready var _close_button: Button = %CloseButton
-@onready var _confirm_dialog: ConfirmationDialog = %ConfirmDialog
+@onready var _confirm_dialog: AppConfirmDialog = %ConfirmDialog
 
 var _instance_id: String = ""
 

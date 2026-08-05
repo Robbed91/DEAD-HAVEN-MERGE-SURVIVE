@@ -7,6 +7,44 @@ each one.
 
 ---
 
+## 2026-08-05 — Real-device bug fixes: hotspot/board overlap, dialog overflow
+
+### Starting commit and objective
+
+- Starting commit: `b138e83` on `visual-production`.
+- Objective: the user installed a build on their own Android phone and reported it as broadly broken - drag-and-drop merging unreliable, most board icons "blacked out" and unclickable, a light touch popping an info panel instead of dragging, and the New Game confirmation dialog's text and OK button running off the right edge of the screen. All of this was reported with real device screenshots, not a description. Prior sessions' desktop `xvfb-run` captures use synthetic mouse input and can't reproduce touch-specific or real-screen-bounds issues, so this required re-reading the actual runtime scene composition against the screenshots rather than re-trusting earlier desktop-only verification.
+
+### Root cause 1: repair hotspot markers sized and layered to fully cover board cells
+
+- `HotspotVisual` markers were sized 76x76 (Hollow Creek Farmhouse, Northgate) or 64x64 (Redwater, Greybridge, Saint Mercy) - matching or nearly matching `BoardCell`'s 78x78 - and centered exactly on their `hotspot.area_position` point, with `mouse_filter = MOUSE_FILTER_STOP`. This was deliberate when hotspots were the only thing on the residence screen (Phase 3), and the 2026-08-03 unified-screen batch's own log correctly predicted "hotspots coexist above the cells" - but never revisited the marker's actual footprint once a full 7x9 board sat directly underneath it. Every hotspot whose `area_position` landed on a board cell fully painted over that cell (`_draw_illustrated_marker`'s dark radial backing) and fully absorbed its input: taps opened the hotspot's own task panel or a "not available yet" toast instead of the item beneath, and merge drops targeting that cell landed on the hotspot control (which implements no `_can_drop_data`/`_drop_data`) and silently did nothing. This alone explains all three of the user's non-dialog complaints: icons "blacked out", "touch even lightly" opens a popup, and drags that don't merge.
+- Fixed by shrinking `HOTSPOT_SIZE` to a uniform 40x40 corner badge (down from 76x76/64x64) and biasing its position with a new `HOTSPOT_CORNER_BIAS` constant so it sits toward a cell's corner instead of dead-center, across all five residence controllers (`scenes/haven/haven.gd`, `scenes/northgate/northgate.gd`, `scenes/redwater/redwater.gd`, `scenes/greybridge/greybridge.gd`, `scenes/saint_mercy/saint_mercy.gd`). `HotspotVisual`'s own drawing code needed no changes - its progress badge and lock/complete indicators are already sized relative to its own `size`. No `ResidenceHotspot`/quest data changed; this is presentation-only.
+- Verified visually, not just by absence of test failures: `tests/capture_layout_haven.gd` re-run at 1080x2340 (the user's own screenshot resolution) shows every board item that previously sat under a hotspot marker (wardrobe, chest, bed, dresser, medicine cabinet, storage bag, workbench, fireplace) now fully visible and reachable, with the repair badge as a small corner accent instead of a covering disc.
+
+### Root cause 2: native ConfirmationDialog doesn't respect canvas_items stretch
+
+- `project.godot` sets `window/stretch/mode="canvas_items"` so the whole UI scales correctly from its 720-wide logical base to any real screen size - but Godot's `ConfirmationDialog`/`AcceptDialog` are `Window` subclasses, and a `Window`'s own size/centering is not run through that same stretch transform. On the user's actual phone this rendered the New Game overwrite dialog at (approximately) its 720-logical-width layout without the compensating scale-down, pushing the dialog text and its "Start New Game" button off the right edge of the screen - exactly matching the submitted screenshot.
+- The same native `ConfirmationDialog` pattern was used in three places: `scenes/main_menu/main_menu.tscn` (overwrite prompt), `scenes/ui/item_info_panel.tscn` (rare-item delete confirm), `scenes/settings/settings.tscn` (reset-progress confirm) - all three would have the same overflow on a real device even though only the first was screenshotted.
+- Fixed by adding `scenes/ui/app_confirm_dialog.gd`/`.tscn` (`class_name AppConfirmDialog`), a plain-`Control`-based modal (`CanvasLayer` > `Scrim` > `CenterContainer` > `PanelContainer`) that mirrors the exact structure `ItemInfoPanel` already uses successfully - since ordinary Controls fully participate in canvas_items stretch, this cannot exhibit the same class of bug. Exposes the same `dialog_title`/`dialog_text`/`ok_button_text`/`cancel_button_text` properties, `confirmed`/`canceled` signals, and a no-argument `popup_centered()` method as the native dialog, so all three call sites needed only a node-type swap in their `.tscn` and an `@onready` type-annotation change in their `.gd` - no behavioral logic changed. Matches the native dialog's sound cues exactly (`modal_open` on open, `confirmation` on confirm, `modal_close` on cancel) since `AudioManager._on_node_added()`'s automatic `ConfirmationDialog` wiring no longer applies to a `CanvasLayer`.
+- Verified visually: new `tests/capture_overwrite_dialog.gd`/`.tscn` drives the real main menu to a save-exists state and pops the dialog at 1080x2340; the result shows the full title, both wrapped body lines, and both buttons entirely on-screen and centered.
+
+### On the "merge is still on its own page, not part of progressing the story" and "nothing like Merge Mansion" complaints
+
+- Not changed this session. The fused Haven+Merge screen (one persistent Home screen per residence, no separate Merge destination) was the user's own explicit prior choice, confirmed via `AskUserQuestion` earlier in this project. Given that both concrete architectural bugs above (hotspot/board layering, dialog overflow) were severe enough to make any design read as broken, and that the residence's own `Repairs: N / 9` counter already ties board-merge progress directly to story/chapter advancement (`ResidenceManager`/`QuestDefinition`, unchanged), this is deliberately left as-is pending the user's reaction to a build with the concrete bugs fixed, rather than reversing a explicitly-chosen architecture on an unconfirmed read of a frustrated bug report.
+
+### Tests performed
+
+- Full relevant subset re-run headless: `smoke_test`, `smoke_test_save`, `smoke_test_settings`, `smoke_test_ui_skin`, `smoke_test_main_menu_presentation`, `smoke_test_merge`, `smoke_test_merge_icons`, `smoke_test_residence`, `smoke_test_redwater(_visual_states)`, `smoke_test_greybridge(_visual_states)`, `smoke_test_saint_mercy(_visual_states)`, `smoke_test_northgate(_visual_states)`, `smoke_test_hollow_creek_hotspot_icons`, `smoke_test_remaining_hotspot_icons`, `smoke_test_northgate_hotspot_icons` - all pass.
+- A newly-added `class_name` (`AppConfirmDialog`) isn't visible to other scripts until Godot rebuilds `.godot/global_script_class_cache.cfg`; the first re-run after adding it failed with `Could not find type "AppConfirmDialog" in the current scope"` until `godot4 --headless --editor --quit-after 3` forced the rescan. Not a code bug, but worth remembering next time a new `class_name` is added in a single headless session.
+- Two new one-off visual verifications (not part of the regular smoke suite, matching the audit-script precedent from the export-size batch): `tests/capture_layout_haven.gd` re-run at 1080x2340 and new `tests/capture_overwrite_dialog.gd`/`.tscn`, both under `docs/layout-captures/`.
+
+### Known issues and exact next phase
+
+- These fixes are desktop-verified only (xvfb-run + software rasterizer); real on-device confirmation still depends on a fresh APK, which this environment cannot build (no Android SDK/export templates, network policy blocks the Google/Godot template mirrors - unchanged from the Batch 4 audit).
+- The "some icons drag but don't merge" complaint should now be substantially resolved as a side effect of the hotspot-overlap fix (drop targets under a hotspot badge are now mostly clear board cells again), but this was not independently reproducible in this environment even before the fix (headless/xvfb testing uses synthetic mouse events, not touch), so it should be re-checked on the next real-device build rather than assumed fixed.
+- Next: install a fresh build and re-triage against this exact list of complaints; if hotspot/dialog fixes don't fully resolve "can't drag and drop," revisit touch-vs-ScrollContainer interaction in the Storage drawer (`scenes/ui/storage_panel.tscn`), which research this session flagged as a separate, real, but still real-device-unverified risk.
+
+---
+
 ## Phase 1: Foundation - complete
 
 ### Files created

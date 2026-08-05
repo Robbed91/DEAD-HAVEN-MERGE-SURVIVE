@@ -7,7 +7,14 @@ extends Control
 ## consumes a merge-board item and advances it.
 
 const RESIDENCE_ID := "hollow_creek_farmhouse"
-const HOTSPOT_SIZE := Vector2(76, 76)
+## Hotspot markers used to be sized to fully cover a board cell (76x76,
+## matching BoardCell's 78x78), which made repair progress fully obscure and
+## input-block whichever merge item happened to share its cell once the
+## board was embedded behind the residence art. Shrunk to a corner badge so
+## the item underneath stays visible and reachable for drag-and-drop; only
+## the badge itself still opens the task panel.
+const HOTSPOT_SIZE := Vector2(40, 40)
+const HOTSPOT_CORNER_BIAS := Vector2(20.0, -20.0)
 
 const CHAPTER_TITLES := {
 	"chapter_1_the_open_door": "Chapter 1: The Open Door",
@@ -87,10 +94,10 @@ func _build_hotspot(hotspot: ResidenceHotspot) -> void:
 	visual.anchor_right = hotspot.area_position.x
 	visual.anchor_top = hotspot.area_position.y
 	visual.anchor_bottom = hotspot.area_position.y
-	visual.offset_left = -HOTSPOT_SIZE.x * 0.5
-	visual.offset_right = HOTSPOT_SIZE.x * 0.5
-	visual.offset_top = -HOTSPOT_SIZE.y * 0.5
-	visual.offset_bottom = HOTSPOT_SIZE.y * 0.5
+	visual.offset_left = HOTSPOT_CORNER_BIAS.x - HOTSPOT_SIZE.x * 0.5
+	visual.offset_right = HOTSPOT_CORNER_BIAS.x + HOTSPOT_SIZE.x * 0.5
+	visual.offset_top = HOTSPOT_CORNER_BIAS.y - HOTSPOT_SIZE.y * 0.5
+	visual.offset_bottom = HOTSPOT_CORNER_BIAS.y + HOTSPOT_SIZE.y * 0.5
 	visual.tooltip_text = hotspot.display_name
 	visual.tapped.connect(_on_hotspot_tapped)
 	_hotspots_layer.add_child(visual)
