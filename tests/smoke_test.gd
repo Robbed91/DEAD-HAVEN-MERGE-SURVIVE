@@ -77,7 +77,8 @@ func _next_step() -> void:
 	if RESIDENCE_SCENES.has(path):
 		var expected_residence_id: String = RESIDENCE_SCENES[path]
 		var panel := _current.get_node_or_null("Layout/Scene/BoardPanel") as MergeBoard
-		var hotspots := _current.get_node_or_null("Layout/Scene/Hotspots") as Control
+		var hotspots := _current.get_node_or_null("%Hotspots") as Control
+		var hotspot_strip := _current.get_node_or_null("Layout/Scene/HotspotStrip") as Control
 		if panel == null or panel.get_node_or_null("Layout/BoardMargin/BoardGrid") == null:
 			print("SMOKE_TEST_FAIL: residence lacks embedded board panel: %s" % path)
 			get_tree().quit(1)
@@ -98,8 +99,17 @@ func _next_step() -> void:
 			print("SMOKE_TEST_FAIL: residence activated wrong board: %s" % path)
 			get_tree().quit(1)
 			return
-		if hotspots == null or hotspots.mouse_filter != Control.MOUSE_FILTER_IGNORE:
-			print("SMOKE_TEST_FAIL: hotspot layer does not pass empty-area input to board: %s" % path)
+		# Repair-task markers moved into their own strip above the board
+		# (see DEVELOPMENT_LOG.md 2026-08-05 follow-up) instead of floating
+		# on top of board cells, so the real invariant now is that the strip
+		# sits entirely above the board rather than overlapping it - not a
+		# mouse_filter pass-through, since there's nothing to pass through.
+		if hotspots == null or hotspot_strip == null:
+			print("SMOKE_TEST_FAIL: hotspot task strip missing: %s" % path)
+			get_tree().quit(1)
+			return
+		if hotspot_strip.get_global_rect().end.y > panel_rect.position.y + 1.0:
+			print("SMOKE_TEST_FAIL: hotspot task strip overlaps the embedded board: %s" % path)
 			get_tree().quit(1)
 			return
 		if expected_residence_id == "hollow_creek_farmhouse":

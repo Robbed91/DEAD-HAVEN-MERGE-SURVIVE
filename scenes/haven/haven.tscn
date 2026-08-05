@@ -103,13 +103,33 @@ anchor_top = 0.26
 anchor_right = 1.0
 anchor_bottom = 1.0
 
-[node name="Hotspots" type="Control" parent="Layout/Scene"]
-unique_name_in_owner = true
+[node name="HotspotStrip" type="PanelContainer" parent="Layout/Scene"]
 layout_mode = 1
-anchors_preset = 15
+anchors_preset = 10
 anchor_right = 1.0
-anchor_bottom = 1.0
+offset_left = 12.0
+offset_top = 108.0
+offset_right = -12.0
+offset_bottom = 172.0
 mouse_filter = 2
+modulate = Color(1, 1, 1, 0.86)
+theme_type_variation = "CharcoalPanel"
+
+[node name="Margin" type="MarginContainer" parent="Layout/Scene/HotspotStrip"]
+layout_mode = 2
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_top = 6
+theme_override_constants/margin_bottom = 6
+
+[node name="Scroll" type="ScrollContainer" parent="Layout/Scene/HotspotStrip/Margin"]
+layout_mode = 2
+vertical_scroll_mode = 0
+
+[node name="Hotspots" type="HBoxContainer" parent="Layout/Scene/HotspotStrip/Margin/Scroll"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 8
 
 [node name="DefenceButton" type="Button" parent="Layout/Scene"]
 unique_name_in_owner = true

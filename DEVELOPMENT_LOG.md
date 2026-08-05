@@ -7,6 +7,33 @@ each one.
 
 ---
 
+## 2026-08-05 — Follow-up: repair tasks off the board grid entirely
+
+### Starting commit and objective
+
+- Starting commit: `8e33e64` on `visual-production` (the merge of this same day's real-device bug-fix batch below and Codex's Android import-optimisation batch).
+- Objective: the user's reply to the previous entry's fixes was that the game "still" isn't close to what they asked for in a merge game, referencing Merge Mansion again. An `AskUserQuestion` asking whether to make the board fully clean/opaque (moving repair tasks into their own panel, closer to the reference games) versus keeping the current translucent room-behind-the-grid look was interrupted/declined by the user rather than answered. Rather than re-ask (already declined once) or leave it unresolved, proceeded on the better-evidenced option: real merge games never place task/request icons on top of the merge grid itself, and the corner-badge fix from the previous entry - while it stopped hotspots from fully blocking items - still had them sitting on the grid, which was never how the reference games do it.
+
+### Change: hotspot markers move into a dedicated task strip above the board
+
+- Previously `HotspotVisual` markers (even after the previous entry's 40x40 corner-badge shrink) were still absolutely positioned on top of specific board cells via `hotspot.area_position`, still visually and functionally part of the grid. Moved them into a new horizontal `ScrollContainer` strip (`HotspotStrip`, styled like the existing `HeaderPlate`/`CharcoalPanel` chrome) sitting between the residence name/chapter/progress header and the embedded board panel, mirroring the merge board's own `ChainLegend` scroll-strip pattern already used one screen below it. Applied identically across all five residence scenes/controllers (`scenes/haven`, `scenes/northgate`, `scenes/redwater`, `scenes/greybridge`, `scenes/saint_mercy`).
+- `_build_hotspot()` in each residence controller no longer does any anchor/offset math against `hotspot.area_position` - it just adds the `HotspotVisual` as a normal child of the strip's `HBoxContainer`, which lays them out automatically. `HOTSPOT_SIZE` changed from a 40x40 corner badge to a 48x48 strip icon (matching `ChainLegendIcon`'s own 48x48). `HOTSPOT_CORNER_BIAS` is gone entirely - there's no longer a "corner" to bias toward.
+- `hotspot.area_position` itself is untouched in the data and is still used for the repair camera-focus zoom effect (`_play_repair_camera_sequence()`), which pans/zooms the residence art behind the header on task completion - that effect is about the residence artwork, not the board, so it's unaffected by where the task badge itself now lives.
+- Net effect: the embedded board is now completely clean - every cell shows only its own merge item, nothing else drawn or positioned on top of it - while repair/decoration requests read as a proper task list, tap-to-open exactly as before.
+
+### Tests performed
+
+- `tests/smoke_test.gd`'s per-residence embedded-board check previously asserted `Layout/Scene/Hotspots` existed directly under the scene root with `mouse_filter == MOUSE_FILTER_IGNORE` (a pass-through check that only made sense for the old full-screen overlay architecture). Updated to resolve `%Hotspots` (now nested inside the strip) and assert the strip's own rect ends above the board panel's top edge instead - the actual invariant this change is meant to guarantee. Caught and fixed before considering this done, not after a false pass.
+- Full suite re-run: `smoke_test` (all 5 residences instantiate and pass the updated embedded-board check), `smoke_test_residence`, `smoke_test_redwater(_visual_states)`, `smoke_test_greybridge(_visual_states)`, `smoke_test_saint_mercy(_visual_states)`, `smoke_test_northgate(_visual_states)`, `smoke_test_hollow_creek_hotspot_icons`, `smoke_test_remaining_hotspot_icons`, `smoke_test_northgate_hotspot_icons`, `smoke_test_merge`, `smoke_test_merge_icons`, `smoke_test_save`, `smoke_test_settings`, `smoke_test_ui_skin`, `smoke_test_main_menu_presentation` - all pass.
+- Visual verification: `tests/capture_layout_haven.gd` re-run at 1080x2340 and a one-off equivalent capture of Redwater (built, checked, then deleted - not kept as a permanent test since `capture_layout_haven.gd` already covers the pattern) both show a fully clean 7x9 board with the repair strip as a separate row above it, at the user's own screenshot resolution.
+
+### Known issues and exact next phase
+
+- Still desktop-verified only; needs a fresh APK on the user's device to confirm.
+- Next: get the user's reaction to this build before considering the "merge is nothing like Merge Mansion" thread resolved - if the remaining gap isn't the board clutter, it needs a more specific description (e.g. producer/chain pacing, chest mechanics, animation feel) since the two concrete, evidenced issues found so far (hotspot/board overlap, dialog overflow) are now both addressed.
+
+---
+
 ## 2026-08-05 — Real-device bug fixes: hotspot/board overlap, dialog overflow
 
 ### Starting commit and objective

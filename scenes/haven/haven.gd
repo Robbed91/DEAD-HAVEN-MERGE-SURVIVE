@@ -7,14 +7,16 @@ extends Control
 ## consumes a merge-board item and advances it.
 
 const RESIDENCE_ID := "hollow_creek_farmhouse"
-## Hotspot markers used to be sized to fully cover a board cell (76x76,
-## matching BoardCell's 78x78), which made repair progress fully obscure and
-## input-block whichever merge item happened to share its cell once the
-## board was embedded behind the residence art. Shrunk to a corner badge so
-## the item underneath stays visible and reachable for drag-and-drop; only
-## the badge itself still opens the task panel.
-const HOTSPOT_SIZE := Vector2(40, 40)
-const HOTSPOT_CORNER_BIAS := Vector2(20.0, -20.0)
+## Hotspot markers used to be absolutely positioned on top of the board grid
+## at each hotspot's own area_position (originally authored when hotspots
+## were the only thing on the residence screen, before the board was
+## embedded underneath) - full board-cell-sized markers fully obscured and
+## input-blocked whichever merge item happened to share their cell. Markers
+## now live in a horizontal task strip above the board instead, matching
+## how the reference merge games present repair/decoration requests
+## separately from the merge grid itself; area_position is still used for
+## the repair camera-focus effect below.
+const HOTSPOT_SIZE := Vector2(48, 48)
 
 const CHAPTER_TITLES := {
 	"chapter_1_the_open_door": "Chapter 1: The Open Door",
@@ -27,7 +29,7 @@ const CHAPTER_TITLES := {
 	"chapter_9_the_signal_keeper": "Chapter 9: The Signal Keeper",
 }
 
-@onready var _hotspots_layer: Control = %Hotspots
+@onready var _hotspots_layer: HBoxContainer = %Hotspots
 @onready var _task_panel: TaskPanel = %TaskPanel
 @onready var _progress_label: Label = %ProgressLabel
 @onready var _chapter_label: Label = %ChapterLabel
@@ -89,15 +91,6 @@ func _build_hotspot(hotspot: ResidenceHotspot) -> void:
 	visual.residence_id = RESIDENCE_ID
 	visual.custom_minimum_size = HOTSPOT_SIZE
 	visual.size = HOTSPOT_SIZE
-	visual.set_anchors_preset(Control.PRESET_TOP_LEFT)
-	visual.anchor_left = hotspot.area_position.x
-	visual.anchor_right = hotspot.area_position.x
-	visual.anchor_top = hotspot.area_position.y
-	visual.anchor_bottom = hotspot.area_position.y
-	visual.offset_left = HOTSPOT_CORNER_BIAS.x - HOTSPOT_SIZE.x * 0.5
-	visual.offset_right = HOTSPOT_CORNER_BIAS.x + HOTSPOT_SIZE.x * 0.5
-	visual.offset_top = HOTSPOT_CORNER_BIAS.y - HOTSPOT_SIZE.y * 0.5
-	visual.offset_bottom = HOTSPOT_CORNER_BIAS.y + HOTSPOT_SIZE.y * 0.5
 	visual.tooltip_text = hotspot.display_name
 	visual.tapped.connect(_on_hotspot_tapped)
 	_hotspots_layer.add_child(visual)

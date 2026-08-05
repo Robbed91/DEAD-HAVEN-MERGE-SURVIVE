@@ -9,10 +9,10 @@ extends Control
 
 const RESIDENCE_ID := "redwater_service_station"
 const DEFENCE_EVENT_ID := "redwater_defence"
-## Shrunk from a near-board-cell-sized 64x64 to a corner badge - see
-## haven.gd for why (repair markers were obscuring/input-blocking items).
-const HOTSPOT_SIZE := Vector2(40, 40)
-const HOTSPOT_CORNER_BIAS := Vector2(20.0, -20.0)
+## Hotspot markers moved off the board grid into a horizontal task strip -
+## see haven.gd for why (they used to sit on top of the board and fully
+## obscure/input-block whichever merge item shared their cell).
+const HOTSPOT_SIZE := Vector2(48, 48)
 
 const CHAPTER_TITLES := {
 	"chapter_4_the_first_wave": "Chapter 4: The First Wave",
@@ -23,7 +23,7 @@ const CHAPTER_TITLES := {
 	"chapter_9_the_signal_keeper": "Chapter 9: The Signal Keeper",
 }
 
-@onready var _hotspots_layer: Control = %Hotspots
+@onready var _hotspots_layer: HBoxContainer = %Hotspots
 @onready var _task_panel: TaskPanel = %TaskPanel
 @onready var _progress_label: Label = %ProgressLabel
 @onready var _chapter_label: Label = %ChapterLabel
@@ -59,15 +59,6 @@ func _build_hotspot(hotspot: ResidenceHotspot) -> void:
 	visual.residence_id = RESIDENCE_ID
 	visual.custom_minimum_size = HOTSPOT_SIZE
 	visual.size = HOTSPOT_SIZE
-	visual.set_anchors_preset(Control.PRESET_TOP_LEFT)
-	visual.anchor_left = hotspot.area_position.x
-	visual.anchor_right = hotspot.area_position.x
-	visual.anchor_top = hotspot.area_position.y
-	visual.anchor_bottom = hotspot.area_position.y
-	visual.offset_left = HOTSPOT_CORNER_BIAS.x - HOTSPOT_SIZE.x * 0.5
-	visual.offset_right = HOTSPOT_CORNER_BIAS.x + HOTSPOT_SIZE.x * 0.5
-	visual.offset_top = HOTSPOT_CORNER_BIAS.y - HOTSPOT_SIZE.y * 0.5
-	visual.offset_bottom = HOTSPOT_CORNER_BIAS.y + HOTSPOT_SIZE.y * 0.5
 	visual.tooltip_text = hotspot.display_name
 	visual.tapped.connect(_on_hotspot_tapped)
 	_hotspots_layer.add_child(visual)
