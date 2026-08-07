@@ -7,6 +7,36 @@ each one.
 
 ---
 
+## 2026-08-05 — Rebalance the starting board; explicit touch-drag fix
+
+### Starting commit and objective
+
+- Starting commit: `87ae0d9` on `visual-production`.
+- Objective: the user's follow-up after the merge-challenge build was severe - "none of the merging works on any of the games... just a large storage page that you can move only some of the icons." This applied to both the main residence board and the brand-new scavenging challenge, so the investigation looked for a cause that could plausibly explain both at once rather than patching each separately.
+
+### Two real, independent causes found
+
+1. **`project.godot` never explicitly enabled touch-to-mouse emulation.** Godot's built-in Control drag-and-drop (`_get_drag_data`/`_can_drop_data`/`_drop_data`, which every merge board in this project uses) is driven entirely by mouse events. `input_devices/pointing/emulate_touch_from_mouse=true` was already set (lets a desktop mouse emulate touch, useful for this project's own xvfb testing), but the setting that matters on a real Android device - `pointing/emulate_mouse_from_touch` - was never set at all, meaning it was left to whatever the engine's compiled default happens to be rather than a value verified for this project. Set explicitly to `true` now. Godot's own tap/button handling has other input paths that don't strictly need this, which would explain why taps (opening item info, pressing buttons) reportedly worked while dragging never did - a coherent, single explanation covering every "merge doesn't work" report across every board so far, verified as far as this desktop-only environment allows (a real device is still required to confirm the drag gesture itself, not just that the config is now explicit and correct).
+2. **The starting board was ~95% locked on a fresh game.** `data/boards/*.json` (one per residence) define a handful of free `starter_items`, some `cobweb_items`, a few `empty_cells`, and leave every other cell to be auto-filled as a locked "covered box" (`BoardState._fill_layout_junk()`). Checked directly rather than assumed: all five residences had exactly **2** free starter items against **42** locked boxes out of 63 cells - meaning a first-time player could only ever drag 2 items, surrounded by 42 grey, entirely unresponsive tiles (locked items refuse `_get_drag_data()` outright - see `BoardState.is_item_blocked()`). That is a legitimate, severe explanation for "this is a storage page, not a merge game" independent of any input bug: even with drag-and-drop working perfectly, 67% of the board would still do nothing when touched. Rebalanced all five layouts to **23 free starters / 21 locked boxes** (a `tools/`-adjacent one-off Python pass, not committed as a script - see Tests below for how the result was verified), spreading the newly-freed cells across the other eight gameplay chains in matching pairs so a new player sees plenty of immediately mergeable, colourful content instead of a wall of grey boxes. The original two `construction_1` starters were left untouched (a downstream test merges exactly that pair and checks it reveals an adjacent box) and no chain was allowed to duplicate onto them. The box-reveal mechanic itself is unchanged in behaviour and still present at a meaningful scale (21 boxes, not 0) - only the balance changed.
+
+### Scavenging merge challenge: same density complaint, separate fix
+
+- The user's "half the tiles are empty" also applied to the brand-new scavenging merge grid (`scripts/scavenge_merge/scavenge_merge_state.gd`), which was deliberately sparse in its first version (~40% filled - 10 of 25 cells). Increased seeding to add extra primary-chain material beyond the strict minimum needed to reach `target_level`, plus a denser secondary-chain count (capped at 10 instead of 6) - now ~70% filled (18 of 25 cells) while keeping the same guaranteed-solvable minimum tile set untouched.
+
+### Tests performed
+
+- `tests/smoke_test_merge.gd`'s starting-layout assertion was hardcoded to the old `42 boxes` count - updated to `21` and re-verified it still catches the right things (box-covered items still refuse to move/store/delete; the original construction pair still merges and still reveals an adjacent box, proving the rebalance didn't touch their positions or an test's ability to find them by chain+level).
+- Full regression: `smoke_test_merge`, `smoke_test_residence`, `smoke_test_redwater`, `smoke_test_greybridge`, `smoke_test_saint_mercy`, `smoke_test_northgate`, `smoke_test`, `smoke_test_save`, `smoke_test_scavenge_merge` - all pass.
+- `tests/capture_layout_haven.gd` and `tests/capture_scavenge_merge.gd` re-run at 1080x2340 to confirm the denser boards actually render correctly (not just pass a count assertion) - both show a visibly fuller, more colourful board with no missing art or layout breakage.
+
+### Known issues and exact next phase
+
+- The `emulate_mouse_from_touch` fix is the single highest-confidence, highest-impact unverified claim in this whole session - it is consistent with every symptom reported so far (taps work, drags never do, on every board including a brand-new one with independently-written code), but it still cannot be confirmed without a real device or emulator, which this environment does not have.
+- The board-balance numbers (23/21) are a reasoned first pass, not a playtested final answer - worth revisiting once the input fix itself is confirmed, since a board that's still confusing with working drag-and-drop is a different problem than one that looks broken because dragging never registered at all.
+- Still not addressed this round, and explicitly called out by the user as unresolved: Haven presenting as a persistent, always-active full merge board rather than a residence status/upgrade overview; the Survivors screen only showing character bios (their skills already feed into scavenging-challenge difficulty and defence-event outcomes, but that connection isn't surfaced anywhere in the UI); the Inventory tab being an honest "later development" stub with no real content. None of these were touched this round - they need direction on intended design before building, not another guess.
+
+---
+
 ## 2026-08-05 — Scavenging becomes a merge challenge
 
 ### Starting commit and objective

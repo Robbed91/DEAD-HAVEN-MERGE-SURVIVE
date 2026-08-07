@@ -52,7 +52,13 @@ func _seed_board() -> void:
 	var tiles: Array[String] = []
 	for i in required_primary:
 		tiles.append("%s_1" % chain_ids[0])
-	var secondary_count: int = mini(6, all_cells.size() - tiles.size() - 2)
+	# Extra primary-chain material beyond the strict minimum, plus a denser
+	# secondary count - the first version left ~60% of the grid empty, which
+	# read as a broken/unfinished board rather than a real merge puzzle.
+	var bonus_primary: int = mini(4, (all_cells.size() - tiles.size()) / 3)
+	for i in bonus_primary:
+		tiles.append("%s_%d" % [chain_ids[0], 1 + (i % 2)])
+	var secondary_count: int = mini(10, all_cells.size() - tiles.size() - 2)
 	for i in secondary_count:
 		tiles.append("%s_%d" % [chain_ids[1], 1 + (i % 2)])
 	tiles.shuffle()

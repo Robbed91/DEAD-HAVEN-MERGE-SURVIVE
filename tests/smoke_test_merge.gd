@@ -40,8 +40,13 @@ func _ready() -> void:
 			covered_ids.append(id)
 		elif item_def != null and not item_def.is_producer and board_item.has_cobweb:
 			cobweb_ids.append(id)
-	if covered_ids.size() != 42 or cobweb_ids.size() != 6 or BoardState.find_empty_cell().x < 0:
-		_fail("starting board should contain 42 boxes, 6 cobwebs and 4 work cells")
+	# Board layouts were rebalanced (see DEVELOPMENT_LOG.md 2026-08-05
+	# "rebalance the starting board") from 2 freely-draggable starter items
+	# and 42 covered boxes to 23 starters and 21 boxes, so a first-time
+	# player has plenty of immediately mergeable content instead of a board
+	# that reads as almost entirely locked/unresponsive.
+	if covered_ids.size() != 21 or cobweb_ids.size() != 6 or BoardState.find_empty_cell().x < 0:
+		_fail("starting board should contain 21 boxes, 6 cobwebs and 4 work cells, got %d boxes, %d cobwebs" % [covered_ids.size(), cobweb_ids.size()])
 		return
 	var blocked_id := covered_ids[0]
 	var blocked_pos: Vector2i = BoardState.items[blocked_id].grid_position
@@ -59,7 +64,7 @@ func _ready() -> void:
 	if locked_tap.success or locked_tap.reason != "producer_locked" or GameManager.resources.energy != energy_before_locked_tap:
 		_fail("locked tool producer should reject without spending energy, got %s" % str(locked_tap))
 		return
-	print("SMOKE_MERGE: starting layout OK (%d occupied, 42 boxes, 6 cobwebs, 1/%d producers active)" % [BoardState.items.size(), producer_count])
+	print("SMOKE_MERGE: starting layout OK (%d occupied, 21 boxes, 6 cobwebs, 1/%d producers active)" % [BoardState.items.size(), producer_count])
 
 	# -- Valid merge + discovery reward -------------------------------------
 	var construction_ids: Array[String] = []
