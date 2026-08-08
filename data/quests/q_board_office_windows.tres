@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="QuestDefinition" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data_models/quest_definition.gd" id="1_bow01"]
+
+[resource]
+script = ExtResource("1_bow01")
+id = "q_board_office_windows"
+title = "Board the Office Windows"
+description = "The cashier's office has a clear line of sight from the road. Board it up before it's someone's clear shot in, too."
+quest_type = 1
+requirements = {
+"construction_3": 1
+}
+prerequisite_quest_ids = PackedStringArray()
+rewards = {
+"coins": 35,
+"xp": 25
+}
+is_complete = false
+dialogue_trigger_id = ""
+residence_hotspot_id = "cashier_office"
+time_condition = ""

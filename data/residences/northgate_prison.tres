@@ -1,0 +1,105 @@
+[gd_resource type="Resource" script_class="ResidenceDefinition" load_steps=11 format=3]
+
+[ext_resource type="Script" path="res://scripts/data_models/residence_hotspot.gd" id="1_3ynot"]
+[ext_resource type="Script" path="res://scripts/data_models/residence_definition.gd" id="2_x0jd1"]
+
+[sub_resource type="Resource" id="Resource_sp001"]
+script = ExtResource("1_3ynot")
+id = "sally_port"
+display_name = "Sally Port"
+area_position = Vector2(0.5, 0.68)
+state = 0
+required_task_ids = PackedStringArray("q_reinforce_sally_port")
+visual_variant_scenes = {}
+transition_animation = "construction_repair"
+completion_reward = {}
+
+[sub_resource type="Resource" id="Resource_gt001"]
+script = ExtResource("1_3ynot")
+id = "guard_tower"
+display_name = "Guard Tower"
+area_position = Vector2(0.86, 0.24)
+state = 0
+required_task_ids = PackedStringArray("q_repair_guard_tower")
+visual_variant_scenes = {}
+transition_animation = "construction_repair"
+completion_reward = {}
+
+[sub_resource type="Resource" id="Resource_ar001"]
+script = ExtResource("1_3ynot")
+id = "armory"
+display_name = "Armory"
+area_position = Vector2(0.66, 0.5)
+state = 0
+required_task_ids = PackedStringArray("q_secure_armory")
+visual_variant_scenes = {}
+transition_animation = "construction_repair"
+completion_reward = {}
+
+[sub_resource type="Resource" id="Resource_mh002"]
+script = ExtResource("1_3ynot")
+id = "mess_hall"
+display_name = "Mess Hall"
+area_position = Vector2(0.2, 0.44)
+state = 0
+required_task_ids = PackedStringArray("q_clear_mess_hall")
+visual_variant_scenes = {}
+transition_animation = "construction_repair"
+completion_reward = {}
+
+[sub_resource type="Resource" id="Resource_cb001"]
+script = ExtResource("1_3ynot")
+id = "cell_block_a"
+display_name = "Cell Block A"
+area_position = Vector2(0.34, 0.6)
+state = 0
+required_task_ids = PackedStringArray("q_salvage_cell_block")
+visual_variant_scenes = {}
+transition_animation = "construction_repair"
+completion_reward = {}
+
+[sub_resource type="Resource" id="Resource_cr001"]
+script = ExtResource("1_3ynot")
+id = "control_room"
+display_name = "Control Room"
+area_position = Vector2(0.5, 0.32)
+state = 0
+required_task_ids = PackedStringArray("q_restore_control_room")
+visual_variant_scenes = {}
+transition_animation = "construction_repair"
+completion_reward = {}
+
+[sub_resource type="Resource" id="Resource_tb001"]
+script = ExtResource("1_3ynot")
+id = "transport_bay"
+display_name = "Transport Bay"
+area_position = Vector2(0.12, 0.82)
+state = 0
+required_task_ids = PackedStringArray("q_clear_transport_bay")
+visual_variant_scenes = {}
+transition_animation = "construction_repair"
+completion_reward = {}
+
+[sub_resource type="Resource" id="Resource_wo001"]
+script = ExtResource("1_3ynot")
+id = "warden_office"
+display_name = "Warden's Office"
+area_position = Vector2(0.68, 0.16)
+state = 0
+required_task_ids = PackedStringArray("q_rescue_caleb")
+visual_variant_scenes = {}
+transition_animation = "construction_repair"
+completion_reward = {}
+
+[resource]
+script = ExtResource("2_x0jd1")
+id = "northgate_prison"
+display_name = "Northgate Prison"
+description = "A decommissioned county prison, walled and defensible by design - and already home to someone who built a bunker out of the warden's office."
+environment_scene_path = "res://scenes/northgate/northgate.tscn"
+hotspots = Array[ExtResource("1_3ynot")]([SubResource("Resource_sp001"), SubResource("Resource_gt001"), SubResource("Resource_ar001"), SubResource("Resource_mh002"), SubResource("Resource_cb001"), SubResource("Resource_cr001"), SubResource("Resource_tb001"), SubResource("Resource_wo001")])
+chapter_ids = PackedStringArray("chapter_8_old_debts")
+unlock_requirements = {
+"story_flag": "northgate_unlocked"
+}
+completion_rewards = {}

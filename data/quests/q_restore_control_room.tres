@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="QuestDefinition" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data_models/quest_definition.gd" id="1_rcr01"]
+
+[resource]
+script = ExtResource("1_rcr01")
+id = "q_restore_control_room"
+title = "Restore the Control Room"
+description = "Every door in this place used to lock and unlock from right here. Worth getting that back."
+quest_type = 1
+requirements = {
+"electronics_4": 1
+}
+prerequisite_quest_ids = PackedStringArray()
+rewards = {
+"coins": 45,
+"xp": 35
+}
+is_complete = false
+dialogue_trigger_id = ""
+residence_hotspot_id = "control_room"
+time_condition = ""

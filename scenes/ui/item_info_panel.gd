@@ -15,13 +15,22 @@ signal changed()
 @onready var _storage_button: Button = %StorageButton
 @onready var _delete_button: Button = %DeleteButton
 @onready var _close_button: Button = %CloseButton
-@onready var _confirm_dialog: ConfirmationDialog = %ConfirmDialog
+@onready var _confirm_dialog: AppConfirmDialog = %ConfirmDialog
 
 var _instance_id: String = ""
 
 func _ready() -> void:
 	layer = 92
 	visible = false
+	$CenterContainer.theme = get_window().theme
+	$CenterContainer/Panel.theme_type_variation = "CreamPanel"
+	_name_label.add_theme_font_override("font", ThemeFactory.display_font())
+	for label in [_name_label, _desc_label, _meta_label]:
+		label.add_theme_color_override("font_color", ThemeFactory.CHARCOAL_LIGHT)
+	_collect_button.theme_type_variation = "OliveButton"
+	_storage_button.theme_type_variation = "RustButton"
+	_delete_button.theme_type_variation = "DangerButton"
+	_close_button.theme_type_variation = "NavButton"
 	_scrim.gui_input.connect(func(e):
 		if e is InputEventMouseButton and e.pressed:
 			hide_panel()
@@ -48,18 +57,22 @@ func show_for(instance_id: String, detailed: bool) -> void:
 	var rarity_name: String = ["Common", "Uncommon", "Rare", "Story"][def.rarity]
 	if def.is_producer:
 		_meta_label.text = "%s producer - %s" % [rarity_name, _chain_category(def.chain_id)]
+	elif board_item.is_locked:
+		_meta_label.text = "Covered junk - clear it with an adjacent merge."
+	elif board_item.has_cobweb:
+		_meta_label.text = "Cobwebbed - merge a matching free item into it."
 	else:
 		_meta_label.text = "%s - Level %d of %d - Sell %d coins" % [rarity_name, def.level, def.max_level_in_chain, def.sell_value]
 
 	var chain := ItemDatabase.get_chain(def.chain_id)
 	var is_reward: bool = chain.get("is_reward_chain", false)
+	var collect_check := BoardState.can_collect_reward(instance_id)
 
-	_collect_button.visible = detailed and is_reward
+	_collect_button.visible = detailed and bool(collect_check.get("allowed", false))
 	if _collect_button.visible:
-		var amount: int = def.level * int(chain.get("per_level_value", 0))
-		_collect_button.text = "Collect (+%d %s)" % [amount, String(chain.get("resource", ""))]
+		_collect_button.text = "Collect (+%d %s)" % [int(collect_check.get("amount", 0)), String(collect_check.get("resource", ""))]
 
-	_storage_button.visible = detailed and not def.is_producer and not is_reward
+	_storage_button.visible = detailed and not def.is_producer and not is_reward and not BoardState.is_item_blocked(instance_id)
 	if _storage_button.visible:
 		if board_item.is_on_board():
 			_storage_button.text = "Move to Storage"
@@ -71,8 +84,10 @@ func show_for(instance_id: String, detailed: bool) -> void:
 	_delete_button.visible = detailed and BoardState.can_delete(instance_id)
 
 	visible = true
+	AudioManager.play_sfx("modal_open")
 
 func hide_panel() -> void:
+	if visible: AudioManager.play_sfx("modal_close")
 	visible = false
 	_instance_id = ""
 
@@ -80,8 +95,14 @@ func _chain_category(chain_id: String) -> String:
 	return String(ItemDatabase.get_chain(chain_id).get("category", chain_id))
 
 func _on_collect_pressed() -> void:
+	var def := BoardState.get_item_def(_instance_id)
+	var resource := String(BoardState.can_collect_reward(_instance_id).get("resource", ""))
 	if BoardState.collect_reward(_instance_id):
+		if def != null and def.id == "coin_reward_7": AudioManager.play_sfx("chest_open")
+		AudioManager.play_sfx("coin_collect" if resource == "coins" else ("energy_collect" if resource == "energy" else "reward"))
 		EventBus.show_toast.emit("Collected.")
+	else:
+		EventBus.show_toast.emit("Can't collect that right now.")
 	hide_panel()
 	changed.emit()
 

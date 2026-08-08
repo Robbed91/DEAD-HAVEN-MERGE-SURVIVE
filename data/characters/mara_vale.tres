@@ -1,0 +1,33 @@
+[gd_resource type="Resource" script_class="SurvivorDefinition" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data_models/survivor_definition.gd" id="1_aeoqd"]
+
+[resource]
+script = ExtResource("1_aeoqd")
+id = "mara_vale"
+display_name = "Mara Vale"
+role = "Player protagonist"
+biography = "A capable but inexperienced survivor searching for her missing brother Eli, following a repeating radio message to Haven Seven."
+personality_traits = PackedStringArray("resourceful", "determined")
+skills = PackedStringArray("leadership", "improvisation", "negotiation")
+portraits = {
+"neutral": "res://assets/art/characters/mara_vale/portraits/neutral.png"
+}
+expressions = {
+"neutral": "res://assets/art/characters/mara_vale/portraits/neutral.png",
+"concerned": "res://assets/art/characters/mara_vale/portraits/concerned.png",
+"angry": "res://assets/art/characters/mara_vale/portraits/angry.png",
+"afraid": "res://assets/art/characters/mara_vale/portraits/afraid.png",
+"relieved": "res://assets/art/characters/mara_vale/portraits/relieved.png",
+"injured": "res://assets/art/characters/mara_vale/portraits/injured.png",
+"exhausted": "res://assets/art/characters/mara_vale/portraits/exhausted.png",
+"determined": "res://assets/art/characters/mara_vale/portraits/determined.png"
+}
+personal_quest_id = ""
+relationship_links = PackedStringArray()
+trust = 0
+health = 100
+morale = 70
+is_recruited = false
+assigned_residence_id = ""
+injury_state = "healthy"

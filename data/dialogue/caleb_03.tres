@@ -1,0 +1,36 @@
+[gd_resource type="Resource" script_class="DialogueEntry" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data_models/dialogue_entry.gd" id="1_clb03"]
+
+[resource]
+script = ExtResource("1_clb03")
+id = "caleb_03"
+speaker_id = "mara_vale"
+portrait_key = "mara_vale"
+expression_key = "neutral"
+text = "Nobody's here to hold anything off. We're building something worth defending properly - and it sounds like you already know how to do that."
+background_scene_path = ""
+animation = ""
+sound_cue = ""
+branching_options = Array[Dictionary]([{
+"condition": "",
+"next_id": "",
+"quest_trigger": "",
+"relationship_changes": {
+"caleb_trusted": true
+},
+"reward": {
+"coins": 20
+},
+"text": "Offer him a place at Hollow Creek and let the stitched patch go unmentioned."
+}, {
+"condition": "",
+"next_id": "",
+"quest_trigger": "",
+"relationship_changes": {
+"caleb_trusted": false
+},
+"reward": {},
+"text": "Ask him directly what that patch is."
+}])
+next_id = ""

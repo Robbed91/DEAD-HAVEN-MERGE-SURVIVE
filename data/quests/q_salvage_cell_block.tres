@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="QuestDefinition" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data_models/quest_definition.gd" id="1_scb01"]
+
+[resource]
+script = ExtResource("1_scb01")
+id = "q_salvage_cell_block"
+title = "Salvage Cell Block A"
+description = "Bedding, uniforms, whatever's left in the lockers. Grim, but usable - and there's a lot of it."
+quest_type = 1
+requirements = {
+"clothing_3": 1
+}
+prerequisite_quest_ids = PackedStringArray()
+rewards = {
+"coins": 35,
+"xp": 25
+}
+is_complete = false
+dialogue_trigger_id = ""
+residence_hotspot_id = "cell_block_a"
+time_condition = ""

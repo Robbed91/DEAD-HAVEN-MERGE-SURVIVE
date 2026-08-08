@@ -7,13 +7,29 @@ extends Node
 ## SceneRouter.go_to(key) so navigation stays consistent and testable.
 
 const SCENE_PATHS: Dictionary = {
+	"splash": "res://scenes/splash/splash.tscn",
 	"main_menu": "res://scenes/main_menu/main_menu.tscn",
 	"haven": "res://scenes/haven/haven.tscn",
-	"merge_board": "res://scenes/merge_board/merge_board.tscn",
+	"redwater": "res://scenes/redwater/redwater.tscn",
+	"greybridge": "res://scenes/greybridge/greybridge.tscn",
+	"saint_mercy": "res://scenes/saint_mercy/saint_mercy.tscn",
+	"northgate": "res://scenes/northgate/northgate.tscn",
+	"dialogue": "res://scenes/dialogue/dialogue.tscn",
+	"scavenging": "res://scenes/scavenging/scavenging.tscn",
+	"vehicle": "res://scenes/vehicle/vehicle.tscn",
+	"defence": "res://scenes/defence/defence.tscn",
 	"world_map": "res://scenes/world_map/world_map.tscn",
 	"survivors": "res://scenes/survivors/survivors.tscn",
 	"settings": "res://scenes/settings/settings.tscn",
 	"dev_diagnostics": "res://scenes/dev_diagnostics/dev_diagnostics.tscn",
+}
+
+const RESIDENCE_SCENE_KEYS := {
+	"hollow_creek_farmhouse": "haven",
+	"redwater_service_station": "redwater",
+	"greybridge_school": "greybridge",
+	"saint_mercy_hospital": "saint_mercy",
+	"northgate_prison": "northgate",
 }
 
 const FADE_DURATION := 0.18
@@ -59,6 +75,9 @@ func take_pending_params() -> Dictionary:
 	var params := pending_params
 	pending_params = {}
 	return params
+
+func residence_scene_key(residence_id: String) -> String:
+	return String(RESIDENCE_SCENE_KEYS.get(residence_id, "haven"))
 
 func _transition_to(path: String, key: String) -> void:
 	_is_transitioning = true

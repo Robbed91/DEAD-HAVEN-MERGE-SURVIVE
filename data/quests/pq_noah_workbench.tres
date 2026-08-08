@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="QuestDefinition" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data_models/quest_definition.gd" id="1_xflh2"]
+
+[resource]
+script = ExtResource("1_xflh2")
+id = "pq_noah_workbench"
+title = "Noah's Workbench"
+description = "Noah's been eyeing the barn corner for a proper workbench. Bring him the tools and he'll set it up himself."
+quest_type = 2
+requirements = {
+"tool_4": 1
+}
+prerequisite_quest_ids = PackedStringArray()
+rewards = {
+"coins": 40,
+"xp": 30
+}
+is_complete = false
+dialogue_trigger_id = ""
+residence_hotspot_id = ""
+time_condition = ""

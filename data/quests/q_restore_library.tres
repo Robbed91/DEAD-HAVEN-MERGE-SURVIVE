@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="QuestDefinition" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data_models/quest_definition.gd" id="1_rls01"]
+
+[resource]
+script = ExtResource("1_rls01")
+id = "q_restore_library"
+title = "Restore the Library Systems"
+description = "The library's old research terminals still have power lines running to them - worth salvaging properly."
+quest_type = 1
+requirements = {
+"electronics_3": 1
+}
+prerequisite_quest_ids = PackedStringArray()
+rewards = {
+"coins": 40,
+"xp": 30
+}
+is_complete = false
+dialogue_trigger_id = ""
+residence_hotspot_id = "library"
+time_condition = ""

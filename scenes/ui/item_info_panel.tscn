@@ -1,7 +1,8 @@
-[gd_scene load_steps=3 format=3 uid="uid://item_info_panel"]
+[gd_scene load_steps=4 format=3 uid="uid://item_info_panel"]
 
 [ext_resource type="Script" path="res://scenes/ui/item_info_panel.gd" id="1"]
 [ext_resource type="Script" path="res://scripts/merge/item_view.gd" id="2"]
+[ext_resource type="PackedScene" path="res://scenes/ui/app_confirm_dialog.tscn" id="3"]
 
 [node name="ItemInfoPanel" type="CanvasLayer"]
 script = ExtResource("1")
@@ -41,6 +42,7 @@ layout_mode = 2
 size_flags_horizontal = 4
 script = ExtResource("2")
 interactive = false
+show_level_badge = false
 
 [node name="NameLabel" type="Label" parent="CenterContainer/Panel/Margin/Content"]
 unique_name_in_owner = true
@@ -90,7 +92,9 @@ unique_name_in_owner = true
 layout_mode = 2
 text = "Close"
 
-[node name="ConfirmDialog" type="ConfirmationDialog" parent="."]
+[node name="ConfirmDialog" parent="." instance=ExtResource("3")]
 unique_name_in_owner = true
-title = "Delete this item?"
+dialog_title = "Delete this item?"
 dialog_text = "This is a rare item. Delete it anyway?"
+ok_button_text = "Delete"
+cancel_button_text = "Cancel"

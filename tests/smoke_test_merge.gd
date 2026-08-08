@@ -16,18 +16,60 @@ func _fail(msg: String) -> void:
 func _ready() -> void:
 	GameManager.new_game()
 
-	# -- Starting layout: every producer placed, plus two starter items ----
+	# -- Starting layout: junk-filled with four usable work cells ------------
 	var producer_count := ItemDatabase.get_producer_ids().size()
-	var expected_items := producer_count + 2
-	if BoardState.items.size() != expected_items:
-		_fail("expected %d starting items, got %d" % [expected_items, BoardState.items.size()])
+	var expected_occupied := BoardState.COLUMNS * BoardState.ROWS - 4
+	if BoardState.items.size() != expected_occupied or BoardState.grid.size() != expected_occupied:
+		_fail("expected %d occupied starting cells, got %d" % [expected_occupied, BoardState.items.size()])
 		return
-	print("SMOKE_MERGE: starting layout OK (%d items, %d producers)" % [BoardState.items.size(), producer_count])
+	var producer_instance_ids: Array[String] = []
+	var construction_producer_id := ""
+	var tool_producer_id := ""
+	for id in BoardState.items:
+		var def := BoardState.get_item_def(id)
+		if def != null and def.is_producer:
+			producer_instance_ids.append(id)
+			if def.chain_id == "construction": construction_producer_id = id
+			if def.chain_id == "tool": tool_producer_id = id
+	var covered_ids: Array[String] = []
+	var cobweb_ids: Array[String] = []
+	for id in BoardState.items:
+		var board_item: BoardItem = BoardState.items[id]
+		var item_def := BoardState.get_item_def(id)
+		if item_def != null and not item_def.is_producer and board_item.is_locked:
+			covered_ids.append(id)
+		elif item_def != null and not item_def.is_producer and board_item.has_cobweb:
+			cobweb_ids.append(id)
+	# Board layouts were rebalanced (see DEVELOPMENT_LOG.md 2026-08-05
+	# "rebalance the starting board") from 2 freely-draggable starter items
+	# and 42 covered boxes to 23 starters and 21 boxes, so a first-time
+	# player has plenty of immediately mergeable content instead of a board
+	# that reads as almost entirely locked/unresponsive.
+	if covered_ids.size() != 21 or cobweb_ids.size() != 6 or BoardState.find_empty_cell().x < 0:
+		_fail("starting board should contain 21 boxes, 6 cobwebs and 4 work cells, got %d boxes, %d cobwebs" % [covered_ids.size(), cobweb_ids.size()])
+		return
+	var blocked_id := covered_ids[0]
+	var blocked_pos: Vector2i = BoardState.items[blocked_id].grid_position
+	if BoardState.move_to_storage(blocked_id) or BoardState.move_to_cell(blocked_id, BoardState.find_empty_cell()) or BoardState.can_delete(blocked_id):
+		_fail("box-covered item must not move, enter storage, or delete")
+		return
+	if BoardState.items[blocked_id].grid_position != blocked_pos:
+		_fail("blocked interaction changed a covered item's position")
+		return
+	if _active_producer_count() != 1 or BoardState.items[construction_producer_id].is_locked:
+		_fail("new board should activate only the construction producer")
+		return
+	var energy_before_locked_tap: int = GameManager.resources.energy
+	var locked_tap := BoardState.tap_producer(tool_producer_id)
+	if locked_tap.success or locked_tap.reason != "producer_locked" or GameManager.resources.energy != energy_before_locked_tap:
+		_fail("locked tool producer should reject without spending energy, got %s" % str(locked_tap))
+		return
+	print("SMOKE_MERGE: starting layout OK (%d occupied, 21 boxes, 6 cobwebs, 1/%d producers active)" % [BoardState.items.size(), producer_count])
 
 	# -- Valid merge + discovery reward -------------------------------------
 	var construction_ids: Array[String] = []
 	for id in BoardState.items:
-		if BoardState.items[id].item_id == "construction_1":
+		if BoardState.items[id].item_id == "construction_1" and not BoardState.is_item_blocked(id):
 			construction_ids.append(id)
 	if construction_ids.size() != 2:
 		_fail("expected 2 starter construction_1 items, found %d" % construction_ids.size())
@@ -46,14 +88,57 @@ func _ready() -> void:
 	if BoardState.items.has(construction_ids[0]) or BoardState.items.has(construction_ids[1]):
 		_fail("source instances should be gone after merging")
 		return
-	print("SMOKE_MERGE: valid merge + discovery reward OK")
+	var revealed_ids: Array = merge_result.get("revealed_instance_ids", [])
+	if revealed_ids.is_empty():
+		_fail("starter merge should reveal at least one adjacent box")
+		return
+	var revealed_id: String = String(revealed_ids[0])
+	if not BoardState.items[revealed_id].has_cobweb or BoardState.items[revealed_id].is_locked:
+		_fail("revealed box should become a cobwebbed underlying item")
+		return
+	var revealed_item_id: String = BoardState.items[revealed_id].item_id
+	var free_match := BoardState.spawn_item(revealed_item_id, BoardState.find_empty_cell())
+	var cobweb_merge := BoardState.try_merge(free_match.instance_id, revealed_id)
+	if not cobweb_merge.success or BoardState.items.has(revealed_id):
+		_fail("matching free item should merge into and clear a cobwebbed item")
+		return
+	print("SMOKE_MERGE: valid merge reveals box and matching merge clears cobweb OK")
+
+	# -- Progressive producer milestones -----------------------------------
+	var repair_result := ResidenceManager.try_complete_quest("q_secure_front_door")
+	if not repair_result.success or _active_producer_count() != 2 or BoardState.items[tool_producer_id].is_locked:
+		_fail("securing the front door should unlock only the tool producer")
+		return
+	ResidenceManager.completed_quest_ids["q_clear_living_room"] = true
+	BoardState.refresh_producer_locks(false)
+	if _active_producer_count() != 3:
+		_fail("clearing the living room should unlock the food producer")
+		return
+	ResidenceManager.completed_quest_ids["q_repair_pantry"] = true
+	BoardState.refresh_producer_locks(false)
+	if _active_producer_count() != 4:
+		_fail("repairing the pantry should unlock the medical producer")
+		return
+	ResidenceManager.completed_quest_ids["q_rescue_noah"] = true
+	BoardState.refresh_producer_locks(false)
+	if _active_producer_count() != 5:
+		_fail("rescuing Noah should unlock the trap producer")
+		return
+	VehicleManager.discover_vehicle("delivery_van")
+	if _active_producer_count() != 6:
+		_fail("discovering the delivery van should unlock vehicle parts")
+		return
+	GameManager.set_story_flag("redwater_unlocked", true)
+	if _active_producer_count() != 8:
+		_fail("unlocking Redwater should unlock fuel and electronics")
+		return
+	GameManager.set_story_flag("greybridge_unlocked", true)
+	if _active_producer_count() != 9:
+		_fail("unlocking Greybridge should unlock clothing and complete producer progression")
+		return
+	print("SMOKE_MERGE: producer progression milestones unlock 1 -> 9 without replacing instances OK")
 
 	# -- Invalid merges: producers, and mismatched chain/level --------------
-	var producer_ids := ItemDatabase.get_producer_ids()
-	var producer_instance_ids: Array[String] = []
-	for id in BoardState.items:
-		if BoardState.get_item_def(id).is_producer:
-			producer_instance_ids.append(id)
 	var producer_merge := BoardState.try_merge(producer_instance_ids[0], producer_instance_ids[1])
 	if producer_merge.success or producer_merge.reason != "producers_do_not_merge":
 		_fail("merging two producers should fail with producers_do_not_merge, got %s" % str(producer_merge))
@@ -76,14 +161,12 @@ func _ready() -> void:
 	if max_result.success or not max_result.get("is_max_level", false):
 		_fail("merging two max-level items should fail as max_level, got %s" % str(max_result))
 		return
+	if not BoardState.soft_delete(max_a.instance_id):
+		_fail("could not free a work cell after max-level rejection")
+		return
 	print("SMOKE_MERGE: max-level merge correctly rejected OK")
 
 	# -- Producer tap: energy spend + cooldown blocks immediate re-tap ------
-	var construction_producer_id := ""
-	for id in producer_instance_ids:
-		if BoardState.get_item_def(id).chain_id == "construction":
-			construction_producer_id = id
-			break
 	var energy_before: int = GameManager.resources.energy
 	var tap_result := BoardState.tap_producer(construction_producer_id)
 	if not tap_result.success:
@@ -168,6 +251,37 @@ func _ready() -> void:
 		return
 	print("SMOKE_MERGE: reward-chain collection OK")
 
+	# -- Per-residence board isolation -----------------------------------------
+	var hollow_marker := BoardState.spawn_item("construction_3", BoardState.find_empty_cell())
+	var hollow_marker_pos: Vector2i = hollow_marker.grid_position
+	var hollow_count: int = BoardState.items.size()
+	if not BoardState.activate_residence_board("redwater_service_station"):
+		_fail("could not activate Redwater board")
+		return
+	if BoardState.active_residence_id != "redwater_service_station" or BoardState.items.size() != expected_occupied:
+		_fail("Redwater should activate its own untouched starting board")
+		return
+	var redwater_marker := BoardState.spawn_item("food_2", BoardState.find_empty_cell())
+	if redwater_marker == null:
+		_fail("could not add Redwater isolation marker")
+		return
+	BoardState.activate_residence_board("hollow_creek_farmhouse")
+	if BoardState.items.size() != hollow_count or BoardState.count_item("food_2") != 0:
+		_fail("Redwater mutation leaked into Hollow Creek")
+		return
+	if not BoardState.items.has(hollow_marker.instance_id) or BoardState.items[hollow_marker.instance_id].grid_position != hollow_marker_pos:
+		_fail("Hollow Creek item position did not survive board switching")
+		return
+	BoardState.activate_residence_board("redwater_service_station")
+	if BoardState.count_item("food_2") != 1:
+		_fail("Redwater board mutation did not survive switching")
+		return
+	BoardState.activate_residence_board("hollow_creek_farmhouse")
+	var board_preview := BoardState.to_save_data()
+	if board_preview.residences.size() != BoardState.RESIDENCE_IDS.size():
+		_fail("version-2 board save must contain all five residences")
+		return
+	print("SMOKE_MERGE: five residence boards remain isolated across switching OK")
 	# -- Save / reload round trip ------------------------------------------------
 	var items_before: int = BoardState.items.size()
 	var storage_before: int = BoardState.storage_order.size()
@@ -194,3 +308,11 @@ func _ready() -> void:
 
 	print("SMOKE_MERGE_TEST_OK")
 	get_tree().quit(0)
+
+func _active_producer_count() -> int:
+	var count := 0
+	for instance_id in BoardState.items:
+		var def := BoardState.get_item_def(instance_id)
+		if def != null and def.is_producer and not BoardState.items[instance_id].is_locked:
+			count += 1
+	return count

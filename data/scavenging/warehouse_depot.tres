@@ -1,0 +1,47 @@
+[gd_resource type="Resource" script_class="ScavengingMission" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data_models/scavenging_mission.gd" id="1_whd01"]
+
+[resource]
+script = ExtResource("1_whd01")
+id = "warehouse_depot"
+location_name = "Warehouse Depot"
+danger_rating = 3
+duration_seconds = 300
+recommended_equipment = PackedStringArray("vehicle_parts", "construction")
+loot_table = {
+"coin_reward_2": 1,
+"construction_2": 1
+}
+survivor_encounter_ids = PackedStringArray()
+story_condition = ""
+zombie_threat = 3
+human_threat = 0
+noise_level = 2
+encounter_scene_path = ""
+energy_cost = 12
+encounter_choices = Array[Dictionary]([{
+"failure_penalty": {
+"energy": 6
+},
+"failure_text": "The pallet racking comes down behind you, loud enough to draw a crowd. You're already moving.",
+"success_chance": 0.6,
+"success_loot": {
+"vehicle_parts_2": 1
+},
+"success_text": "Row after row of loading pallets, most still sealed. Worth every risky step in.",
+"text": "Work through the loading bay rows."
+}, {
+"failure_penalty": {
+"coins": 10,
+"energy": 4
+},
+"failure_text": "The catwalk groans underfoot. You get down and out before it gives.",
+"success_chance": 0.45,
+"success_loot": {
+"construction_3": 1,
+"vehicle_parts_2": 1
+},
+"success_text": "The office catwalk overlooks stock nobody else reached. Worth the climb.",
+"text": "Climb to the office catwalk for a better view."
+}])

@@ -27,6 +27,27 @@ signal board_item_removed(instance_id: String)
 signal items_merged(dragged_instance_id: String, target_instance_id: String, resulting_instance_id: String)
 signal item_discovered(item_id: String)
 signal producer_activated(producer_instance_id: String, spawned_instance_id: String)
+signal producer_unlocked(producer_item_id: String)
+
+# -- Residence / quests (Phase 3) ------------------------------------------
+signal hotspot_state_changed(hotspot_id: String, new_state: int)
+signal quest_completed(quest_id: String)
+signal survivor_unlocked(survivor_id: String)
+
+# -- Story (Phase 4) --------------------------------------------------------
+signal chapter_changed(chapter_id: String)
+signal story_flag_changed(flag_id: String, value: Variant)
+signal dialogue_finished(entry_id: String)
+
+# -- Scavenging (Phase 5) -----------------------------------------------
+signal mission_completed(mission_id: String, outcome_success: bool)
+
+# -- Vehicles (Phase 6) ------------------------------------------------
+signal vehicle_discovered(vehicle_id: String)
+signal vehicle_stage_changed(vehicle_id: String, new_stage: int)
+
+# -- Defence (Phase 7) -------------------------------------------------
+signal defence_resolved(outcome_success: bool)
 
 # -- Lightweight UI feedback ----------------------------------------------
 ## Used by any screen to surface a short non-blocking message, e.g. for

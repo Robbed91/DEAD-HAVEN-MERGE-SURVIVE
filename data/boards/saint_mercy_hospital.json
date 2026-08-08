@@ -1,0 +1,278 @@
+{
+  "layout_version": 1,
+  "seed": 6,
+  "producer_positions": [
+    [
+      0,
+      0
+    ],
+    [
+      1,
+      0
+    ],
+    [
+      2,
+      0
+    ],
+    [
+      3,
+      0
+    ],
+    [
+      4,
+      0
+    ],
+    [
+      5,
+      0
+    ],
+    [
+      6,
+      0
+    ],
+    [
+      0,
+      7
+    ],
+    [
+      6,
+      7
+    ]
+  ],
+  "starter_items": [
+    {
+      "item_id": "construction_1",
+      "position": [
+        3,
+        6
+      ]
+    },
+    {
+      "item_id": "construction_1",
+      "position": [
+        4,
+        6
+      ]
+    },
+    {
+      "item_id": "tool_1",
+      "position": [
+        0,
+        1
+      ]
+    },
+    {
+      "item_id": "tool_1",
+      "position": [
+        1,
+        1
+      ]
+    },
+    {
+      "item_id": "food_1",
+      "position": [
+        2,
+        1
+      ]
+    },
+    {
+      "item_id": "food_1",
+      "position": [
+        3,
+        1
+      ]
+    },
+    {
+      "item_id": "medical_1",
+      "position": [
+        4,
+        1
+      ]
+    },
+    {
+      "item_id": "medical_1",
+      "position": [
+        5,
+        1
+      ]
+    },
+    {
+      "item_id": "clothing_1",
+      "position": [
+        6,
+        1
+      ]
+    },
+    {
+      "item_id": "clothing_1",
+      "position": [
+        0,
+        2
+      ]
+    },
+    {
+      "item_id": "trap_1",
+      "position": [
+        1,
+        2
+      ]
+    },
+    {
+      "item_id": "trap_1",
+      "position": [
+        2,
+        2
+      ]
+    },
+    {
+      "item_id": "fuel_1",
+      "position": [
+        3,
+        2
+      ]
+    },
+    {
+      "item_id": "fuel_1",
+      "position": [
+        4,
+        2
+      ]
+    },
+    {
+      "item_id": "vehicle_parts_1",
+      "position": [
+        5,
+        2
+      ]
+    },
+    {
+      "item_id": "vehicle_parts_1",
+      "position": [
+        6,
+        2
+      ]
+    },
+    {
+      "item_id": "electronics_1",
+      "position": [
+        0,
+        3
+      ]
+    },
+    {
+      "item_id": "electronics_1",
+      "position": [
+        1,
+        3
+      ]
+    },
+    {
+      "item_id": "tool_1",
+      "position": [
+        2,
+        3
+      ]
+    },
+    {
+      "item_id": "tool_1",
+      "position": [
+        3,
+        3
+      ]
+    },
+    {
+      "item_id": "food_1",
+      "position": [
+        4,
+        3
+      ]
+    },
+    {
+      "item_id": "food_1",
+      "position": [
+        5,
+        3
+      ]
+    },
+    {
+      "item_id": "medical_1",
+      "position": [
+        6,
+        3
+      ]
+    }
+  ],
+  "empty_cells": [
+    [
+      2,
+      6
+    ],
+    [
+      5,
+      6
+    ],
+    [
+      1,
+      7
+    ],
+    [
+      3,
+      7
+    ]
+  ],
+  "cobweb_items": [
+    {
+      "item_id": "medical_1",
+      "position": [
+        1,
+        6
+      ]
+    },
+    {
+      "item_id": "electronics_1",
+      "position": [
+        2,
+        7
+      ]
+    },
+    {
+      "item_id": "clothing_1",
+      "position": [
+        5,
+        7
+      ]
+    },
+    {
+      "item_id": "tool_1",
+      "position": [
+        1,
+        8
+      ]
+    },
+    {
+      "item_id": "construction_1",
+      "position": [
+        3,
+        8
+      ]
+    },
+    {
+      "item_id": "food_1",
+      "position": [
+        5,
+        8
+      ]
+    }
+  ],
+  "covered_item_pool": [
+    "medical_1",
+    "electronics_1",
+    "clothing_1",
+    "tool_1",
+    "construction_1",
+    "food_1",
+    "fuel_1",
+    "vehicle_parts_1",
+    "trap_1"
+  ]
+}

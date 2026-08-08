@@ -1,0 +1,46 @@
+[gd_resource type="Resource" script_class="ScavengingMission" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data_models/scavenging_mission.gd" id="1_rrs01"]
+
+[resource]
+script = ExtResource("1_rrs01")
+id = "radio_relay_station"
+location_name = "Radio Relay Station"
+danger_rating = 2
+duration_seconds = 260
+recommended_equipment = PackedStringArray("electronics", "communications")
+loot_table = {
+"token_reward_2": 1,
+"coin_reward_2": 1
+}
+survivor_encounter_ids = PackedStringArray()
+story_condition = "saint_mercy_unlocked"
+zombie_threat = 1
+human_threat = 1
+noise_level = 1
+encounter_scene_path = ""
+energy_cost = 10
+encounter_choices = Array[Dictionary]([{
+"failure_penalty": {
+"energy": 5
+},
+"failure_text": "The relay's still broadcasting on a loop of its own. You don't linger to find out who's listening.",
+"success_chance": 0.55,
+"success_loot": {
+"token_reward_3": 1
+},
+"success_text": "The relay logs show more than one Haven Line site still checking in. Worth bringing home.",
+"text": "Check the relay's transmission logs."
+}, {
+"failure_penalty": {
+"coins": 10
+},
+"failure_text": "Someone's already stripped the good parts. You salvage what's left in a hurry.",
+"success_chance": 0.6,
+"success_loot": {
+"coins": 18,
+"token_reward_2": 1
+},
+"success_text": "The equipment room is untouched - whoever built this relay knew what they were doing.",
+"text": "Search the equipment room instead."
+}])

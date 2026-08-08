@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="QuestDefinition" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data_models/quest_definition.gd" id="1_r50l0"]
+
+[resource]
+script = ExtResource("1_r50l0")
+id = "q_build_rear_escape"
+title = "Build a Rear Escape Route"
+description = "One way in means one way out. That's not good enough."
+quest_type = 1
+requirements = {
+"construction_4": 1
+}
+prerequisite_quest_ids = PackedStringArray()
+rewards = {
+"coins": 40,
+"xp": 30
+}
+is_complete = false
+dialogue_trigger_id = ""
+residence_hotspot_id = "rear_escape"
+time_condition = ""

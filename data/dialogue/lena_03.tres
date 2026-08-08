@@ -1,0 +1,36 @@
+[gd_resource type="Resource" script_class="DialogueEntry" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data_models/dialogue_entry.gd" id="1_len03"]
+
+[resource]
+script = ExtResource("1_len03")
+id = "lena_03"
+speaker_id = "mara_vale"
+portrait_key = "mara_vale"
+expression_key = "neutral"
+text = "Not here for the gas. We're patching up a place down the road - could use someone who actually knows what's under a hood."
+background_scene_path = ""
+animation = ""
+sound_cue = ""
+branching_options = Array[Dictionary]([{
+"condition": "",
+"next_id": "",
+"quest_trigger": "",
+"relationship_changes": {
+"lena_trusted": true
+},
+"reward": {
+"coins": 20
+},
+"text": "Offer her a place at Hollow Creek, no conditions."
+}, {
+"condition": "",
+"next_id": "",
+"quest_trigger": "",
+"relationship_changes": {
+"lena_trusted": false
+},
+"reward": {},
+"text": "Tell her she pulls her weight or she's on her own."
+}])
+next_id = ""

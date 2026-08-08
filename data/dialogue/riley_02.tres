@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="DialogueEntry" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data_models/dialogue_entry.gd" id="1_ril02"]
+
+[resource]
+script = ExtResource("1_ril02")
+id = "riley_02"
+speaker_id = "riley_chen"
+portrait_key = "riley_chen"
+expression_key = "suspicious"
+text = "\"That cabinet stays where it is until I know who's asking. I've kept this signal running for longer than you'd believe - I'm not shutting it off for just anyone.\""
+background_scene_path = ""
+animation = ""
+sound_cue = ""
+branching_options = Array[Dictionary]([])
+next_id = "riley_03"

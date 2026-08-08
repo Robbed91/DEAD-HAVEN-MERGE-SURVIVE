@@ -1,0 +1,36 @@
+[gd_resource type="Resource" script_class="DialogueEntry" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data_models/dialogue_entry.gd" id="1_img03"]
+
+[resource]
+script = ExtResource("1_img03")
+id = "imogen_03"
+speaker_id = "mara_vale"
+portrait_key = "mara_vale"
+expression_key = "neutral"
+text = "Clean bill of health, for what that's worth these days. We could use someone who actually knows medicine - properly, not just guesswork."
+background_scene_path = ""
+animation = ""
+sound_cue = ""
+branching_options = Array[Dictionary]([{
+"condition": "",
+"next_id": "",
+"quest_trigger": "",
+"relationship_changes": {
+"imogen_trusted": true
+},
+"reward": {
+"coins": 20
+},
+"text": "Offer her a real place at Hollow Creek, no strings attached."
+}, {
+"condition": "",
+"next_id": "",
+"quest_trigger": "",
+"relationship_changes": {
+"imogen_trusted": false
+},
+"reward": {},
+"text": "Ask her to keep proving herself first."
+}])
+next_id = ""

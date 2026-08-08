@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="QuestDefinition" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data_models/quest_definition.gd" id="1_rpf01"]
+
+[resource]
+script = ExtResource("1_rpf01")
+id = "q_reinforce_perimeter_fence"
+title = "Reinforce the Perimeter Fence"
+description = "The chain-link is cut through in two places. Patch it and rig some early warning."
+quest_type = 1
+requirements = {
+"trap_3": 1
+}
+prerequisite_quest_ids = PackedStringArray()
+rewards = {
+"coins": 40,
+"xp": 30
+}
+is_complete = false
+dialogue_trigger_id = ""
+residence_hotspot_id = "perimeter_fence"
+time_condition = ""

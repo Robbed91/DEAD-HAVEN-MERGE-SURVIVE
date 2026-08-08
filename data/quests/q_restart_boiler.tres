@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="QuestDefinition" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data_models/quest_definition.gd" id="1_rbl01"]
+
+[resource]
+script = ExtResource("1_rbl01")
+id = "q_restart_boiler"
+title = "Restart the Boiler"
+description = "Cold stone hallways all winter. The old boiler just needs the right tools to bring it back."
+quest_type = 1
+requirements = {
+"tool_3": 1
+}
+prerequisite_quest_ids = PackedStringArray()
+rewards = {
+"coins": 40,
+"xp": 30
+}
+is_complete = false
+dialogue_trigger_id = ""
+residence_hotspot_id = "boiler_room"
+time_condition = ""

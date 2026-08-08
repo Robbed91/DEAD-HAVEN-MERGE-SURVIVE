@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="DialogueEntry" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data_models/dialogue_entry.gd" id="1_img01"]
+
+[resource]
+script = ExtResource("1_img01")
+id = "imogen_01"
+speaker_id = ""
+portrait_key = ""
+expression_key = "neutral"
+text = "The isolation ward's doors are sealed the proper way - the kind of seal meant to keep something dangerous in, or everyone else out. A shape moves behind the reinforced glass."
+background_scene_path = ""
+animation = ""
+sound_cue = ""
+branching_options = Array[Dictionary]([])
+next_id = "imogen_02"

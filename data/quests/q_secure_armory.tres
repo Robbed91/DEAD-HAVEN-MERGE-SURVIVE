@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="QuestDefinition" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data_models/quest_definition.gd" id="1_sar01"]
+
+[resource]
+script = ExtResource("1_sar01")
+id = "q_secure_armory"
+title = "Secure the Armory"
+description = "Mostly emptied out already, but what's left is worth locking down properly rather than leaving for whoever comes next."
+quest_type = 1
+requirements = {
+"trap_3": 1
+}
+prerequisite_quest_ids = PackedStringArray()
+rewards = {
+"coins": 40,
+"xp": 30
+}
+is_complete = false
+dialogue_trigger_id = ""
+residence_hotspot_id = "armory"
+time_condition = ""

@@ -10,7 +10,7 @@ const SAVE_DIR := "user://saves/"
 const SAVE_FILE := SAVE_DIR + "slot1.json"
 const SAVE_FILE_TMP := SAVE_DIR + "slot1.json.tmp"
 const BACKUP_FILE := SAVE_DIR + "slot1.bak.json"
-const CURRENT_SAVE_VERSION := 1
+const CURRENT_SAVE_VERSION := 2
 
 ## Debounce autosave so rapid-fire actions (several merges in a row, etc.)
 ## don't hammer disk I/O; the timer coalesces them into one write.
@@ -113,7 +113,21 @@ func _migrate_if_needed(data: Dictionary) -> Dictionary:
 	var version: int = data.get("save_version", 1)
 	if version < CURRENT_SAVE_VERSION:
 		push_warning("SaveManager: migrating save from version %d to %d" % [version, CURRENT_SAVE_VERSION])
-		# No migrations exist yet - this is version 1, the first schema.
+	if version < 2:
+		var legacy_board: Dictionary = data.get("board", {})
+		var profile: Dictionary = data.get("profile", {})
+		var residence_id := String(profile.get("current_residence_id", BoardState.DEFAULT_RESIDENCE_ID))
+		if not residence_id in BoardState.RESIDENCE_IDS:
+			residence_id = BoardState.DEFAULT_RESIDENCE_ID
+		var discoveries: Array = legacy_board.get("discovered_item_ids", [])
+		legacy_board.erase("discovered_item_ids")
+		data["board"] = {
+			"format_version": BoardState.BOARD_FORMAT_VERSION,
+			"active_residence_id": residence_id,
+			"discovered_item_ids": discoveries,
+			"residences": {residence_id: legacy_board},
+		}
+		data["save_version"] = 2
 	return data
 
 func delete_save() -> void:

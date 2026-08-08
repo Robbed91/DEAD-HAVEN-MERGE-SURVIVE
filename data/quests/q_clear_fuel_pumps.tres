@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="QuestDefinition" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data_models/quest_definition.gd" id="1_rwfp1"]
+
+[resource]
+script = ExtResource("1_rwfp1")
+id = "q_clear_fuel_pumps"
+title = "Clear the Fuel Pumps"
+description = "The pumps are choked with debris and rust. Clear them out before anything here is worth pumping."
+quest_type = 1
+requirements = {
+"fuel_2": 1
+}
+prerequisite_quest_ids = PackedStringArray()
+rewards = {
+"coins": 30,
+"xp": 20
+}
+is_complete = false
+dialogue_trigger_id = ""
+residence_hotspot_id = "fuel_pumps"
+time_condition = ""

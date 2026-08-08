@@ -7,6 +7,38 @@ needs to contain when it's produced. See
 `assets/manifests/asset_manifest.json` for the machine-readable version of
 this table.
 
+**Related documents** (Art Phase 1, added in response to the full
+art/graphics/animation brief): `ART_STYLE_GUIDE.md` is the formal
+palette/typography/logo reference; `ART_GENERATION_PROMPTS.md` has
+ready-to-use image-generation prompts for the vertical-slice assets;
+`assets/manifests/animation_manifest.json` tracks every animation,
+implemented and planned, alongside the asset manifest below.
+
+## Approved concept art (Art Phase 2 part 1)
+
+Nine reviewed, original flattened concept PNGs now live under
+`assets/concepts/vertical_slice/`: Mara Vale and Noah Vance character
+sheets, a Drifter concept sheet, matched Hollow Creek Stage 1 and Stage 2
+exteriors, the eight-level construction chain, the six-state Salvaged Tool
+Crate, a ten-panel window-boarding storyboard, and the intro farmhouse
+approach composition.
+
+These are direction-setting concepts, not runtime replacements. They have
+no separated source layers or transparent cut-outs and are not wired into
+scenes, so all procedural placeholders described below remain authoritative
+in the running game. A merge-board concept was also attempted but rejected:
+one version had 7x10 cells and its correction had 6x9, rather than the
+required exact 7x9. Neither rejected variant is stored in the project.
+
+## Finished (non-placeholder) assets
+
+Not everything in this project is a placeholder. `icon.svg` (the launcher
+icon) and, as of Art Phase 1, the full logo set under
+`assets/branding/logo/` plus the notification icon and the real splash
+screen (`scenes/splash/`) are genuine original vector art, hand-authored,
+integrated, and not expected to change before a rebrand - see
+`ART_STYLE_GUIDE.md` section 4 for the full set and their intended uses.
+
 ## Placeholder technique used in Phase 1
 
 Where a final illustration doesn't exist yet, the corresponding scene has a
@@ -23,8 +55,43 @@ implemented.
 Current placeholder scripts:
 - `scenes/main_menu/main_menu_background.gd`
 - `scenes/haven/haven_background.gd`
+- `scenes/redwater/redwater_background.gd` (Phase 8) - Redwater Service
+  Station's exterior, same layered-illustration technique as Hollow
+  Creek's but a dusk palette (cool violet-to-rust sky, warm canopy red)
+  instead of Hollow Creek's day exterior, so the two residences read as
+  distinct places even as procedural placeholders.
+- `scenes/greybridge/greybridge_background.gd` (Phase 10) - Greybridge
+  School's exterior, a third distinct palette/time-of-day again (flat
+  cold overcast daylight) so all three residences read as different
+  places at a glance.
+- `scenes/saint_mercy/saint_mercy_background.gd` (Phase 11) - Saint
+  Mercy Hospital's exterior, a fourth distinct palette/time-of-day: full
+  night lit by a sickly green-white emergency glow from a handful of
+  still-working windows, rather than any warm light source at all.
+- `scenes/northgate/northgate_background.gd` (Phase 12) - Northgate
+  Prison's exterior, a fifth and final distinct palette/time-of-day:
+  early dawn, cold grey-blue breaking to pale rose at the horizon -
+  completing the "every residence has its own time of day" set across
+  the current 5-residence roster (day, dusk, flat overcast, night, dawn).
 - `scenes/world_map/world_map_background.gd`
 - `scripts/ui/survivor_silhouette.gd`
+- `scripts/residence/hotspot_visual.gd` (Phase 3, extended Phase
+  8/10/11/12) - one reusable before/after patch renderer shared by every
+  residence's hotspots: a distinct simple shape per repair area (Hollow
+  Creek: door, window, couch, hearth, shelving, bed, barn, fence, spikes;
+  Redwater: pumps, garage bay, store shelves, office window, generator
+  vents, fence posts, drainage arc, workbench; Greybridge: double doors,
+  basketball hoop, book spines, cafeteria table, boiler tank, desk,
+  chain-link fencing, radio mast; Saint Mercy: cross-marked ER doors,
+  pharmacy shelving, a hospital bed, an operating table, a power room
+  with a lightning-bolt accent, an ambulance silhouette, file drawers, a
+  sealed observation window; Northgate: a barred gate, a stilted
+  watchtower, a weapons rack, a mess table, cell bars, a control panel
+  grid, a transport truck, a barred office/desk), damaged colouring
+  before its quest completes and clean colouring plus a checkmark badge
+  after, with a brief dust-burst animation on completion. Same swap-over
+  story as the item icon renderer below: point a hotspot at real layered
+  art later and this stops being called for that hotspot.
 - `scripts/merge/item_icon_renderer.gd` (Phase 2) - one reusable renderer for
   all 101 merge items instead of 101 bespoke drawings: a rarity-tinted
   background, a category-specific silhouette (distinct shape per chain -
@@ -53,10 +120,31 @@ individual pieces can animate/update independently:
 9. Weather effects
 10. Particle effects
 
-`haven_background.gd` currently draws layers 1-4 procedurally in a single
-script for Hollow Creek Farmhouse; splitting these into separate nodes/
-textures is expected once real art replaces the placeholder (tracked as
+`haven_background.gd`, `redwater_background.gd`,
+`greybridge_background.gd`, `saint_mercy_background.gd` and
+`northgate_background.gd` each currently draw layers 1-4 procedurally in
+a single script, one per residence; splitting these into separate nodes/
+textures is expected once real art replaces the placeholders (tracked as
 high priority in the asset manifest).
+
+## Dialogue portraits (Phase 4)
+
+The dialogue screen (`scenes/dialogue/`) reuses `SurvivorSilhouette`,
+colour-coded per speaker, rather than a new placeholder - no new visual
+technique was needed this phase. `DialogueEntry.expression_key` is set on
+content (e.g. Noah's `"injured"` line) but nothing currently varies the
+portrait rendering by expression; that's still tracked under "Characters"
+below, since it's the same underlying asset gap.
+
+## Vehicle (Phase 6)
+
+`scripts/vehicle/vehicle_visual.gd` draws the delivery van as a single
+procedural silhouette rather than 9 separate illustrations: body colour
+shifts from rust to olive with upgrade progress, and each stage lights up
+one more concrete drawn detail (wheels, fuel cap, storage rack, window
+tint, front ram, roof box, antenna). Real art would replace this with 9
+actual illustrated stages per spec section 13 - tracked in the asset
+manifest.
 
 ## Characters - required set per survivor (not yet produced)
 

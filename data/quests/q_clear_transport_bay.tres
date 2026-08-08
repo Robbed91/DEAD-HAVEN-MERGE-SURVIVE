@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="QuestDefinition" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data_models/quest_definition.gd" id="1_ctb01"]
+
+[resource]
+script = ExtResource("1_ctb01")
+id = "q_clear_transport_bay"
+title = "Clear the Transport Bay"
+description = "A prison transport truck still sits in the bay, tank bone dry. Worth clearing and siphoning what's left nearby."
+quest_type = 1
+requirements = {
+"fuel_3": 1
+}
+prerequisite_quest_ids = PackedStringArray()
+rewards = {
+"coins": 35,
+"xp": 25
+}
+is_complete = false
+dialogue_trigger_id = ""
+residence_hotspot_id = "transport_bay"
+time_condition = ""

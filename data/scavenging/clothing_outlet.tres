@@ -1,0 +1,46 @@
+[gd_resource type="Resource" script_class="ScavengingMission" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data_models/scavenging_mission.gd" id="1_cot01"]
+
+[resource]
+script = ExtResource("1_cot01")
+id = "clothing_outlet"
+location_name = "Clothing Outlet"
+danger_rating = 1
+duration_seconds = 200
+recommended_equipment = PackedStringArray("clothing")
+loot_table = {
+"coin_reward_1": 1,
+"clothing_2": 1
+}
+survivor_encounter_ids = PackedStringArray()
+story_condition = ""
+zombie_threat = 1
+human_threat = 0
+noise_level = 1
+encounter_scene_path = ""
+energy_cost = 8
+encounter_choices = Array[Dictionary]([{
+"failure_penalty": {
+"energy": 4
+},
+"failure_text": "The rack topples over with a crash. You grab an armful and move on.",
+"success_chance": 0.8,
+"success_loot": {
+"clothing_3": 1
+},
+"success_text": "Untouched racks, still on their hangers. Nobody else thought to look here.",
+"text": "Check the back racks."
+}, {
+"failure_penalty": {
+"coins": 6
+},
+"failure_text": "The stockroom's mostly empty already - you make do with what's left.",
+"success_chance": 0.6,
+"success_loot": {
+"coins": 12,
+"clothing_2": 1
+},
+"success_text": "The stockroom's still sealed, boxes stacked exactly as delivered.",
+"text": "Try the sealed stockroom."
+}])

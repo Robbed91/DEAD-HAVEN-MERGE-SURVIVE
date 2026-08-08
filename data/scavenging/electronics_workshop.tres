@@ -1,0 +1,46 @@
+[gd_resource type="Resource" script_class="ScavengingMission" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data_models/scavenging_mission.gd" id="1_ewk01"]
+
+[resource]
+script = ExtResource("1_ewk01")
+id = "electronics_workshop"
+location_name = "Electronics Workshop"
+danger_rating = 2
+duration_seconds = 240
+recommended_equipment = PackedStringArray("electronics")
+loot_table = {
+"coin_reward_1": 1,
+"electronics_2": 1
+}
+survivor_encounter_ids = PackedStringArray()
+story_condition = ""
+zombie_threat = 1
+human_threat = 0
+noise_level = 1
+encounter_scene_path = ""
+energy_cost = 10
+encounter_choices = Array[Dictionary]([{
+"failure_penalty": {
+"energy": 5
+},
+"failure_text": "The shelving gives way loudly. You catch what you can on the way out.",
+"success_chance": 0.65,
+"success_loot": {
+"electronics_3": 1
+},
+"success_text": "Careful hands, quiet work. The workbenches are exactly as their owner left them.",
+"text": "Search the workbenches methodically."
+}, {
+"failure_penalty": {
+"coins": 8
+},
+"failure_text": "The storeroom door was rigged with a bell. You grab what's nearest and go.",
+"success_chance": 0.55,
+"success_loot": {
+"coins": 15,
+"electronics_2": 1
+},
+"success_text": "The storeroom's untouched - whoever ran this place stocked it well.",
+"text": "Force the storeroom door."
+}])

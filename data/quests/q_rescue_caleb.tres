@@ -1,0 +1,23 @@
+[gd_resource type="Resource" script_class="QuestDefinition" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data_models/quest_definition.gd" id="1_rqc01"]
+
+[resource]
+script = ExtResource("1_rqc01")
+id = "q_rescue_caleb"
+title = "The Warden's Office"
+description = "Someone's built a proper defensive position in the warden's old office - and they're not interested in a peaceful introduction."
+quest_type = 2
+requirements = {
+"trap_4": 1
+}
+prerequisite_quest_ids = PackedStringArray()
+rewards = {
+"coins": 70,
+"unlock_survivor": "caleb_rusk",
+"xp": 60
+}
+is_complete = false
+dialogue_trigger_id = "caleb_01"
+residence_hotspot_id = "warden_office"
+time_condition = ""

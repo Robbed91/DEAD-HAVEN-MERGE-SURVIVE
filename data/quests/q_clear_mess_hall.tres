@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="QuestDefinition" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data_models/quest_definition.gd" id="1_cmh02"]
+
+[resource]
+script = ExtResource("1_cmh02")
+id = "q_clear_mess_hall"
+title = "Clear the Mess Hall"
+description = "Long tables overturned, a kitchen behind it that hasn't been touched. Worth clearing properly."
+quest_type = 1
+requirements = {
+"food_3": 1
+}
+prerequisite_quest_ids = PackedStringArray()
+rewards = {
+"coins": 35,
+"xp": 25
+}
+is_complete = false
+dialogue_trigger_id = ""
+residence_hotspot_id = "mess_hall"
+time_condition = ""

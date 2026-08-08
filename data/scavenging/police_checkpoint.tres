@@ -1,0 +1,46 @@
+[gd_resource type="Resource" script_class="ScavengingMission" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data_models/scavenging_mission.gd" id="1_pck01"]
+
+[resource]
+script = ExtResource("1_pck01")
+id = "police_checkpoint"
+location_name = "Police Checkpoint"
+danger_rating = 3
+duration_seconds = 280
+recommended_equipment = PackedStringArray("trap", "defence")
+loot_table = {
+"coin_reward_2": 1,
+"trap_2": 1
+}
+survivor_encounter_ids = PackedStringArray()
+story_condition = ""
+zombie_threat = 2
+human_threat = 3
+noise_level = 2
+encounter_scene_path = ""
+energy_cost = 12
+encounter_choices = Array[Dictionary]([{
+"failure_penalty": {
+"energy": 6
+},
+"failure_text": "Whoever set this up left something behind to make sure nobody follows quietly. You get clear, nothing more.",
+"success_chance": 0.55,
+"success_loot": {
+"trap_3": 1
+},
+"success_text": "The barricades aren't overrun - they're arranged. Someone built this on purpose, and left good gear behind.",
+"text": "Search the arranged barricades."
+}, {
+"failure_penalty": {
+"coins": 12
+},
+"failure_text": "The patrol car's alarm still works, apparently. You're gone before anything finds the noise.",
+"success_chance": 0.6,
+"success_loot": {
+"coins": 20,
+"trap_2": 1
+},
+"success_text": "The patrol car's trunk is untouched. Whoever was here didn't get this far.",
+"text": "Check the abandoned patrol car."
+}])

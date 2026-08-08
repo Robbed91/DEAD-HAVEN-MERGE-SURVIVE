@@ -10,7 +10,7 @@ config/name="Dead Haven: Merge & Survive"
 config/description="An original zombie-survival merge-puzzle adventure. Build shelter, find survivors, outlast the dead."
 run/main_scene="res://scenes/boot/boot.tscn"
 config/features=PackedStringArray("4.3")
-config/icon="res://icon.svg"
+config/icon="res://assets/branding/android/launcher_main.png"
 
 [autoload]
 
@@ -18,9 +18,16 @@ EventBus="*res://autoload/event_bus.gd"
 ItemDatabase="*res://autoload/item_database.gd"
 GameManager="*res://autoload/game_manager.gd"
 BoardState="*res://autoload/board_state.gd"
+CharacterDatabase="*res://autoload/character_database.gd"
+ResidenceManager="*res://autoload/residence_manager.gd"
+DialogueManager="*res://autoload/dialogue_manager.gd"
+ScavengingManager="*res://autoload/scavenging_manager.gd"
+VehicleManager="*res://autoload/vehicle_manager.gd"
+DefenceManager="*res://autoload/defence_manager.gd"
 SaveManager="*res://autoload/save_manager.gd"
 AudioManager="*res://autoload/audio_manager.gd"
 SceneRouter="*res://autoload/scene_router.gd"
+UIAnimationDirector="*res://scripts/ui/ui_animation_director.gd"
 
 [display]
 
@@ -30,12 +37,17 @@ window/size/window_width_override=405
 window/size/window_height_override=720
 window/stretch/mode="canvas_items"
 window/stretch/aspect="expand"
-window/handheld/orientation="portrait"
+window/handheld/orientation=1
 window/energy_saving/keep_screen_on=true
+
+[editor]
+
+export/convert_text_resources_to_binary=false
 
 [input_devices]
 
 pointing/emulate_touch_from_mouse=true
+pointing/emulate_mouse_from_touch=true
 
 [rendering]
 

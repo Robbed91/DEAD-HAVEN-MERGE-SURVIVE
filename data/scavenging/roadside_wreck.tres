@@ -1,0 +1,46 @@
+[gd_resource type="Resource" script_class="ScavengingMission" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data_models/scavenging_mission.gd" id="1_ws6gk"]
+
+[resource]
+script = ExtResource("1_ws6gk")
+id = "roadside_wreck"
+location_name = "Roadside Wreck"
+danger_rating = 2
+duration_seconds = 260
+recommended_equipment = PackedStringArray("vehicle_parts")
+loot_table = {
+"coin_reward_1": 1,
+"vehicle_parts_2": 1
+}
+survivor_encounter_ids = PackedStringArray()
+story_condition = ""
+zombie_threat = 1
+human_threat = 0
+noise_level = 1
+encounter_scene_path = ""
+energy_cost = 10
+encounter_choices = Array[Dictionary]([{
+"failure_penalty": {
+"energy": 5
+},
+"failure_text": "You're spotted, but outrun it easily with the extra weight left behind.",
+"success_chance": 0.7,
+"success_loot": {
+"vehicle_parts_3": 1
+},
+"success_text": "In and out before whatever's in the trees notices.",
+"text": "Grab what's in the trunk and go."
+}, {
+"failure_penalty": {
+"coins": 10
+},
+"failure_text": "Too slow. You leave most of it behind to get clear in time.",
+"success_chance": 0.45,
+"success_loot": {
+"coins": 20,
+"vehicle_parts_3": 1
+},
+"success_text": "Worth the risk - the engine parts are in great shape.",
+"text": "Check under the hood too."
+}])

@@ -1,0 +1,222 @@
+[gd_scene load_steps=6 format=3 uid="uid://vehicle_scene"]
+
+[ext_resource type="Script" path="res://scenes/vehicle/vehicle.gd" id="1"]
+[ext_resource type="Script" path="res://scripts/vehicle/vehicle_visual.gd" id="2"]
+[ext_resource type="PackedScene" path="res://scenes/ui/top_resource_bar.tscn" id="3"]
+[ext_resource type="Script" path="res://scripts/merge/item_view.gd" id="4"]
+[ext_resource type="Texture2D" path="res://assets/ui/icons/final/icon_vehicle.png" id="5"]
+
+[node name="Vehicle" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+script = ExtResource("1")
+
+[node name="Background" type="PanelContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_type_variation = "CharcoalPanel"
+
+[node name="Layout" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_constants/separation = 0
+
+[node name="TopResourceBar" parent="Layout" instance=ExtResource("3")]
+layout_mode = 2
+
+[node name="Margin" type="MarginContainer" parent="Layout"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/margin_left = 18
+theme_override_constants/margin_right = 18
+theme_override_constants/margin_top = 14
+theme_override_constants/margin_bottom = 18
+
+[node name="Content" type="VBoxContainer" parent="Layout/Margin"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="HeaderRow" type="HBoxContainer" parent="Layout/Margin/Content"]
+layout_mode = 2
+alignment = 1
+theme_override_constants/separation = 10
+
+[node name="VehicleBadge" type="TextureRect" parent="Layout/Margin/Content/HeaderRow"]
+custom_minimum_size = Vector2(44, 44)
+layout_mode = 2
+texture = ExtResource("5")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Header" type="Label" parent="Layout/Margin/Content/HeaderRow"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.94, 0.86, 0.68, 1)
+theme_override_font_sizes/font_size = 24
+text = "Old Delivery Van"
+
+[node name="VehicleFrame" type="PanelContainer" parent="Layout/Margin/Content"]
+custom_minimum_size = Vector2(0, 430)
+layout_mode = 2
+clip_contents = true
+theme_type_variation = "CharcoalPanel"
+
+[node name="VehicleVisual" type="Control" parent="Layout/Margin/Content/VehicleFrame"]
+unique_name_in_owner = true
+layout_mode = 2
+script = ExtResource("2")
+
+[node name="VisualTag" type="Label" parent="Layout/Margin/Content/VehicleFrame/VehicleVisual"]
+layout_mode = 0
+offset_left = 14.0
+offset_top = 12.0
+offset_right = 230.0
+offset_bottom = 40.0
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.94, 0.76, 0.4, 1)
+theme_override_colors/font_shadow_color = Color(0.02, 0.02, 0.02, 0.9)
+theme_override_constants/shadow_offset_x = 2
+theme_override_constants/shadow_offset_y = 2
+theme_override_font_sizes/font_size = 14
+text = "RECOVERY VEHICLE"
+
+[node name="EngineStatus" type="Label" parent="Layout/Margin/Content/VehicleFrame/VehicleVisual"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -210.0
+offset_top = -42.0
+offset_right = -14.0
+offset_bottom = -14.0
+grow_horizontal = 0
+grow_vertical = 0
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.75, 0.81, 0.62, 1)
+theme_override_colors/font_shadow_color = Color(0.02, 0.02, 0.02, 0.9)
+theme_override_constants/shadow_offset_x = 2
+theme_override_constants/shadow_offset_y = 2
+theme_override_font_sizes/font_size = 14
+text = "ENGINE OFFLINE"
+horizontal_alignment = 2
+
+[node name="StageCard" type="PanelContainer" parent="Layout/Margin/Content"]
+layout_mode = 2
+theme_type_variation = "CreamPanel"
+
+[node name="StageMargin" type="MarginContainer" parent="Layout/Margin/Content/StageCard"]
+layout_mode = 2
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="StageContent" type="VBoxContainer" parent="Layout/Margin/Content/StageCard/StageMargin"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="StageLabel" type="Label" parent="Layout/Margin/Content/StageCard/StageMargin/StageContent"]
+unique_name_in_owner = true
+layout_mode = 2
+horizontal_alignment = 1
+theme_override_colors/font_color = Color(0.43, 0.25, 0.12, 1)
+theme_override_font_sizes/font_size = 19
+text = "Abandoned Wreck"
+
+[node name="ProgressLabel" type="Label" parent="Layout/Margin/Content/StageCard/StageMargin/StageContent"]
+unique_name_in_owner = true
+layout_mode = 2
+horizontal_alignment = 1
+theme_override_colors/font_color = Color(0.23, 0.22, 0.18, 0.8)
+text = "Stage 0 / 8"
+
+[node name="StageProgress" type="ProgressBar" parent="Layout/Margin/Content/StageCard/StageMargin/StageContent"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 14)
+layout_mode = 2
+max_value = 8.0
+show_percentage = false
+
+[node name="RequirementCard" type="PanelContainer" parent="Layout/Margin/Content"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = "CreamPanel"
+
+[node name="RequirementMargin" type="MarginContainer" parent="Layout/Margin/Content/RequirementCard"]
+layout_mode = 2
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_bottom = 12
+
+[node name="RequirementPanel" type="VBoxContainer" parent="Layout/Margin/Content/RequirementCard/RequirementMargin"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 7
+
+[node name="NextUpgradeLabel" type="Label" parent="Layout/Margin/Content/RequirementCard/RequirementMargin/RequirementPanel"]
+unique_name_in_owner = true
+layout_mode = 2
+horizontal_alignment = 1
+theme_override_colors/font_color = Color(0.43, 0.25, 0.12, 1)
+theme_override_font_sizes/font_size = 15
+text = "NEXT: ENGINE REPAIRED"
+
+[node name="RequirementRow" type="HBoxContainer" parent="Layout/Margin/Content/RequirementCard/RequirementMargin/RequirementPanel"]
+layout_mode = 2
+alignment = 1
+theme_override_constants/separation = 12
+
+[node name="RequirementIcon" type="Control" parent="Layout/Margin/Content/RequirementCard/RequirementMargin/RequirementPanel/RequirementRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(82, 82)
+layout_mode = 2
+script = ExtResource("4")
+interactive = false
+show_level_badge = false
+
+[node name="RequirementLabel" type="Label" parent="Layout/Margin/Content/RequirementCard/RequirementMargin/RequirementPanel/RequirementRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(320, 0)
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_colors/font_color = Color(0.23, 0.22, 0.18, 1)
+text = "Item: 0 / 1"
+autowrap_mode = 3
+
+[node name="UpgradeButton" type="Button" parent="Layout/Margin/Content/RequirementCard/RequirementMargin/RequirementPanel"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 54)
+layout_mode = 2
+theme_type_variation = "OliveButton"
+text = "Install Upgrade"
+
+[node name="CompleteLabel" type="Label" parent="Layout/Margin/Content"]
+unique_name_in_owner = true
+visible = false
+custom_minimum_size = Vector2(0, 72)
+layout_mode = 2
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 3
+theme_override_colors/font_color = Color(0.78, 0.86, 0.63, 1)
+theme_override_font_sizes/font_size = 17
+text = "Long-range expedition configuration complete."
+
+[node name="BackButton" type="Button" parent="Layout/Margin/Content"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 54)
+layout_mode = 2
+theme_type_variation = "NavButton"
+text = "Return to Map"

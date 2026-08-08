@@ -4,6 +4,7 @@
 [ext_resource type="PackedScene" path="res://scenes/ui/top_resource_bar.tscn" id="2"]
 [ext_resource type="PackedScene" path="res://scenes/ui/bottom_nav.tscn" id="3"]
 [ext_resource type="PackedScene" path="res://scenes/ui/toast.tscn" id="4"]
+[ext_resource type="PackedScene" path="res://scenes/ui/task_panel.tscn" id="5"]
 
 [node name="Survivors" type="Control"]
 layout_mode = 3
@@ -11,6 +12,16 @@ anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 script = ExtResource("1")
+
+[node name="Backdrop" type="PanelContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_type_variation = "CharcoalPanel"
 
 [node name="Layout" type="VBoxContainer" parent="."]
 layout_mode = 1
@@ -43,5 +54,8 @@ theme_override_constants/v_separation = 12
 [node name="BottomNav" parent="Layout" instance=ExtResource("3")]
 layout_mode = 2
 active_tab = "survivors"
+
+[node name="TaskPanel" parent="." instance=ExtResource("5")]
+unique_name_in_owner = true
 
 [node name="Toast" parent="." instance=ExtResource("4")]

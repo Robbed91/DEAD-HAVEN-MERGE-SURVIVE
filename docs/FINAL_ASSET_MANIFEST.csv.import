@@ -1,0 +1,17 @@
+[remap]
+
+importer="csv_translation"
+type="Translation"
+uid="uid://bg4u7t0sglq6"
+
+[deps]
+
+files=["res://docs/FINAL_ASSET_MANIFEST.Existing file path.translation", "res://docs/FINAL_ASSET_MANIFEST.Scene using it.translation", "res://docs/FINAL_ASSET_MANIFEST.Current placeholder type.translation", "res://docs/FINAL_ASSET_MANIFEST.Required final asset.translation", "res://docs/FINAL_ASSET_MANIFEST.Required dimensions.translation", "res://docs/FINAL_ASSET_MANIFEST.Transparency requirements.translation", "res://docs/FINAL_ASSET_MANIFEST.Visual states.translation", "res://docs/FINAL_ASSET_MANIFEST.Required separated layers.translation", "res://docs/FINAL_ASSET_MANIFEST.Animation requirements.translation", "res://docs/FINAL_ASSET_MANIFEST.Audio requirements.translation", "res://docs/FINAL_ASSET_MANIFEST.Replacement priority.translation", "res://docs/FINAL_ASSET_MANIFEST.Whether replacement can occur without altering gameplay logic.translation", "res://docs/FINAL_ASSET_MANIFEST.Classification.translation"]
+
+source_file="res://docs/FINAL_ASSET_MANIFEST.csv"
+dest_files=["res://docs/FINAL_ASSET_MANIFEST.Existing file path.translation", "res://docs/FINAL_ASSET_MANIFEST.Scene using it.translation", "res://docs/FINAL_ASSET_MANIFEST.Current placeholder type.translation", "res://docs/FINAL_ASSET_MANIFEST.Required final asset.translation", "res://docs/FINAL_ASSET_MANIFEST.Required dimensions.translation", "res://docs/FINAL_ASSET_MANIFEST.Transparency requirements.translation", "res://docs/FINAL_ASSET_MANIFEST.Visual states.translation", "res://docs/FINAL_ASSET_MANIFEST.Required separated layers.translation", "res://docs/FINAL_ASSET_MANIFEST.Animation requirements.translation", "res://docs/FINAL_ASSET_MANIFEST.Audio requirements.translation", "res://docs/FINAL_ASSET_MANIFEST.Replacement priority.translation", "res://docs/FINAL_ASSET_MANIFEST.Whether replacement can occur without altering gameplay logic.translation", "res://docs/FINAL_ASSET_MANIFEST.Classification.translation"]
+
+[params]
+
+compress=true
+delimiter=0

@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="DialogueEntry" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data_models/dialogue_entry.gd" id="1_ax6pr"]
+
+[resource]
+script = ExtResource("1_ax6pr")
+id = "intro_02"
+speaker_id = "mara_vale"
+portrait_key = "mara_vale"
+expression_key = "neutral"
+text = "\"Haven Seven is still active...\" That's what it said. If this is Haven Seven, someone built it to last. Let's see what's left standing."
+background_scene_path = ""
+animation = ""
+sound_cue = ""
+branching_options = Array[Dictionary]([])
+next_id = "intro_03"

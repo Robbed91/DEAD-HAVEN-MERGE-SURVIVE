@@ -1,0 +1,36 @@
+[gd_resource type="Resource" script_class="DialogueEntry" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data_models/dialogue_entry.gd" id="1_ril03"]
+
+[resource]
+script = ExtResource("1_ril03")
+id = "riley_03"
+speaker_id = "mara_vale"
+portrait_key = "mara_vale"
+expression_key = "neutral"
+text = "Keep the signal running. We just need somewhere solid to run it from - and someone who actually understands the equipment."
+background_scene_path = ""
+animation = ""
+sound_cue = ""
+branching_options = Array[Dictionary]([{
+"condition": "",
+"next_id": "",
+"quest_trigger": "",
+"relationship_changes": {
+"riley_trusted": true
+},
+"reward": {
+"coins": 20
+},
+"text": "Offer to keep the tower running as part of Hollow Creek's network."
+}, {
+"condition": "",
+"next_id": "",
+"quest_trigger": "",
+"relationship_changes": {
+"riley_trusted": false
+},
+"reward": {},
+"text": "Ask her to prove the signal is worth the risk first."
+}])
+next_id = ""

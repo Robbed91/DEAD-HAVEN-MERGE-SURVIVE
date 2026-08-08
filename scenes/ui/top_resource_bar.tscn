@@ -1,13 +1,19 @@
-[gd_scene load_steps=2 format=3 uid="uid://top_resource_bar"]
+[gd_scene load_steps=7 format=3 uid="uid://top_resource_bar"]
 
 [ext_resource type="Script" path="res://scenes/ui/top_resource_bar.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/ui/icons/final/icon_energy.png" id="2"]
+[ext_resource type="Texture2D" path="res://assets/ui/icons/final/icon_coin.png" id="3"]
+[ext_resource type="Texture2D" path="res://assets/ui/icons/final/icon_token.png" id="4"]
+[ext_resource type="Texture2D" path="res://assets/ui/icons/final/icon_bell.png" id="5"]
+[ext_resource type="Texture2D" path="res://assets/ui/icons/final/icon_notification.png" id="6"]
 
 [node name="TopResourceBar" type="PanelContainer"]
-custom_minimum_size = Vector2(0, 76)
+custom_minimum_size = Vector2(0, 84)
 layout_mode = 2
 script = ExtResource("1")
 
 [node name="Margin" type="MarginContainer" parent="."]
+unique_name_in_owner = true
 layout_mode = 2
 theme_override_constants/margin_left = 16
 theme_override_constants/margin_right = 16
@@ -15,38 +21,47 @@ theme_override_constants/margin_top = 8
 theme_override_constants/margin_bottom = 8
 
 [node name="Row" type="HBoxContainer" parent="Margin"]
+unique_name_in_owner = true
 layout_mode = 2
-theme_override_constants/separation = 18
+theme_override_constants/separation = 12
 
 [node name="LevelLabel" type="Label" parent="Margin/Row"]
 unique_name_in_owner = true
+custom_minimum_size = Vector2(58, 0)
 layout_mode = 2
 text = "Lv 1"
 vertical_alignment = 1
+theme_override_font_sizes/font_size = 24
 
 [node name="XpBar" type="ProgressBar" parent="Margin/Row"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(60, 14)
+visible = false
+custom_minimum_size = Vector2(54, 14)
 layout_mode = 2
-size_flags_horizontal = 3
 show_percentage = false
 
 [node name="EnergyRow" type="HBoxContainer" parent="Margin/Row"]
 layout_mode = 2
 theme_override_constants/separation = 4
 
-[node name="EnergyIcon" type="Label" parent="Margin/Row/EnergyRow"]
+[node name="EnergyTexture" type="TextureRect" parent="Margin/Row/EnergyRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(30, 30)
 layout_mode = 2
-text = "⚡"
+texture = ExtResource("2")
+expand_mode = 1
+stretch_mode = 5
 
 [node name="EnergyLabel" type="Label" parent="Margin/Row/EnergyRow"]
 unique_name_in_owner = true
 layout_mode = 2
 text = "100/100"
+theme_override_font_sizes/font_size = 22
 
 [node name="EnergyBar" type="ProgressBar" parent="Margin/Row/EnergyRow"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(50, 14)
+visible = false
+custom_minimum_size = Vector2(44, 14)
 layout_mode = 2
 show_percentage = false
 
@@ -54,42 +69,69 @@ show_percentage = false
 layout_mode = 2
 theme_override_constants/separation = 4
 
-[node name="CoinsIcon" type="Label" parent="Margin/Row/CoinsRow"]
+[node name="CoinsTexture" type="TextureRect" parent="Margin/Row/CoinsRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(30, 30)
 layout_mode = 2
-text = "🪙"
+texture = ExtResource("3")
+expand_mode = 1
+stretch_mode = 5
 
 [node name="CoinsLabel" type="Label" parent="Margin/Row/CoinsRow"]
 unique_name_in_owner = true
 layout_mode = 2
 text = "0"
+theme_override_font_sizes/font_size = 22
 
 [node name="TokensRow" type="HBoxContainer" parent="Margin/Row"]
 layout_mode = 2
 theme_override_constants/separation = 4
 
-[node name="TokensIcon" type="Label" parent="Margin/Row/TokensRow"]
+[node name="TokensTexture" type="TextureRect" parent="Margin/Row/TokensRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(30, 30)
 layout_mode = 2
-text = "◆"
+texture = ExtResource("4")
+expand_mode = 1
+stretch_mode = 5
 
 [node name="TokensLabel" type="Label" parent="Margin/Row/TokensRow"]
 unique_name_in_owner = true
 layout_mode = 2
 text = "0"
-
-[node name="Spacer" type="Control" parent="Margin/Row"]
-layout_mode = 2
-size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 22
 
 [node name="NotificationButton" type="Button" parent="Margin/Row"]
-layout_mode = 2
-text = "🔔"
-flat = true
-
-[node name="NotificationDot" type="ColorRect" parent="Margin/Row/NotificationButton"]
 unique_name_in_owner = true
-color = Color(0.698, 0.227, 0.18, 1)
-offset_left = 26.0
-offset_top = 2.0
-offset_right = 34.0
-offset_bottom = 10.0
+custom_minimum_size = Vector2(52, 52)
+layout_mode = 2
+theme_type_variation = "NotificationButton"
+
+[node name="BellIcon" type="TextureRect" parent="Margin/Row/NotificationButton"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -18.0
+offset_top = -18.0
+offset_right = 18.0
+offset_bottom = 18.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("5")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="NotificationDot" type="TextureRect" parent="Margin/Row/NotificationButton"]
+unique_name_in_owner = true
+texture = ExtResource("6")
+expand_mode = 1
+stretch_mode = 5
+offset_left = 31.0
+offset_top = -2.0
+offset_right = 51.0
+offset_bottom = 18.0
 visible = false

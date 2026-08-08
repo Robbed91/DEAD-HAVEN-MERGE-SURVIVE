@@ -3,7 +3,7 @@ extends Control
 
 @onready var _continue_button: Button = %ContinueButton
 @onready var _new_game_button: Button = %NewGameButton
-@onready var _overwrite_dialog: ConfirmationDialog = %OverwriteDialog
+@onready var _overwrite_dialog: AppConfirmDialog = %OverwriteDialog
 @onready var _title_label: Label = %TitleLabel
 
 var _title_tap_count: int = 0

@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="QuestDefinition" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data_models/quest_definition.gd" id="1_rcs01"]
+
+[resource]
+script = ExtResource("1_rcs01")
+id = "q_restock_convenience_store"
+title = "Clear the Convenience Store"
+description = "Shelves knocked flat, stock scattered everywhere. Sort out what's still good."
+quest_type = 1
+requirements = {
+"food_2": 1
+}
+prerequisite_quest_ids = PackedStringArray()
+rewards = {
+"coins": 30,
+"xp": 20
+}
+is_complete = false
+dialogue_trigger_id = ""
+residence_hotspot_id = "convenience_store"
+time_condition = ""
